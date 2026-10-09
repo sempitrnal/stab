@@ -31,8 +31,8 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
+// Only routes that read the session need the refresh. The public storefront
+// skips the Supabase round-trip so its pages can be served from cache.
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/admin/:path*", "/auth/:path*"],
 };

@@ -29,6 +29,11 @@ export interface ProductInput {
   variants: VariantInput[];
 }
 
+function revalidateStorefront() {
+  revalidatePath("/");
+  revalidatePath("/product/[slug]", "page");
+}
+
 async function requireAdmin() {
   const supabase = await createClient();
   const {
@@ -111,7 +116,7 @@ export async function saveProduct(input: ProductInput) {
     }
   }
 
-  revalidatePath("/");
+  revalidateStorefront();
   redirect("/admin");
 }
 
@@ -123,7 +128,7 @@ export async function setProductActive(id: string, active: boolean) {
     .update({ active })
     .eq("id", id);
   if (error) throw new Error(error.message);
-  revalidatePath("/");
+  revalidateStorefront();
   revalidatePath("/admin");
 }
 
@@ -132,7 +137,7 @@ export async function deleteProduct(id: string) {
   const admin = createAdminClient();
   const { error } = await admin.from("products").delete().eq("id", id);
   if (error) throw new Error(error.message);
-  revalidatePath("/");
+  revalidateStorefront();
   revalidatePath("/admin");
 }
 

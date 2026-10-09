@@ -159,5 +159,6 @@ export async function placeOrder(
   }
 
   revalidatePath("/");
+  revalidatePath("/product/[slug]", "page");
   return { ref: order.ref };
 }
