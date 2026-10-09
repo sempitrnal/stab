@@ -1,6 +1,5 @@
 "use client";
 
-import { compressImage } from "@/lib/compress-image";
 import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import AddressSearch from "@/components/address-search";
@@ -145,16 +144,11 @@ export default function CheckoutForm() {
         if (proof) {
           if (!configured) return setError("Supabase not configured");
           const supabase = createClient();
-          // Screenshots of receipts: keep text legible, drop the megabytes.
-          const { file: body, ext } = await compressImage(proof, {
-            maxEdge: 1600,
-            quality: 0.8,
-            type: "image/jpeg",
-          });
+          const ext = proof.name.split(".").pop() ?? "jpg";
           const path = `${crypto.randomUUID()}.${ext}`;
           const { error: upErr } = await supabase.storage
             .from("payment-proofs")
-            .upload(path, body);
+            .upload(path, proof);
           if (upErr) return setError("Proof upload failed, try again");
           proofPath = path;
         }

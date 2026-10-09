@@ -1,6 +1,5 @@
 "use client";
 
-import { compressImage } from "@/lib/compress-image";
 import { useRef, useState, useTransition } from "react";
 import { saveProduct } from "@/app/admin/(panel)/actions";
 import { createClient } from "@/lib/supabase/client";
@@ -94,16 +93,11 @@ export default function ProductForm({ product }: { product?: Product }) {
     setUploading(true);
     setError(null);
     const supabase = createClient();
-    // 2000px covers the 1200px gallery size on high-DPI screens.
-    const { file: body, ext } = await compressImage(file, {
-      maxEdge: 2000,
-      quality: 0.85,
-      type: "image/webp",
-    });
+    const ext = file.name.split(".").pop() ?? "jpg";
     const path = `${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage
       .from("product-images")
-      .upload(path, body, { cacheControl: "31536000" });
+      .upload(path, file);
     if (error) {
       setError(error.message);
     } else {
