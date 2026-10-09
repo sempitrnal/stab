@@ -105,7 +105,7 @@ export default function AddressSearch({
                   onSelect(parse(r));
                   setResults(null);
                 }}
-                className="w-full text-left px-3 py-2.5 font-mono text-[10px] tracking-wider uppercase hover:bg-bone transition-colors"
+                className="w-full text-left px-3 py-2.5 text-[10px] tracking-wider uppercase hover:bg-bone transition-colors"
               >
                 {r.display_name}
               </button>

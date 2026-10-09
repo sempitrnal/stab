@@ -1,13 +1,7 @@
 import Link from "next/link";
 import ProductMedia from "@/components/product-media";
 import { formatPrice } from "@/lib/format";
-import type { Product, ProductType } from "@/lib/types";
-
-const TYPE_WORD: Record<ProductType, string> = {
-  apparel: "Apparel",
-  accessory: "Accessory",
-  music: "Music",
-};
+import type { Product } from "@/lib/types";
 
 // One boxed classified ad.
 export default function ProductCard({
@@ -24,12 +18,10 @@ export default function ProductCard({
   return (
     <Link
       href={`/product/${product.slug}`}
-      className="group block break-inside-avoid mb-6 rounded-lg bg-card p-3.5 hover:bg-card-hover transition-colors"
+      className="group block rounded-lg bg-card p-3.5 hover:bg-card-hover transition-colors"
     >
       <div className="flex justify-between gap-3 mb-3 tag">
-        <span>
-          No. {number} · {TYPE_WORD[product.type]}
-        </span>
+        <span>{number}</span>
         <span className={soldOut ? "text-faded" : "text-accent"}>
           {soldOut ? "Sold out" : formatPrice(product.price_cents)}
         </span>
@@ -47,12 +39,12 @@ export default function ProductCard({
         {product.description ||
           "Official STAB merch. Pick it up at a show or have it shipped."}
       </p>
-      {inStock.length > 1 && (
-        <p className="mt-1.5 text-faded">In stock: {inStock.join(" · ")}</p>
+      {inStock.length > 1 && (<></>
+        // <p className="mt-1.5 text-faded">In stock: {inStock.join(" · ")}</p>
       )}
-      <p className="mt-2 tag group-hover:text-accent">
+      { <p className="mt-2 tag group-hover:text-accent">
         {soldOut ? "→ See listing" : "→ Add to cart"}
-      </p>
+      </p> }
     </Link>
   );
 }

@@ -10,16 +10,19 @@
   --color-bone: #e6e2d8;
   --color-line: #dcd7cb;
   /* logo's #ba8fe3 chrome, deepened so it reads on paper */
-  --color-accent: #6b3fc6;
+  --color-accent: #333333;
   --color-faded: #7f7b72;
 
   --font-serif: var(--font-newsreader), Georgia, serif;
   --font-mono: var(--font-ibm-mono), ui-monospace, monospace;
+  /* Body text and the small uppercase labels. Swap for --font-serif (or a
+     sans) to change the whole UI voice in one place. */
+  --font-ui: var(--font-mono);
 }
 
-/* Small uppercase mono label: section heads, table keys, nav. */
+/* Small uppercase label: section heads, table keys, nav. */
 @utility tag {
-  font-family: var(--font-mono);
+  font-family: var(--font-ui);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;

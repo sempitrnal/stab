@@ -28,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${newsreader.variable} ${ibmMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-mono text-xs bg-paper text-ink">
+      <body className="min-h-full flex flex-col font-ui text-xs bg-paper text-ink">
         <CartProvider>
           <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 flex-1 flex flex-col">
             <SiteHeader />

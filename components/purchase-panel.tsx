@@ -85,9 +85,9 @@ export default function PurchasePanel({ product }: { product: Product }) {
       <button
         onClick={handleAdd}
         disabled={!selected || soldOut}
-        className="mt-2 w-full h-12 px-4 rounded-md flex items-center justify-between bg-ink text-paper tag hover:bg-accent transition-colors disabled:bg-bone disabled:text-faded disabled:cursor-not-allowed"
+        className="mt-6 w-max h-12 px-4 rounded-md  flex items-center justify-between bg-ink text-paper tag hover:bg-ink/90 cursor-pointer transition-colors disabled:bg-bone disabled:text-faded disabled:cursor-not-allowed"
       >
-        <span>{soldOut ? "Sold out" : added ? "Added ✓" : "Add to cart"}</span>
+        <span className="mr-5">{soldOut ? "Sold out" : added ? "Added ✓" : "Add to cart"}</span>
         {!soldOut && <span>{formatPrice(unitPrice)} →</span>}
       </button>
 

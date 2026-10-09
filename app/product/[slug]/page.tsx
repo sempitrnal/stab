@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageBody from "@/components/page-body";
+import ProductGallery from "@/components/product-gallery";
 import ProductMedia from "@/components/product-media";
-import ZoomableImage from "@/components/zoomable-image";
 import PurchasePanel from "@/components/purchase-panel";
 import { getProductBySlug } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
@@ -29,19 +29,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
         <article className="pt-5 grid md:grid-cols-[1.15fr_1fr] gap-6 md:gap-10">
           <div className="flex flex-col gap-4">
             {product.images.length > 0 ? (
-              product.images.map((src, i) => (
-                <figure key={src} className="rounded-lg bg-card p-2.5">
-                  <div className="relative aspect-4/5 rounded-md overflow-hidden bg-bone">
-                    <ZoomableImage
-                      src={src}
-                      alt={i === 0 ? product.title : `${product.title} ${i + 1}`}
-                    />
-                  </div>
-                  <figcaption className="pt-2.5 px-1 tag text-faded">
-                    Fig. {i + 1} · {product.title}
-                  </figcaption>
-                </figure>
-              ))
+              <ProductGallery images={product.images} title={product.title} />
             ) : (
               <div className="rounded-lg bg-card p-2.5">
                 <div className="relative aspect-4/5 rounded-md overflow-hidden bg-bone">

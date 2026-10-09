@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { saveProduct } from "@/app/admin/(panel)/actions";
 import { createClient } from "@/lib/supabase/client";
+import { TEE_SIZES } from "@/lib/size-chart";
 import type { Product, ProductType } from "@/lib/types";
 
 interface VariantRow {
@@ -18,6 +19,29 @@ const inputCls =
   "w-full bg-transparent border border-ink/25 px-3 py-2.5 font-mono text-xs tracking-widest placeholder:text-faded focus:outline-none focus:border-ink";
 const labelCls =
   "block font-mono text-[10px] uppercase tracking-widest text-faded mb-1.5";
+
+const blankVariant = (label = "", dimensions = ""): VariantRow => ({
+  label,
+  sku: "",
+  dimensions,
+  priceDollars: "",
+  stock: "0",
+});
+
+// Tee sizes in chart order. A row whose label already matches a size keeps
+// its stock, price, SKU and id and just takes the chart's measurements;
+// missing sizes are added; any other rows stay after them.
+function withTeeSizes(rows: VariantRow[]): VariantRow[] {
+  // XXL/XXXL are the same sizes as the chart's 2XL/3XL.
+  const key = (s: string) =>
+    s.trim().toUpperCase().replace(/^XXXL$/, "3XL").replace(/^XXL$/, "2XL");
+  const sized = TEE_SIZES.map(({ label, dimensions }) => {
+    const match = rows.find((r) => key(r.label) === key(label));
+    return match ? { ...match, dimensions } : blankVariant(label, dimensions);
+  });
+  const sizeKeys = new Set(TEE_SIZES.map((t) => key(t.label)));
+  return [...sized, ...rows.filter((r) => !sizeKeys.has(key(r.label)))];
+}
 
 function slugify(s: string) {
   return s
@@ -42,16 +66,19 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [sortOrder, setSortOrder] = useState(
     (product?.sort_order ?? 0).toString(),
   );
-  const [variants, setVariants] = useState<VariantRow[]>(
-    (product?.variants ?? []).map((v) => ({
-      id: v.id,
-      label: v.label,
-      sku: v.sku ?? "",
-      dimensions: v.dimensions ?? "",
-      priceDollars:
-        v.price_cents != null ? (v.price_cents / 100).toString() : "",
-      stock: v.stock.toString(),
-    })),
+  // New products start with the tee size chart (type defaults to apparel).
+  const [variants, setVariants] = useState<VariantRow[]>(() =>
+    product
+      ? (product.variants ?? []).map((v) => ({
+          id: v.id,
+          label: v.label,
+          sku: v.sku ?? "",
+          dimensions: v.dimensions ?? "",
+          priceDollars:
+            v.price_cents != null ? (v.price_cents / 100).toString() : "",
+          stock: v.stock.toString(),
+        }))
+      : withTeeSizes([]),
   );
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -253,24 +280,22 @@ export default function ProductForm({ product }: { product?: Product }) {
           <label className="font-mono text-[10px] uppercase tracking-widest text-faded">
             Variants
           </label>
-          <button
-            type="button"
-            onClick={() =>
-              setVariants((prev) => [
-                ...prev,
-                {
-                  label: "",
-                  sku: "",
-                  dimensions: "",
-                  priceDollars: "",
-                  stock: "0",
-                },
-              ])
-            }
-            className="font-mono text-[10px] uppercase tracking-widest hover:text-accent"
-          >
-            + Add variant
-          </button>
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={() => setVariants(withTeeSizes)}
+              className="font-mono text-[10px] uppercase tracking-widest hover:text-accent"
+            >
+              Use tee sizes
+            </button>
+            <button
+              type="button"
+              onClick={() => setVariants((prev) => [...prev, blankVariant()])}
+              className="font-mono text-[10px] uppercase tracking-widest hover:text-accent"
+            >
+              + Add variant
+            </button>
+          </div>
         </div>
         <div className="border-t border-ink/15">
           <div className="hidden sm:grid grid-cols-[1fr_7rem_4.5rem_6rem_5rem_2rem] gap-2 py-2 font-mono text-[9px] uppercase tracking-widest text-faded">

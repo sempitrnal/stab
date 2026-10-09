@@ -31,7 +31,7 @@ export default async function Home(props: PageProps<"/">) {
   // Numbers stay tied to the full catalog so they don't shift when filtering.
   const numbered = products.map((product, i) => ({
     product,
-    n: String(i + 1).padStart(2, "0"),
+    n: String(i + 1).padStart(3, "0"),
   }));
   const types = (Object.keys(TYPE_LABELS) as ProductType[]).filter((t) =>
     products.some((p) => p.type === t),
@@ -78,9 +78,9 @@ export default async function Home(props: PageProps<"/">) {
         </nav>
       </div>
 
-      {/* Newspaper columns: 1 on phones, up to 4 on wide screens */}
+      {/* Reads left to right, row by row: 1 column on phones, up to 4 wide */}
       <PageBody>
-        <div className="pt-6 columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-6">
+        <div className="pt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
           {shown.map(({ product, n }) => (
             <ProductCard key={product.id} product={product} number={n} />
           ))}

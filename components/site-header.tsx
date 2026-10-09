@@ -43,7 +43,7 @@ export default function SiteHeader() {
         aria-label="STAB, home"
         className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-1 w-full md:w-auto justify-self-center"
       >
-        <StabLogo3D className="h-64 md:w-[30rem] md:h-48" />
+        <StabLogo3D className="h-24 md:w-[30rem] md:h-48" />
       </Link>
       <div className="md:col-start-1 md:row-start-1 flex flex-col gap-1">
         {nav}
