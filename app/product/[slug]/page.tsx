@@ -4,10 +4,17 @@ import PageBody from "@/components/page-body";
 import ProductGallery from "@/components/product-gallery";
 import ProductMedia from "@/components/product-media";
 import PurchasePanel from "@/components/purchase-panel";
-import { getProductBySlug } from "@/lib/data";
+import { getProductBySlug, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 
-export const dynamic = "force-dynamic";
+// Statically generated; admin edits and checkout revalidate on demand, the
+// timer is a safety net.
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  const products = await getProducts();
+  return products.map((p) => ({ slug: p.slug }));
+}
 
 export default async function ProductPage(props: PageProps<"/product/[slug]">) {
   const { slug } = await props.params;
