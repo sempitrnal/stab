@@ -42,7 +42,7 @@ function StabModel({ onReady }: { onReady: () => void }) {
     const size = new THREE.Box3()
       .setFromObject(scene)
       .getSize(new THREE.Vector3());
-    return size.x > 0 ? 1.3 / size.x : 1;
+    return size.x > 0 ? 1.8 / size.x : 1;
   }, [scene]);
 
   useEffect(onReady, [onReady]);

@@ -11,7 +11,9 @@ interface Props {
 }
 
 // Hover magnifier: scales the image and tracks transform-origin to the
-// cursor. Click toggles for touch devices.
+// cursor. Click toggles for touch devices. The white-dropping multiply blend
+// sits on the (never transformed) wrapper: Safari skips blending on
+// transformed elements.
 export default function ZoomableImage({ src, alt, sizes, priority }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [zoomed, setZoomed] = useState(false);
@@ -33,7 +35,7 @@ export default function ZoomableImage({ src, alt, sizes, priority }: Props) {
   return (
     <div
       ref={ref}
-      className={`absolute inset-0 overflow-hidden ${zoomed || locked ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+      className={`absolute inset-0 overflow-hidden mix-blend-multiply ${zoomed || locked ? "cursor-zoom-out" : "cursor-zoom-in"}`}
       onMouseEnter={() => setZoomed(true)}
       onMouseLeave={() => setZoomed(false)}
       onMouseMove={track}
@@ -47,7 +49,7 @@ export default function ZoomableImage({ src, alt, sizes, priority }: Props) {
         fill
         sizes={sizes}
         priority={priority}
-        className="object-contain p-[10%] mix-blend-multiply transition-transform duration-200 ease-out"
+        className="object-contain p-[10%] transition-transform duration-200 ease-out"
         style={{
           transform: zoomed || locked ? "scale(2.25)" : "scale(1)",
         }}
