@@ -18,33 +18,35 @@ export default function ProductCard({
   return (
     <Link
       href={`/product/${product.slug}`}
-      className="group block rounded-lg bg-card p-3.5 hover:bg-card-hover transition-colors"
+      className="group block overflow-hidden rounded-lg bg-card hover:bg-card-hover transition-colors"
     >
-      <div className="flex justify-between gap-3 mb-3 tag">
-        <span>{number}</span>
-        <span className={soldOut ? "text-faded" : "text-accent"}>
-          {soldOut ? "Sold out" : formatPrice(product.price_cents)}
-        </span>
+      <div className="relative aspect-4/3 bg-bone">
+        <ProductMedia title={product.title} image={product.images[0] ?? null} />
       </div>
-      <div className="relative aspect-4/3 rounded-md overflow-hidden bg-bone mb-3">
-        <ProductMedia
-          title={product.title}
-          image={product.images[0] ?? null}
-        />
+      <div className="p-3.5">
+        <div className="flex justify-between gap-3 mb-3 tag">
+          <span>{number}</span>
+          <span className={soldOut ? "text-faded" : "text-accent"}>
+            {soldOut ? "Sold out" : formatPrice(product.price_cents)}
+          </span>
+        </div>
+        <h3 className="font-serif italic text-xl leading-tight">
+          {product.title}
+        </h3>
+        <p className="mt-1 font-serif text-[13px] leading-snug text-ink/75 line-clamp-3">
+          {product.description ||
+            "Official STAB merch. Pick it up at a show or have it shipped."}
+        </p>
+        {inStock.length > 1 && (
+          <></>
+          // <p className="mt-1.5 text-faded">In stock: {inStock.join(" · ")}</p>
+        )}
+        {
+          <p className="mt-2 tag group-hover:text-accent">
+            {soldOut ? "→ See listing" : "→ Add to cart"}
+          </p>
+        }
       </div>
-      <h3 className="font-serif italic text-xl leading-tight">
-        {product.title}
-      </h3>
-      <p className="mt-1 font-serif text-[13px] leading-snug text-ink/75 line-clamp-3">
-        {product.description ||
-          "Official STAB merch. Pick it up at a show or have it shipped."}
-      </p>
-      {inStock.length > 1 && (<></>
-        // <p className="mt-1.5 text-faded">In stock: {inStock.join(" · ")}</p>
-      )}
-      { <p className="mt-2 tag group-hover:text-accent">
-        {soldOut ? "→ See listing" : "→ Add to cart"}
-      </p> }
     </Link>
   );
 }
