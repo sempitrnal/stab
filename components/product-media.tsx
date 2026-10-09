@@ -14,7 +14,7 @@ export default function ProductMedia({ title, image }: Props) {
       <PaperPhoto
         src={image}
         alt={title}
-        width={640}
+        width={800}
         className="absolute inset-0 [@media(hover:hover)]:grayscale [@media(hover:hover)]:sepia-[.08] group-hover:grayscale-0 group-hover:sepia-0 transition-[filter] duration-300"
       />
     );
