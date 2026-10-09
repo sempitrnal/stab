@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Drawer from "@/components/drawer";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import type { Product, Variant } from "@/lib/types";
-
 
 export default function PurchasePanel({ product }: { product: Product }) {
   const variants = [...(product.variants ?? [])].sort(
@@ -97,37 +97,43 @@ export default function PurchasePanel({ product }: { product: Product }) {
         </p>
       )}
 
-      <div className="mt-4 flex justify-between items-start gap-4">
-        {hasDims ? (
-          <details className="group flex-1">
-            <summary className="tag text-faded hover:text-ink cursor-pointer list-none">
-              <span className="group-open:hidden">+</span>
-              <span className="hidden group-open:inline">−</span> Size guide
-            </summary>
-            <table className="mt-2 w-full">
-              <tbody>
-                {variants.map(
-                  (v) =>
-                    v.dimensions && (
-                      <tr
-                        key={v.id}
-                        className={v.id === selectedId ? "text-accent" : ""}
-                      >
-                        <td className="py-1">{v.label}</td>
-                        <td className="py-1 text-right">{v.dimensions}</td>
-                      </tr>
-                    ),
-                )}
-              </tbody>
-            </table>
-          </details>
-        ) : (
-          <span />
-        )}
-        <Link href="/cart" className="tag text-faded hover:text-ink shrink-0">
+      <div className="mt-3 flex justify-end">
+        <Link href="/cart" className="tag text-faded hover:text-ink">
           View cart →
         </Link>
       </div>
+
+      {(product.description || hasDims) && (
+        <div className="mt-6">
+          {product.description && (
+            <Drawer title="Details">
+              <p className="font-serif text-base leading-relaxed whitespace-pre-line">
+                {product.description}
+              </p>
+            </Drawer>
+          )}
+          {hasDims && (
+            <Drawer title="Size guide">
+              <table className="w-full">
+                <tbody>
+                  {variants.map(
+                    (v) =>
+                      v.dimensions && (
+                        <tr
+                          key={v.id}
+                          className={v.id === selectedId ? "text-accent" : ""}
+                        >
+                          <td className="py-1">{v.label}</td>
+                          <td className="py-1 text-right">{v.dimensions}</td>
+                        </tr>
+                      ),
+                  )}
+                </tbody>
+              </table>
+            </Drawer>
+          )}
+        </div>
+      )}
     </div>
   );
 }

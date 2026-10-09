@@ -13,11 +13,11 @@ import {
   PAYMENT_TYPES,
   SHIPPING_METHODS,
 } from "@/lib/checkout-config";
-import { formatPrice } from "@/lib/format";
+import { formatPhPhone, formatPrice, isCompletePhPhone } from "@/lib/format";
 import type { PaymentMethod, PaymentType, ShippingMethod } from "@/lib/types";
 
 const inputCls =
-  "w-full rounded-md bg-paper px-3 h-10 text-xs placeholder:text-faded focus:outline-none focus:bg-bone transition-colors";
+  "w-full rounded-md bg-paper px-3 h-10 text-xs placeholder:text-faded focus:outline-none";
 const labelCls = "block tag text-faded mb-1.5";
 const segCls = "flex flex-wrap gap-2";
 const radioCls = (active: boolean) =>
@@ -134,6 +134,10 @@ export default function CheckoutForm() {
 
   function submit() {
     setError(null);
+    if (!isCompletePhPhone(phone)) {
+      setError("Enter your full phone number, like +63 999 616 6666");
+      return;
+    }
     startTransition(async () => {
       try {
         let proofPath: string | undefined;
@@ -261,8 +265,15 @@ export default function CheckoutForm() {
               <input
                 className={inputCls}
                 type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="+63 999 616 6666"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                // Prefill the country code on tap; drop it again if nothing
+                // was typed so the placeholder comes back.
+                onFocus={() => !phone && setPhone("+63 ")}
+                onBlur={() => phone.trim() === "+63" && setPhone("")}
+                onChange={(e) => setPhone(formatPhPhone(e.target.value))}
               />
             </div>
             <div className="sm:col-span-2">
@@ -313,18 +324,7 @@ export default function CheckoutForm() {
                 </button>
               ))}
             </div>
-            {payType === "down" && (
-              <p className="mt-2.5 text-faded leading-relaxed">
-                Pay now{" "}
-                <span className="text-ink">
-                  {formatPrice(Math.ceil(subtotalCents / 2) + feeCents)}
-                </span>{" "}
-                (50% of merch
-                {feeCents > 0 && " + full shipping"}) · balance{" "}
-                {formatPrice(subtotalCents - Math.ceil(subtotalCents / 2))} on
-                handoff
-              </p>
-            )}
+        
           </div>
 
           <div>
@@ -348,7 +348,7 @@ export default function CheckoutForm() {
               {proof ? `✓ ${proof.name}` : "+ Upload screenshot"}
             </button>
             <p className="mt-2 text-faded">
-              Pay after placing the order? You can send proof via IG/FB too.
+           
             </p>
           </div>
         </Step>

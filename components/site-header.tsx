@@ -41,9 +41,9 @@ export default function SiteHeader() {
       <Link
         href="/"
         aria-label="STAB, home"
-        className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-1 justify-self-center"
+        className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-1 w-full md:w-auto justify-self-center"
       >
-        <StabLogo3D className="w-80 h-36 md:w-[30rem] md:h-48" />
+        <StabLogo3D className="h-64 md:w-[30rem] md:h-48" />
       </Link>
       <div className="md:col-start-1 md:row-start-1 flex flex-col gap-1">
         {nav}

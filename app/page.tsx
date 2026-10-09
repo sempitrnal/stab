@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PageBody from "@/components/page-body";
 import ProductCard from "@/components/product-card";
 import { getProducts } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/configured";
@@ -78,43 +79,45 @@ export default async function Home(props: PageProps<"/">) {
       </div>
 
       {/* Newspaper columns: 1 on phones, up to 4 on wide screens */}
-      <div className="pt-6 columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-6">
-        {shown.map(({ product, n }, i) => (
-          <ProductCard key={product.id} product={product} number={n} priority={i < 4} />
-        ))}
-      </div>
-
-      <section id="music" className="mt-6 scroll-mt-4">
-        <div className="py-2.5 border-y border-line flex justify-between tag">
-          <span>Music · Now playing</span>
-          <span className="text-faded">Listen / Watch</span>
+      <PageBody>
+        <div className="pt-6 columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-6">
+          {shown.map(({ product, n }) => (
+            <ProductCard key={product.id} product={product} number={n} />
+          ))}
         </div>
-        <div className="pt-6 grid md:grid-cols-2 gap-6">
-          <div className="rounded-lg bg-card p-2.5">
-            <iframe
-              src="https://open.spotify.com/embed/album/4MnTPaBmEl61zANQDXRdAe?utm_source=generator&theme=0"
-              width="100%"
-              height="352"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy"
-              title="STAB on Spotify"
-              className="block border-0 w-full rounded-md"
-            />
+
+        <section id="music" className="mt-6 scroll-mt-4">
+          <div className="py-2.5 border-y border-line flex justify-between tag">
+            <span>Music · Now playing</span>
+            <span className="text-faded">Listen / Watch</span>
           </div>
-          <div className="rounded-lg bg-card p-2.5">
-            <div className="relative aspect-video rounded-md overflow-hidden bg-bone">
+          <div className="pt-6 grid md:grid-cols-2 gap-6">
+            <div className="rounded-lg bg-card p-2.5">
               <iframe
-                src="https://www.youtube.com/embed/Y140YV3xvAk"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
+                src="https://open.spotify.com/embed/album/4MnTPaBmEl61zANQDXRdAe?utm_source=generator&theme=0"
+                width="100%"
+                height="352"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"
-                title="STAB set video"
-                className="absolute inset-0 w-full h-full border-0"
+                title="STAB on Spotify"
+                className="block border-0 w-full rounded-md"
               />
             </div>
+            <div className="rounded-lg bg-card p-2.5">
+              <div className="relative aspect-video rounded-md overflow-hidden bg-bone">
+                <iframe
+                  src="https://www.youtube.com/embed/Y140YV3xvAk"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  loading="lazy"
+                  title="STAB set video"
+                  className="absolute inset-0 w-full h-full border-0"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </PageBody>
     </>
   );
 }

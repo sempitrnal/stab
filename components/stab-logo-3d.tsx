@@ -4,13 +4,13 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Center, Environment, useGLTF } from "@react-three/drei";
 import {
-  Bloom,
   ChromaticAberration,
   EffectComposer,
   Noise,
   Pixelation,
   Scanline,
 } from "@react-three/postprocessing";
+import { BlendFunction, Effect } from "postprocessing";
 import * as THREE from "three";
 
 // Tinted chrome: color multiplies the env reflections.
@@ -20,6 +20,21 @@ const CHROME = new THREE.MeshStandardMaterial({
   roughness: 0.01,
   envMapIntensity: 10,
 });
+
+// Last pass: scale colour by alpha. Grain and scanlines write colour into
+// the transparent pixels around the logo; on mobile Safari that showed up as
+// a light square. Premultiplying makes those pixels truly empty everywhere.
+class PremultiplyAlpha extends Effect {
+  constructor() {
+    super(
+      "PremultiplyAlpha",
+      `void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+        outputColor = vec4(inputColor.rgb * inputColor.a, inputColor.a);
+      }`,
+      { blendFunction: BlendFunction.SRC },
+    );
+  }
+}
 
 // Stop-motion spin: the logo only updates FPS times a second, jumping
 // SPEED/FPS radians per frame.
@@ -42,7 +57,7 @@ function StabModel({ onReady }: { onReady: () => void }) {
     const size = new THREE.Box3()
       .setFromObject(scene)
       .getSize(new THREE.Vector3());
-    return size.x > 0 ? 1.8 / size.x : 1;
+    return size.x > 0 ? 1.5 / size.x : 1;
   }, [scene]);
 
   useEffect(onReady, [onReady]);
@@ -71,6 +86,7 @@ export default function StabLogo3D({
   className?: string;
 }) {
   const [ready, setReady] = useState(false);
+  const premultiply = useMemo(() => new PremultiplyAlpha(), []);
 
   return (
     <div className={`relative w-full ${className}`} aria-hidden>
@@ -99,14 +115,7 @@ export default function StabLogo3D({
             angle={0.5}
             color="#b4c8ff"
           />
-          {/* bloom: highlights past the threshold bleed into glare */}
           <EffectComposer>
-            <Bloom
-              intensity={0.1}
-              luminanceThreshold={1}
-              luminanceSmoothing={0.2}
-              mipmapBlur
-            />
             {/* edge fringing: cheap print / photocopy feel */}
             <ChromaticAberration offset={[0.0007, 0.0006]} />
             {/* subtle film grain */}
@@ -115,6 +124,7 @@ export default function StabLogo3D({
             <Scanline density={1.5} opacity={0.15} />
             {/* chunky low-res pixels */}
             <Pixelation granularity={2} />
+            <primitive object={premultiply} />
           </EffectComposer>
         </Suspense>
       </Canvas>

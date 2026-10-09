@@ -1,58 +1,43 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
+import PaperPhoto from "@/components/paper-photo";
 
 interface Props {
   src: string;
   alt: string;
-  sizes?: string;
-  priority?: boolean;
 }
 
-// Hover magnifier: scales the image and tracks transform-origin to the
-// cursor. Click toggles for touch devices. The white-dropping multiply blend
-// sits on the (never transformed) wrapper: Safari skips blending on
-// transformed elements.
-export default function ZoomableImage({ src, alt, sizes, priority }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
+// Hover magnifier: scales the photo tile and tracks transform-origin to the
+// cursor. Click toggles for touch devices.
+export default function ZoomableImage({ src, alt }: Props) {
+  const tile = useRef<HTMLDivElement>(null);
   const [zoomed, setZoomed] = useState(false);
   const [locked, setLocked] = useState(false);
-  const origin = useRef("50% 50%");
 
-  function track(e: React.MouseEvent) {
-    const r = ref.current?.getBoundingClientRect();
-    if (!r) return;
+  function track(e: React.MouseEvent<HTMLDivElement>) {
+    const r = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - r.left) / r.width) * 100;
     const y = ((e.clientY - r.top) / r.height) * 100;
-    origin.current = `${x}% ${y}%`;
-    if (ref.current) {
-      const img = ref.current.querySelector("img");
-      if (img) img.style.transformOrigin = origin.current;
-    }
+    if (tile.current) tile.current.style.transformOrigin = `${x}% ${y}%`;
   }
 
   return (
     <div
-      ref={ref}
-      className={`absolute inset-0 overflow-hidden mix-blend-multiply ${zoomed || locked ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+      className={`absolute inset-0 overflow-hidden ${zoomed || locked ? "cursor-zoom-out" : "cursor-zoom-in"}`}
       onMouseEnter={() => setZoomed(true)}
       onMouseLeave={() => setZoomed(false)}
       onMouseMove={track}
       onClick={() => setLocked((l) => !l)}
-      role="img"
-      aria-label={alt}
     >
-      <Image
+      <PaperPhoto
+        ref={tile}
         src={src}
         alt={alt}
-        fill
-        sizes={sizes}
-        priority={priority}
-        className="object-contain p-[10%] transition-transform duration-200 ease-out"
-        style={{
-          transform: zoomed || locked ? "scale(2.25)" : "scale(1)",
-        }}
+        width={1200}
+        inset="10%"
+        className="absolute inset-0 transition-transform duration-200 ease-out"
+        style={{ transform: zoomed || locked ? "scale(2.25)" : "scale(1)" }}
       />
     </div>
   );

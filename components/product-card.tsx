@@ -13,11 +13,9 @@ const TYPE_WORD: Record<ProductType, string> = {
 export default function ProductCard({
   product,
   number,
-  priority,
 }: {
   product: Product;
   number: string;
-  priority?: boolean;
 }) {
   const variants = product.variants ?? [];
   const soldOut = variants.length > 0 && variants.every((v) => v.stock <= 0);
@@ -40,7 +38,6 @@ export default function ProductCard({
         <ProductMedia
           title={product.title}
           image={product.images[0] ?? null}
-          priority={priority}
         />
       </div>
       <h3 className="font-serif italic text-xl leading-tight">

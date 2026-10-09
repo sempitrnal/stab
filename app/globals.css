@@ -44,6 +44,17 @@ body {
   color: var(--color-paper);
 }
 
+/* iOS Safari zooms into any field under 16px when it's focused. Touch
+   screens get 16px fields; desktop keeps the smaller type. Left outside a
+   cascade layer on purpose so it beats Tailwind's text-* utilities. */
+@media (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
 :focus-visible {
   outline: 1px solid var(--color-accent);
   outline-offset: 2px;

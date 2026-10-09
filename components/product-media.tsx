@@ -1,23 +1,21 @@
-import Image from "next/image";
+import PaperPhoto from "@/components/paper-photo";
 
 interface Props {
   title: string;
   image: string | null;
-  priority?: boolean;
 }
 
-// Newsprint photo: black and white, full colour when the parent `group`
-// is hovered. Multiplied so white backdrops sink into the paper.
-export default function ProductMedia({ title, image, priority }: Props) {
+// Newsprint photo: black and white (sepia nudges the greyed tile back to
+// warm bone), full colour when the parent `group` is hovered. Touch screens
+// can't hover, so they always get full colour.
+export default function ProductMedia({ title, image }: Props) {
   if (image) {
     return (
-      <Image
+      <PaperPhoto
         src={image}
         alt={title}
-        fill
-        priority={priority}
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        className="object-contain p-[6%] mix-blend-multiply grayscale contrast-110 group-hover:grayscale-0 group-hover:contrast-100 transition-[filter] duration-300"
+        width={640}
+        className="absolute inset-0 [@media(hover:hover)]:grayscale [@media(hover:hover)]:sepia-[.08] group-hover:grayscale-0 group-hover:sepia-0 transition-[filter] duration-300"
       />
     );
   }

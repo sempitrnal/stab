@@ -9,15 +9,15 @@ export const PAYMENT_METHODS: Record<
   gcash: {
     label: "GCash",
     instructions:
-      "Send to 09XX XXX XXXX (STAB). Put your order ref in the notes.",
+      "",
   },
   bank_transfer: {
     label: "Bank transfer",
-    instructions: "BDO 0000 0000 0000 (STAB). Put your order ref in the notes.",
+    instructions: "",
   },
   paypal: {
     label: "PayPal",
-    instructions: "paypal.me/stabhc. Put your order ref in the notes.",
+    instructions: "",
   },
 };
 
