@@ -3,10 +3,9 @@
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import PaperPhoto from "@/components/paper-photo";
-import ZoomableImage from "@/components/zoomable-image";
 
 // Product photos one at a time: arrows, thumbnails, arrow keys and swipe to
-// switch; the current photo keeps hover/tap zoom.
+// switch.
 export default function ProductGallery({
   images,
   title,
@@ -52,7 +51,17 @@ export default function ProductGallery({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            <ZoomableImage src={images[index]} alt={alt(index)} />
+            {/* Product shots carry wide white margins; scaling past the
+                frame zooms in on the product, and the cropped margins are
+                white anyway, so they vanish into the paper. */}
+            <PaperPhoto
+              src={images[index]}
+              alt={alt(index)}
+              width={1200}
+              inset="0"
+              className="absolute inset-0"
+              style={{ backgroundSize: "115%" }}
+            />
           </motion.div>
         </AnimatePresence>
 
