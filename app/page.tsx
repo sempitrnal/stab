@@ -7,6 +7,9 @@ import { isSupabaseConfigured } from "@/lib/supabase/configured";
 // timer is a safety net.
 export const revalidate = 60;
 
+const HERO_VIDEO =
+  "https://euwpzielyffgzghvkdla.supabase.co/storage/v1/object/public/stab/stab2.mp4";
+
 export default async function Home() {
   const configured = isSupabaseConfigured();
   const products = configured ? await getProducts() : [];
@@ -22,6 +25,23 @@ export default async function Home() {
   }
 
   return (
+    <>
+      <section className="pt-6">
+        {/* Banner within the page gutters; the video is stretched to fit. Short on
+            mobile, taller at md, then shorter again as the screen widens. */}
+        <div className="relative h-36 overflow-hidden rounded-md bg-bone md:h-64 lg:h-56 xl:h-48">
+          <video
+            src={HERO_VIDEO}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-label="STAB"
+            className="absolute inset-0 h-full w-full object-fill"
+          />
+        </div>
+      </section>
     <Suspense>
       <ShopBrowser products={products}>
         <section id="music" className="mt-6 scroll-mt-4">
@@ -57,5 +77,6 @@ export default async function Home() {
         </section>
       </ShopBrowser>
     </Suspense>
+    </>
   );
 }
