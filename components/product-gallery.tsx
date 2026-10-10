@@ -51,16 +51,12 @@ export default function ProductGallery({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            {/* Product shots carry wide white margins; scaling past the
-                frame zooms in on the product, and the cropped margins are
-                white anyway, so they vanish into the paper. */}
             <PaperPhoto
               src={images[index]}
               alt={alt(index)}
               width={1200}
-              inset="0"
+              inset="4%"
               className="absolute inset-0"
-              style={{ backgroundSize: "115%" }}
             />
           </motion.div>
         </AnimatePresence>
