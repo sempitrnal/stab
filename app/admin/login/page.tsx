@@ -3,6 +3,11 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+// Magic links always land on the production site, whichever origin the form
+// was opened from. Override with NEXT_PUBLIC_SITE_URL for other deployments.
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://stabhardcore.vercel.app";
+
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
@@ -17,7 +22,7 @@ export default function AdminLoginPage() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${SITE_URL}/auth/callback`,
       },
     });
     setLoading(false);
