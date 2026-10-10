@@ -10,16 +10,21 @@ function matches(a: string, b: string) {
   return timingSafeEqual(hash(a), hash(b));
 }
 
-// Username + password login. The credentials live in env vars
-// (ADMIN_USERNAME, ADMIN_PASSWORD), never in the repo. A match signs in the
+// TEMPORARY: hardcoded fallback credentials, used until ADMIN_USERNAME and
+// ADMIN_PASSWORD are set in the environment (which then take over). Remove
+// these and rotate the password once env vars can be configured.
+const FALLBACK_USERNAME = "stabulok";
+const FALLBACK_PASSWORD = "saggin123";
+
+// Username + password login. A match signs in the
 // Supabase admin account behind the scenes so the rest of admin (RLS, image
 // uploads, requireAdmin) keeps working off one real session.
 export async function signInAdmin(
   username: string,
   password: string,
 ): Promise<{ error: string }> {
-  const expectedUser = process.env.ADMIN_USERNAME;
-  const expectedPass = process.env.ADMIN_PASSWORD;
+  const expectedUser = process.env.ADMIN_USERNAME ?? FALLBACK_USERNAME;
+  const expectedPass = process.env.ADMIN_PASSWORD ?? FALLBACK_PASSWORD;
   if (
     !expectedUser ||
     !expectedPass ||
