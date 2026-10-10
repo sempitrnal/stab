@@ -33,7 +33,7 @@ function Step({
 }) {
   return (
     <section className="panel p-5 md:p-6 grid md:grid-cols-[140px_1fr] gap-4">
-      <h2 className="text-[15px] font-semibold tracking-tight">
+      <h2 className="text-[15px] font-medium tracking-tight">
         <span className="text-faded mr-2 tabular-nums">{n}</span>
         {title}
       </h2>

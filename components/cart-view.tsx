@@ -9,8 +9,8 @@ import { formatPrice } from "@/lib/format";
 export function PageBar({ title, meta }: { title: string; meta?: string }) {
   return (
     <div className="pt-6 flex items-baseline gap-2">
-      <h1 className="text-[28px] font-bold tracking-tight leading-tight">{title}</h1>
-      {meta && <span className="text-[28px] font-semibold tabular-nums text-faded">{meta}</span>}
+      <h1 className="text-[18px] font-nor tracking-tight leading-tight">{title}</h1>
+      {meta && <span className="text-[16px] font-light tabular-nums text-faded">{meta}</span>}
     </div>
   );
 }
