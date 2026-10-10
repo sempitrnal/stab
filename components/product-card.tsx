@@ -38,7 +38,7 @@ export default function ProductCard({
         <h3 className="text-[15px] sm:text-[17px] font-medium sm:font-semibold tracking-tight leading-snug">
           {product.title}
         </h3>
-        <p className="mt-1 text-[12px] sm:text-[13px] leading-snug text-faded line-clamp-2 sm:line-clamp-3">
+        <p className="mt-1 text-[12px] font-light sm:font-normal sm:text-[13px] leading-snug text-faded line-clamp-2 sm:line-clamp-3">
           {product.description ||
             "Official STAB merch. Pick it up at a show or have it shipped."}
         </p>
