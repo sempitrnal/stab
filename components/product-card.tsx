@@ -35,7 +35,7 @@ export default function ProductCard({
             {soldOut ? "Sold out" : formatPrice(product.price_cents)}
           </span>
         </div>
-        <h3 className="text-[15px] sm:text-[17px] font-semibold tracking-tight leading-snug">
+        <h3 className="text-[15px] sm:text-[17px] font-medium sm:font-semibold tracking-tight leading-snug">
           {product.title}
         </h3>
         <p className="mt-1 text-[12px] sm:text-[13px] leading-snug text-faded line-clamp-2 sm:line-clamp-3">
