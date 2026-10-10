@@ -12,6 +12,8 @@
   /* Photo tiles. White-backdrop photos are multiplied in; transparent ones
      are listed in lib/photo-tiles.ts and skip the blend. */
   --color-well: #e6e2d8;
+  /* Lighter tile for the product page photos. */
+  --color-well-light: #eeebe4;
   --color-line: #dcd7cb;
   --color-accent: #333333;
   --color-faded: #6e6e73;

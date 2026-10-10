@@ -40,7 +40,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
               <ProductGallery images={product.images} title={product.title} slug={product.slug} />
             ) : (
               <div className="panel p-2.5">
-                <div className="relative aspect-4/5 rounded-md overflow-hidden bg-well">
+                <div className="relative aspect-4/5 rounded-md overflow-hidden bg-well-light">
                   <ProductMedia title={product.title} image={null} />
                 </div>
               </div>
@@ -49,10 +49,10 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
 
           <div>
             <div className="md:sticky md:top-6 panel p-5 md:p-6">
-              <h1 className="text-[28px] md:text-[34px] font-normal sm:font-bold tracking-tight leading-tight">
+              <h1 className="text-[28px] md:text-[34px] font-normal sm:font-  tracking-tight leading-tight">
                 {product.title}
               </h1>
-              <p className="mt-1 text-[19px] font-light sm:font-medium tabular-nums text-faded">
+              <p className="mt-1 text-[19px] font-light sm:font-normal tabular-nums text-faded">
                 {formatPrice(product.price_cents)}
               </p>
               <div className="mt-6">

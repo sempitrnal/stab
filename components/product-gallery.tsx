@@ -35,7 +35,7 @@ export default function ProductGallery({
       }}
     >
       <div
-        className="relative aspect-4/5 rounded-md overflow-hidden bg-well"
+        className="relative aspect-4/5 rounded-md overflow-hidden bg-well-light"
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
         onTouchEnd={(e) => {
           if (!many || touchX.current == null) return;
@@ -57,6 +57,7 @@ export default function ProductGallery({
                 Raise backgroundSize past 100% to zoom in. */}
             <PaperPhoto
               slug={slug}
+              tile="bg-well-light"
               src={images[index]}
               alt={alt(index)}
               width={1200}
@@ -103,6 +104,7 @@ export default function ProductGallery({
             >
               <PaperPhoto
               slug={slug}
+              tile="bg-well-light"
                 src={src}
                 alt=""
                 width={240}

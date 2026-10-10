@@ -10,6 +10,8 @@ interface Props {
   inset?: string;
   /** Product slug: transparent photos skip the blend (lib/photo-tiles.ts). */
   slug?: string;
+  /** Tile background class. */
+  tile?: string;
   className?: string;
   style?: React.CSSProperties;
   ref?: React.Ref<HTMLDivElement>;
@@ -25,6 +27,7 @@ export default function PaperPhoto({
   width,
   inset = "6%",
   slug,
+  tile = "bg-well",
   className = "",
   style,
   ref,
@@ -36,7 +39,7 @@ export default function PaperPhoto({
       ref={ref}
       role="img"
       aria-label={alt}
-      className={`bg-well bg-no-repeat bg-center bg-contain bg-origin-content ${photoBlend(slug)} ${className}`}
+      className={`${tile} bg-no-repeat bg-center bg-contain bg-origin-content ${photoBlend(slug)} ${className}`}
       style={{ backgroundImage: `url("${props.src}")`, padding: inset, ...style }}
     />
   );
