@@ -77,7 +77,7 @@ export default function ProductGallery({
 
       <figcaption className="pt-2.5 px-1 flex justify-between tag text-faded/75 font-mono text-[10px] lowercase">
         <span>
-          Fig. {index + 1} -> {title}
+          Fig. {index + 1} {`->`} {title}
         </span>
         {many && (
           <span>
