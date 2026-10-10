@@ -41,11 +41,9 @@ export default function ProductCard({
           <></>
           // <p className="mt-1.5 text-faded">In stock: {inStock.join(" · ")}</p>
         )}
-        {
-          <p className="mt-2 tag group-hover:text-accent">
-            {soldOut ? "→ See listing" : "→ Add to cart"}
-          </p>
-        }
+        {!soldOut && (
+          <p className="mt-2 tag group-hover:text-accent">→ Add to cart</p>
+        )}
       </div>
     </Link>
   );
