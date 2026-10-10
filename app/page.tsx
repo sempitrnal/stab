@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import HeroVideo from "@/components/hero-video";
 import ShopBrowser from "@/components/shop-browser";
 import { getProducts } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/configured";
@@ -30,16 +31,7 @@ export default async function Home() {
         {/* Banner within the page gutters; the video is stretched to fit. Short on
             mobile, taller at md, then shorter again as the screen widens. */}
         <div className="relative h-36 overflow-hidden rounded-md bg-bone md:h-64 lg:h-56 xl:h-48">
-          <video
-            src={HERO_VIDEO}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-label="STAB"
-            className="absolute inset-0 h-full w-full object-fill"
-          />
+          <HeroVideo src={HERO_VIDEO} className="absolute inset-0 h-full w-full object-fill" />
         </div>
       </section>
     <Suspense>
