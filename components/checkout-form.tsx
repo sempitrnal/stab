@@ -241,7 +241,7 @@ export default function CheckoutForm() {
         <Step n="01" title="Contact">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className={labelCls}>Name</label>
+              <label className={labelCls}>Name  <span className="text-red-400">*</span></label>
               <input
                 className={inputCls}
                 value={name}
@@ -249,7 +249,7 @@ export default function CheckoutForm() {
               />
             </div>
             <div>
-              <label className={labelCls}>Email</label>
+              <label className={labelCls}>Email <span className="text-red-400">*</span></label>
               <input
                 className={inputCls}
                 type="email"
@@ -258,7 +258,7 @@ export default function CheckoutForm() {
               />
             </div>
             <div>
-              <label className={labelCls}>Phone</label>
+              <label className={labelCls}>Phone <span className="text-red-400">*</span></label>
               <input
                 className={inputCls}
                 type="tel"
@@ -287,7 +287,7 @@ export default function CheckoutForm() {
 
         <Step n="02" title="Payment">
           <div>
-            <label className={labelCls}>Payment method</label>
+            <label className={labelCls}>Payment method <span className="text-red-400">*</span></label>
             <div className={segCls}>
               {(Object.keys(PAYMENT_METHODS) as PaymentMethod[]).map((m) => (
                 <button
@@ -307,7 +307,7 @@ export default function CheckoutForm() {
           </div>
 
           <div>
-            <label className={labelCls}>Payment type</label>
+            <label className={labelCls}>Payment type <span className="text-red-400">*</span></label>
             <div className={segCls}>
               {(Object.keys(PAYMENT_TYPES) as PaymentType[]).map((t) => (
                 <button
@@ -325,7 +325,7 @@ export default function CheckoutForm() {
           </div>
 
           <div>
-            <label className={labelCls}>Proof of payment (screenshot)</label>
+            <label className={labelCls}>Proof of payment (screenshot) <span className="text-red-400">*</span></label>
             <input
               ref={fileRef}
               type="file"
@@ -352,7 +352,7 @@ export default function CheckoutForm() {
 
         <Step n="03" title="Shipping">
           <div>
-            <label className={labelCls}>Shipping method</label>
+            <label className={labelCls}>Shipping method <span className="text-red-400">*</span></label>
             <div className={segCls}>
               {(Object.keys(SHIPPING_METHODS) as ShippingMethod[]).map((m) => (
                 <button
@@ -370,7 +370,7 @@ export default function CheckoutForm() {
 
           {shipping === "maxim_lalamove" && (
             <div>
-              <label className={labelCls}>Where to pin the location</label>
+              <label className={labelCls}>Where to pin the location <span className="text-red-400">*</span></label>
               <input
                 className={inputCls}
                 value={addr.pin}
@@ -383,8 +383,8 @@ export default function CheckoutForm() {
           {(shipping === "jnt" || shipping === "international") && (
             <div>
               <label className={labelCls}>
-                Delivery address
-                {shipping === "international" ? "" : " · Philippines"}
+                Delivery address 
+                {shipping === "international" ? "" : " · Philippines"} <span className="text-red-400">*</span>
               </label>
               {shipping === "international" && (
                 <div className="mb-3">
