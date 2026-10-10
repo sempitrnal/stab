@@ -1,18 +1,12 @@
 "use client";
 
-import { useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
 import { setOrderStatus } from "@/app/admin/(panel)/actions";
+import { STATUS, STATUS_ORDER } from "@/components/admin/order-badges";
 import type { OrderStatus } from "@/lib/types";
 
-const STATUSES: OrderStatus[] = [
-  "pending",
-  "half_paid",
-  "paid",
-  "fulfilled",
-  "cancelled",
-  "refunded",
-];
-
+// macOS pop-up button for the order status. Updates instantly, saves in the
+// background.
 export default function OrderStatusControl({
   id,
   status,
@@ -21,23 +15,48 @@ export default function OrderStatusControl({
   status: OrderStatus;
 }) {
   const [pending, startTransition] = useTransition();
+  const [shown, setShown] = useOptimistic(status);
+  const color = STATUS[shown].color;
 
   return (
-    <div className="flex flex-wrap gap-px bg-paper border border-ink/15">
-      {STATUSES.map((s) => (
-        <button
-          key={s}
-          disabled={pending || s === status}
-          onClick={() => startTransition(() => setOrderStatus(id, s))}
-          className={`px-2 py-1.5 sm:px-3 font-mono text-[10px] uppercase tracking-widest transition-colors ${
-            s === status
-              ? "bg-ink text-paper"
-              : "bg-paper hover:bg-bone disabled:opacity-40"
-          }`}
-        >
-          {s.replace("_", " ")}
-        </button>
-      ))}
-    </div>
+    <label className="relative inline-flex items-center">
+      <span className="sr-only">Order status</span>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute left-2.5 h-2 w-2 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+      <select
+        value={shown}
+        disabled={pending}
+        onChange={(e) => {
+          const next = e.target.value as OrderStatus;
+          startTransition(async () => {
+            setShown(next);
+            await setOrderStatus(id, next);
+          });
+        }}
+        className="mac-input w-auto! appearance-none pl-7! pr-8! font-medium disabled:opacity-60"
+        style={{ color }}
+      >
+        {STATUS_ORDER.map((s) => (
+          <option key={s} value={s}>
+            {STATUS[s].label}
+          </option>
+        ))}
+      </select>
+      <svg
+        aria-hidden
+        viewBox="0 0 10 14"
+        className="pointer-events-none absolute right-2.5 h-3 w-2 text-[var(--mac-secondary)]"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="m2 5 3-3 3 3M2 9l3 3 3-3" />
+      </svg>
+    </label>
   );
 }

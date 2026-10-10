@@ -1,8 +1,10 @@
 "use client";
 
-import { useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
 import { setProductActive } from "@/app/admin/(panel)/actions";
+import MacSwitch from "@/components/admin/mac-switch";
 
+// Store visibility switch. Flips instantly, saves in the background.
 export default function ActiveToggle({
   id,
   active,
@@ -11,14 +13,19 @@ export default function ActiveToggle({
   active: boolean;
 }) {
   const [pending, startTransition] = useTransition();
+  const [shown, setShown] = useOptimistic(active);
 
   return (
-    <button
+    <MacSwitch
+      checked={shown}
       disabled={pending}
-      onClick={() => startTransition(() => setProductActive(id, !active))}
-      className="font-mono text-[10px] uppercase tracking-widest text-faded hover:text-accent transition-colors w-14 text-right"
-    >
-      {active ? "Hide" : "Show"}
-    </button>
+      label={shown ? "Visible in store" : "Hidden from store"}
+      onChange={(next) =>
+        startTransition(async () => {
+          setShown(next);
+          await setProductActive(id, next);
+        })
+      }
+    />
   );
 }

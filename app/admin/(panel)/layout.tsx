@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/configured";
+import { adminEmail } from "@/lib/admin-email";
 
 export const dynamic = "force-dynamic";
 
@@ -16,10 +17,7 @@ export default async function AdminLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (!user || (adminEmail && user.email !== adminEmail)) {
-    redirect("/admin/login");
-  }
+  if (!user || user.email !== adminEmail()) redirect("/admin/login");
 
   return <>{children}</>;
 }

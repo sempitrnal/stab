@@ -8,9 +8,9 @@ import { formatPrice } from "@/lib/format";
 
 export function PageBar({ title, meta }: { title: string; meta?: string }) {
   return (
-    <div className="py-2.5 border-b border-line flex justify-between tag">
-      <span>{title}</span>
-      {meta && <span className="text-faded">{meta}</span>}
+    <div className="pt-6 flex items-baseline gap-2">
+      <h1 className="text-[28px] font-bold tracking-tight leading-tight">{title}</h1>
+      {meta && <span className="text-[28px] font-semibold tabular-nums text-faded">{meta}</span>}
     </div>
   );
 }
@@ -18,8 +18,8 @@ export function PageBar({ title, meta }: { title: string; meta?: string }) {
 export function EmptyState({ line }: { line: string }) {
   return (
     <div className="px-4 py-32 flex flex-col items-center gap-4 text-center">
-      <p className="tag text-faded">{line}</p>
-      <Link href="/" className="tag underline underline-offset-4 hover:text-accent">
+      <p className="text-[17px] font-semibold">{line}</p>
+      <Link href="/" className="mac-btn">
         Back to shop
       </Link>
     </div>
@@ -29,18 +29,21 @@ export function EmptyState({ line }: { line: string }) {
 export function Thumb({
   src,
   title,
+  slug,
   className,
 }: {
   src: string | null;
   title: string;
+  slug?: string;
   className: string;
 }) {
   return (
-    <div className={`relative rounded-md bg-bone shrink-0 overflow-hidden ${className}`}>
+    <div className={`relative rounded-md bg-well shrink-0 overflow-hidden ${className}`}>
       {src && (
         <PaperPhoto
           src={src}
           alt={title}
+          slug={slug}
           width={256}
           inset="4px"
           className="absolute inset-0"
@@ -58,7 +61,7 @@ export default function CartView() {
   if (items.length === 0) {
     return (
       <>
-        <PageBar title="Cart" meta="[0]" />
+        <PageBar title="Cart" meta="0" />
         <PageBody>
           <EmptyState line="Your cart is empty" />
         </PageBody>
@@ -68,10 +71,10 @@ export default function CartView() {
 
   return (
     <>
-      <PageBar title="Cart" meta={`[${count}]`} />
+      <PageBar title="Cart" meta={String(count)} />
       <PageBody>
         <div className="pt-5 grid lg:grid-cols-[1fr_340px] gap-4 lg:gap-6 items-start">
-          <ul className="rounded-lg bg-card p-2 md:p-3">
+          <ul className="panel p-2 md:p-3">
             {items.map((item, i) => (
               <li
                 key={item.variantId}
@@ -80,11 +83,11 @@ export default function CartView() {
                 <span className="text-faded self-start">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <Thumb src={item.image} title={item.title} className="w-16 h-16" />
+                <Thumb src={item.image} title={item.title} slug={item.slug} className="w-16 h-16" />
                 <div className="min-w-0 flex flex-col gap-1">
                   <Link
                     href={`/product/${item.slug}`}
-                    className="font-serif italic text-lg leading-tight hover:text-accent truncate"
+                    className="text-[15px] font-semibold tracking-tight leading-tight hover:text-faded truncate"
                   >
                     {item.title}
                   </Link>
@@ -125,7 +128,7 @@ export default function CartView() {
             ))}
           </ul>
 
-          <div className="lg:sticky lg:top-6 rounded-lg bg-card p-5">
+          <div className="lg:sticky lg:top-6 panel p-5">
             <div>
               <table className="w-full">
                 <tbody>
@@ -143,7 +146,7 @@ export default function CartView() {
               </table>
               <Link
                 href="/checkout"
-                className="mt-4 h-12 px-4 rounded-md flex items-center justify-between bg-ink text-paper tag hover:bg-accent transition-colors"
+                className="mt-4 btn-primary w-full justify-between"
               >
                 <span>Checkout</span>
                 <span>{formatPrice(subtotalCents)} →</span>

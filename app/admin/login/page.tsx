@@ -3,8 +3,7 @@
 import { useState, useTransition } from "react";
 import { signInAdmin } from "./actions";
 
-const inputCls =
-  "w-full bg-transparent border border-ink/25 px-3 py-3 font-mono text-xs tracking-widest placeholder:uppercase placeholder:text-faded focus:outline-none focus:border-ink";
+const inputCls = "mac-input h-9!";
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("");
@@ -23,12 +22,13 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="px-4 py-24 flex flex-col items-center">
-      <div className="w-full max-w-xs flex flex-col gap-6">
-        <h1 className="font-black uppercase tracking-tight text-3xl text-center">
-          Admin
-        </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <div className="px-4 py-20 flex flex-col items-center">
+      <div className="mac-card w-full max-w-xs p-6 flex flex-col gap-5">
+        <div className="text-center">
+          <h1 className="text-[17px] font-semibold">Admin</h1>
+          <p className="mt-0.5 text-[12px] text-faded">Sign in to manage the store</p>
+        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
           <input
             type="text"
             required
@@ -47,17 +47,11 @@ export default function AdminLoginPage() {
             placeholder="Password"
             className={inputCls}
           />
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-full bg-ink text-paper font-mono text-xs uppercase tracking-widest py-3 hover:bg-accent transition-colors disabled:opacity-50"
-          >
+          <button type="submit" disabled={pending} className="btn-primary mt-1.5 h-9! w-full">
             {pending ? "Signing in…" : "Sign in"}
           </button>
           {error && (
-            <p className="font-mono text-[10px] uppercase tracking-widest text-accent text-center">
-              {error}
-            </p>
+            <p className="text-center text-[12px] text-[#d70015]">{error}</p>
           )}
         </form>
       </div>

@@ -18,22 +18,27 @@ export default function ProductCard({
   return (
     <Link
       href={`/product/${product.slug}`}
-      className="group block overflow-hidden rounded-lg bg-card hover:bg-card-hover transition-colors"
+      className="group flex flex-col overflow-hidden rounded-xl bg-card shadow-[0_0_0_0.5px_rgb(0_0_0/0.07),0_1px_3px_rgb(0_0_0/0.05)] transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:bg-card-hover hover:shadow-[0_0_0_0.5px_rgb(0_0_0/0.08),0_10px_24px_rgb(0_0_0/0.08)]"
     >
-      <div className="relative aspect-4/3 bg-bone">
-        <ProductMedia title={product.title} image={product.images[0] ?? null} />
+      <div className="relative aspect-4/3 bg-well">
+        <ProductMedia
+          title={product.title}
+          image={product.images[0] ?? null}
+          slug={product.slug}
+        />
       </div>
-      <div className="p-2.5 sm:p-3.5">
+      {/* flex-1: fills the card when the row is taller than this card's text */}
+      <div className="flex-1 p-2.5 sm:p-3.5 bg-[#fff]">
         <div className="flex justify-between gap-3 mb-2 sm:mb-3 tag">
-          <span>{number}</span>
-          <span className={soldOut ? "text-faded" : "text-accent"}>
+          <span className="text-faded tabular-nums">{number}</span>
+          <span className={`tabular-nums ${soldOut ? "text-faded" : "text-ink"}`}>
             {soldOut ? "Sold out" : formatPrice(product.price_cents)}
           </span>
         </div>
-        <h3 className="font-serif italic text-base sm:text-xl leading-tight">
+        <h3 className="text-[15px] sm:text-[17px] font-semibold tracking-tight leading-snug">
           {product.title}
         </h3>
-        <p className="mt-1 font-serif text-xs sm:text-[13px] leading-snug text-ink/75 line-clamp-2 sm:line-clamp-3">
+        <p className="mt-1 text-[12px] sm:text-[13px] leading-snug text-faded line-clamp-2 sm:line-clamp-3">
           {product.description ||
             "Official STAB merch. Pick it up at a show or have it shipped."}
         </p>
@@ -42,7 +47,7 @@ export default function ProductCard({
           // <p className="mt-1.5 text-faded">In stock: {inStock.join(" · ")}</p>
         )}
         {!soldOut && (
-          <p className="mt-2 tag group-hover:text-accent">→ Add to cart</p>
+          <p className="mt-2.5 text-[12px] font-medium text-ink/70 group-hover:text-ink transition-colors">Add to cart →</p>
         )}
       </div>
     </Link>

@@ -16,14 +16,11 @@ import {
 import { formatPhPhone, formatPrice, isCompletePhPhone } from "@/lib/format";
 import type { PaymentMethod, PaymentType, ShippingMethod } from "@/lib/types";
 
-const inputCls =
-  "w-full rounded-md bg-paper px-3 h-10 text-xs placeholder:text-faded focus:outline-none";
-const labelCls = "block tag text-faded mb-1.5";
+const inputCls = "mac-input h-10!";
+const labelCls = "block text-[12px] font-medium text-faded mb-1.5";
 const segCls = "flex flex-wrap gap-2";
 const radioCls = (active: boolean) =>
-  `px-3.5 h-10 rounded-md transition-colors ${
-    active ? "bg-ink text-paper" : "bg-paper hover:bg-bone"
-  }`;
+  `mac-btn h-9! px-3.5! ${active ? "bg-[var(--mac-accent)]! text-white!" : ""}`;
 
 function Step({
   n,
@@ -35,9 +32,9 @@ function Step({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg bg-card p-5 md:p-6 grid md:grid-cols-[140px_1fr] gap-4">
-      <h2 className="tag">
-        <span className="text-faded mr-2">{n}</span>
+    <section className="panel p-5 md:p-6 grid md:grid-cols-[140px_1fr] gap-4">
+      <h2 className="text-[15px] font-semibold tracking-tight">
+        <span className="text-faded mr-2 tabular-nums">{n}</span>
         {title}
       </h2>
       <div className="flex flex-col gap-5 max-w-xl">{children}</div>
@@ -88,10 +85,10 @@ export default function CheckoutForm() {
     return (
       <div className="px-4 py-20 flex flex-col items-center gap-6">
         <p className="tag text-faded">Order received</p>
-        <h1 className="font-serif italic text-4xl">
+        <h1 className="text-[28px] font-bold tracking-tight tabular-nums">
           {placed.ref}
         </h1>
-        <table className="w-full max-w-md rounded-lg bg-card [&_td]:px-5 [&_tr:first-child_td]:pt-4 [&_tr:last-child_td]:pb-4">
+        <table className="w-full max-w-md panel [&_td]:px-5 [&_tr:first-child_td]:pt-4 [&_tr:last-child_td]:pb-4">
           <tbody>
             <tr>
               <td className="py-2 tag text-faded">Pay now</td>
@@ -120,7 +117,7 @@ export default function CheckoutForm() {
         </p>
         <Link
           href="/"
-          className="tag underline underline-offset-4 hover:text-accent"
+          className="mac-btn"
         >
           Back to shop
         </Link>
@@ -189,7 +186,7 @@ export default function CheckoutForm() {
   return (
     <div className="pt-5 grid lg:grid-cols-[1fr_380px] gap-4 lg:gap-6 items-start">
       {/* Order summary: top on mobile, sticky sidebar on desktop */}
-      <aside className="lg:order-2 lg:sticky lg:top-6 rounded-lg bg-card p-5">
+      <aside className="lg:order-2 lg:sticky lg:top-6 panel p-5">
         <div>
           <h2 className="tag text-faded mb-3">Your order</h2>
           <ul>
@@ -198,9 +195,9 @@ export default function CheckoutForm() {
                 key={item.variantId}
                 className="py-2 flex items-center gap-3"
               >
-                <Thumb src={item.image} title={item.title} className="w-11 h-11" />
+                <Thumb src={item.image} title={item.title} slug={item.slug} className="w-11 h-11" />
                 <div className="flex-1 min-w-0">
-                  <p className="font-serif italic text-base leading-tight truncate">
+                  <p className="text-[14px] font-semibold tracking-tight leading-tight truncate">
                     {item.title}
                   </p>
                   <p className="text-faded">
@@ -339,10 +336,10 @@ export default function CheckoutForm() {
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className={`px-4 py-6 w-full rounded-md tag transition-colors ${
+              className={`px-4 py-6 w-full rounded-[10px] text-[13px] font-medium transition-colors ${
                 proof
-                  ? "bg-ink text-paper"
-                  : "bg-paper text-faded hover:bg-bone hover:text-ink"
+                  ? "bg-[var(--mac-accent)] text-white"
+                  : "border border-dashed border-[rgb(0_0_0/0.18)] bg-white/50 text-faded hover:border-ink/40 hover:text-ink"
               }`}
             >
               {proof ? `✓ ${proof.name}` : "+ Upload screenshot"}
@@ -462,7 +459,7 @@ export default function CheckoutForm() {
           <button
             onClick={submit}
             disabled={pending}
-            className="h-12 px-4 rounded-md flex items-center justify-between bg-ink text-paper tag hover:bg-accent transition-colors disabled:opacity-50"
+            className="btn-primary w-full justify-between"
           >
             <span>{pending ? "Placing order…" : "Place order"}</span>
             <span>{formatPrice(totalCents)} →</span>

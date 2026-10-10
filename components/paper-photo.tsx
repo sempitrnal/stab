@@ -1,4 +1,5 @@
 import { getImageProps } from "next/image";
+import { photoBlend } from "@/lib/photo-tiles";
 
 interface Props {
   src: string;
@@ -7,12 +8,14 @@ interface Props {
   width: number;
   /** Space between the photo and the tile edge. */
   inset?: string;
+  /** Product slug: transparent photos skip the blend (lib/photo-tiles.ts). */
+  slug?: string;
   className?: string;
   style?: React.CSSProperties;
   ref?: React.Ref<HTMLDivElement>;
 }
 
-// Product photo printed onto a bone tile. The photo and the tile colour are
+// Product photo printed onto its tile. The photo and the tile colour are
 // multiplied inside one element (background-blend-mode), so white photo
 // backdrops drop out on every browser, iOS Safari included, even while the
 // tile is transformed or filtered. mix-blend-mode is not reliable there.
@@ -21,6 +24,7 @@ export default function PaperPhoto({
   alt,
   width,
   inset = "6%",
+  slug,
   className = "",
   style,
   ref,
@@ -32,7 +36,7 @@ export default function PaperPhoto({
       ref={ref}
       role="img"
       aria-label={alt}
-      className={`bg-bone bg-no-repeat bg-center bg-contain bg-origin-content bg-blend-multiply ${className}`}
+      className={`bg-well bg-no-repeat bg-center bg-contain bg-origin-content ${photoBlend(slug)} ${className}`}
       style={{ backgroundImage: `url("${props.src}")`, padding: inset, ...style }}
     />
   );

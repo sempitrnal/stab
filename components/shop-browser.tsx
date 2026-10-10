@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import PageBody from "@/components/page-body";
 import ProductCard from "@/components/product-card";
+import Segmented from "@/components/admin/segmented";
 import type { Product, ProductType } from "@/lib/types";
 
 const TYPE_LABELS: Record<ProductType, string> = {
@@ -37,39 +37,24 @@ export default function ShopBrowser({
     : numbered;
 
   const sections = [
-    { href: "/", label: "All", on: active === null },
-    ...types.map((t) => ({
-      href: `/?type=${t}`,
-      label: TYPE_LABELS[t],
-      on: active === t,
-    })),
+    { value: "all", label: "All", href: "/" },
+    ...types.map((t) => ({ value: t, label: TYPE_LABELS[t], href: `/?type=${t}` })),
   ];
 
   return (
     <>
-      <div className="py-2.5 border-b border-line flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1.5 tag">
-        <span>
-          Merch · For sale{" "}
-          <span className="text-faded">({shown.length})</span>
-        </span>
-        <span className="hidden lg:inline text-faded">
-          Pickup at shows · Ships PH + worldwide · GCash, bank, PayPal
-        </span>
-        <nav className="flex gap-4 overflow-x-auto">
-          {sections.map((s) => (
-            <Link
-              key={s.href}
-              href={s.href}
-              scroll={false}
-              className={
-                s.on
-                  ? "text-ink underline underline-offset-4"
-                  : "text-faded hover:text-ink"
-              }
-            >
-              {s.label}
-            </Link>
-          ))}
+      <div className="pt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+        <div>
+          <h1 className="text-[20px] font-bold tracking-tight leading-tight">
+            Shop{" "}
+            <span className="text-faded font-semibold tabular-nums">{shown.length}</span>
+          </h1>
+          <p className="text-[13px] text-faded">
+           gone stabbin
+          </p>
+        </div>
+        <nav aria-label="Filter by type" className="max-w-full overflow-x-auto">
+          <Segmented value={active ?? "all"} options={sections} scroll={false} />
         </nav>
       </div>
 
@@ -85,3 +70,4 @@ export default function ShopBrowser({
     </>
   );
 }
+

@@ -24,7 +24,7 @@ export default function Drawer({
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
-        className="w-full py-3 flex items-center justify-between tag hover:text-accent transition-colors"
+        className="w-full py-3 flex items-center justify-between text-[13px] font-medium hover:text-faded transition-colors"
       >
         <span>{title}</span>
         <motion.span

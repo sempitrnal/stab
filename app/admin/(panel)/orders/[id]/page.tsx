@@ -1,19 +1,47 @@
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatPrice } from "@/lib/format";
-import {
-  PAYMENT_METHODS,
-  PAYMENT_TYPES,
-  SHIPPING_METHODS,
-} from "@/lib/checkout-config";
+import { PAYMENT_TYPES, SHIPPING_METHODS } from "@/lib/checkout-config";
+import Link from "next/link";
+import AdminWindow from "@/components/admin/admin-window";
 import OrderStatusControl from "@/components/admin/order-status-control";
+import { PAYMENT, Pill, SHIPPING } from "@/components/admin/order-badges";
 import type { Order, OrderItem } from "@/lib/types";
 
 export const metadata = { title: "STAB · Order" };
 export const dynamic = "force-dynamic";
 
-const fieldCls = "font-mono text-[10px] uppercase tracking-widest text-faded";
-const valueCls = "font-mono text-xs";
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="px-1 text-[13px] font-semibold">{title}</h2>
+      <div className="mac-card">{children}</div>
+    </section>
+  );
+}
+
+function Info({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex gap-4 border-b border-[var(--mac-sep)] px-4 py-2.5 last:border-b-0">
+      <span className="w-28 shrink-0 text-[var(--mac-secondary)]">{label}</span>
+      <span className="min-w-0 flex-1 break-words">{children}</span>
+    </div>
+  );
+}
+
+function Amount({ label, value, tint }: { label: string; value: string; tint?: string }) {
+  return (
+    <div className="mac-card px-4 py-3">
+      <div className="mac-label">{label}</div>
+      <div
+        className="mt-0.5 text-[20px] font-semibold tracking-tight tabular-nums"
+        style={tint ? { color: tint } : undefined}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
 
 export default async function OrderPage(
   props: PageProps<"/admin/orders/[id]">,
@@ -56,167 +84,164 @@ export default async function OrderPage(
     proofUrl = data?.signedUrl ?? null;
   }
 
-  return (
-    <div className="px-4 py-6 max-w-3xl flex flex-col gap-8">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/15 pb-3">
-        <h1 className="font-black uppercase tracking-tight text-2xl">
-          {o.ref}
-        </h1>
-        <OrderStatusControl id={o.id} status={o.status} />
-      </div>
+  const pin = o.address?.pin ?? null;
+  const coords = pin?.split(",").map((v) => Number(v.trim())) ?? [];
+  const isCoords = coords.length === 2 && coords.every(Number.isFinite);
+  const addressLine = o.address
+    ? [
+        o.address.street,
+        o.address.barangay ? `Brgy. ${o.address.barangay}` : null,
+        o.address.city,
+        o.address.province,
+        o.address.postal,
+        o.address.country,
+      ]
+        .filter(Boolean)
+        .join(", ")
+    : "";
 
-      <section className="grid sm:grid-cols-2 gap-x-8 gap-y-4">
-        <div>
-          <p className={fieldCls}>Name</p>
-          <p className={valueCls}>{o.name}</p>
+  return (
+    <AdminWindow
+      title={`Order ${o.ref}`}
+      section="orders"
+      actions={
+        <Link href="/admin/orders" className="mac-btn">
+          ‹ Orders
+        </Link>
+      }
+    >
+      <div className="mx-auto flex max-w-4xl flex-col gap-6">
+        <div className="mac-card flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3">
+          <div className="min-w-0 flex-1">
+            <div className="text-[20px] font-semibold tracking-tight tabular-nums">
+              {o.ref}
+            </div>
+            <div className="text-[12px] text-[var(--mac-secondary)]">
+              Placed {new Date(o.created_at).toLocaleString(undefined, {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}
+            </div>
+          </div>
+          <OrderStatusControl id={o.id} status={o.status} />
         </div>
-        <div>
-          <p className={fieldCls}>Email</p>
-          <p className={valueCls}>{o.email}</p>
+
+        <div className="grid grid-cols-3 gap-3">
+          <Amount label="Total" value={formatPrice(o.total_cents)} />
+          <Amount label="Received" value={formatPrice(receivedCents)} />
+          <Amount
+            label="Balance"
+            value={formatPrice(balanceCents)}
+            tint={balanceCents > 0 ? "#c93400" : "#248a3d"}
+          />
         </div>
-        <div>
-          <p className={fieldCls}>Phone</p>
-          <p className={valueCls}>{o.phone}</p>
-        </div>
-        <div>
-          <p className={fieldCls}>IG / FB</p>
-          <p className={valueCls}>{o.social_handle ?? "·"}</p>
-        </div>
-        <div>
-          <p className={fieldCls}>Payment</p>
-          <p className={valueCls}>
-            {PAYMENT_METHODS[o.payment_method].label} ·{" "}
-            {PAYMENT_TYPES[o.payment_type].label}
-          </p>
-        </div>
-        <div>
-          <p className={fieldCls}>Received / Balance</p>
-          <p className={valueCls}>
-            {formatPrice(receivedCents)} /{" "}
-            <span className={balanceCents > 0 ? "text-accent" : ""}>
-              {formatPrice(balanceCents)}
-            </span>
-          </p>
-        </div>
-        <div>
-          <p className={fieldCls}>Shipping</p>
-          <p className={valueCls}>
-            {SHIPPING_METHODS[o.shipping_method].label}
-          </p>
-        </div>
-        {o.address && (
-          <div className="sm:col-span-2">
-            <p className={fieldCls}>Address</p>
-            {o.address.pin &&
-              (() => {
-                const coords = o.address.pin.split(",").map((s) => s.trim());
-                const [lat, lng] = coords.map(Number);
-                const isCoords =
-                  coords.length === 2 &&
-                  Number.isFinite(lat) &&
-                  Number.isFinite(lng);
-                return isCoords ? (
-                  <p className={valueCls}>
-                    Pin:{" "}
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="flex flex-col gap-6">
+            <Section title="Customer">
+              <Info label="Name">{o.name}</Info>
+              <Info label="Email">
+                <a href={`mailto:${o.email}`} className="text-[var(--mac-accent)] hover:underline">
+                  {o.email}
+                </a>
+              </Info>
+              <Info label="Phone">
+                <a href={`tel:${o.phone.replace(/\s/g, "")}`} className="text-[var(--mac-accent)] hover:underline">
+                  {o.phone}
+                </a>
+              </Info>
+              <Info label="IG / FB">{o.social_handle || "—"}</Info>
+            </Section>
+
+            <Section title="Payment & delivery">
+              <Info label="Payment">
+                <span className="flex flex-wrap items-center gap-1.5">
+                  <Pill>{PAYMENT[o.payment_method]}</Pill>
+                  <span className="text-[var(--mac-secondary)]">
+                    {PAYMENT_TYPES[o.payment_type].label}
+                  </span>
+                </span>
+              </Info>
+              <Info label="Shipping">
+                {SHIPPING[o.shipping_method]}
+                {shipFeeCents > 0 && (
+                  <span className="text-[var(--mac-secondary)]"> · {formatPrice(shipFeeCents)}</span>
+                )}
+              </Info>
+              {pin && (
+                <Info label="Pin">
+                  {isCoords ? (
                     <a
-                      href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`}
+                      href={`https://www.openstreetmap.org/?mlat=${coords[0]}&mlon=${coords[1]}#map=15/${coords[0]}/${coords[1]}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="underline underline-offset-4 hover:text-accent"
+                      className="text-[var(--mac-accent)] hover:underline"
                     >
-                      {lat.toFixed(5)}, {lng.toFixed(5)} · open map
+                      {coords[0].toFixed(5)}, {coords[1].toFixed(5)} · Open map ↗
                     </a>
-                  </p>
-                ) : (
-                  <p className={valueCls}>Pin: {o.address.pin}</p>
-                );
-              })()}
-            <p className={`${valueCls} whitespace-pre-line`}>
-              {[
-                o.address.street,
-                o.address.barangay ? `Brgy. ${o.address.barangay}` : null,
-                o.address.city,
-                o.address.province,
-                o.address.postal,
-                o.address.country,
-              ]
-                .filter(Boolean)
-                .join(", ")}
-            </p>
+                  ) : (
+                    pin
+                  )}
+                </Info>
+              )}
+              {addressLine && <Info label="Address">{addressLine}</Info>}
+            </Section>
           </div>
-        )}
-        <div>
-          <p className={fieldCls}>Placed</p>
-          <p className={valueCls}>{new Date(o.created_at).toLocaleString()}</p>
-        </div>
-      </section>
 
-      <section>
-        <h2 className={`${fieldCls} mb-2`}>Items</h2>
-        <ul className="border-t border-ink/15">
-          {orderItems.map((i) => (
-            <li
-              key={i.id}
-              className="border-b border-ink/15 py-2 flex items-center gap-3 font-mono text-xs"
-            >
-              <div className="relative w-10 h-12 bg-bone shrink-0 overflow-hidden flex items-center justify-center">
-                {i.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={i.image}
-                    alt={i.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="text-[8px] uppercase tracking-widest text-ink/40 px-1 text-center leading-tight">
-                    {i.title}
-                  </span>
-                )}
+          <div className="flex flex-col gap-6">
+            <Section title={`Items · ${orderItems.reduce((n, i) => n + i.qty, 0)}`}>
+              {orderItems.map((i) => (
+                <div
+                  key={i.id}
+                  className="flex items-center gap-3 border-b border-[var(--mac-sep)] px-4 py-2.5"
+                >
+                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-[8px] bg-[#f0f0f2] shadow-[inset_0_0_0_0.5px_rgb(0_0_0/0.06)]">
+                    {i.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={i.image} alt="" className="h-full w-full object-cover mix-blend-multiply" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-medium">{i.title}</div>
+                    <div className="text-[12px] text-[var(--mac-secondary)]">
+                      {i.qty} × {formatPrice(i.unit_price_cents)}
+                      {i.variant_label && ` · ${i.variant_label}`}
+                    </div>
+                  </div>
+                  <span className="tabular-nums">{formatPrice(i.unit_price_cents * i.qty)}</span>
+                </div>
+              ))}
+              {shipFeeCents > 0 && (
+                <div className="flex justify-between border-b border-[var(--mac-sep)] px-4 py-2.5 text-[var(--mac-secondary)]">
+                  <span>Shipping</span>
+                  <span className="tabular-nums">{formatPrice(shipFeeCents)}</span>
+                </div>
+              )}
+              <div className="flex justify-between px-4 py-2.5 font-semibold">
+                <span>Total</span>
+                <span className="tabular-nums">{formatPrice(o.total_cents)}</span>
               </div>
-              <span className="text-faded shrink-0">{i.qty}×</span>
-              <span className="flex-1 min-w-0 uppercase truncate">
-                {i.title}
-              </span>
-              <span className="text-faded uppercase text-[10px] hidden sm:inline">
-                {i.variant_label}
-              </span>
-              <span className="shrink-0">
-                {formatPrice(i.unit_price_cents * i.qty)}
-              </span>
-            </li>
-          ))}
-          {shipFeeCents > 0 && (
-            <li className="py-2 flex justify-between font-mono text-[10px] uppercase tracking-widest text-faded">
-              <span>
-                Shipping · {SHIPPING_METHODS[o.shipping_method].label}
-              </span>
-              <span>{formatPrice(shipFeeCents)}</span>
-            </li>
-          )}
-          <li className="py-2 flex justify-between font-mono text-xs uppercase tracking-widest">
-            <span>Total</span>
-            <span>{formatPrice(o.total_cents)}</span>
-          </li>
-        </ul>
-      </section>
+            </Section>
 
-      <section>
-        <h2 className={`${fieldCls} mb-2`}>Proof of payment</h2>
-        {proofUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={proofUrl}
-            alt="Proof of payment"
-            className="max-w-sm border border-ink/15"
-          />
-        ) : (
-          <p className={valueCls}>
-            {o.proof_of_payment
-              ? "Could not load proof image"
-              : "No proof uploaded"}
-          </p>
-        )}
-      </section>
-    </div>
+            <Section title="Proof of payment">
+              {proofUrl ? (
+                <a href={proofUrl} target="_blank" rel="noreferrer" className="block p-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={proofUrl}
+                    alt="Proof of payment"
+                    className="max-h-[28rem] w-full rounded-[8px] object-contain bg-[#f0f0f2]"
+                  />
+                </a>
+              ) : (
+                <p className="px-4 py-6 text-center text-[var(--mac-secondary)]">
+                  {o.proof_of_payment ? "Couldn't load the proof image." : "No proof uploaded."}
+                </p>
+              )}
+            </Section>
+          </div>
+        </div>
+      </div>
+    </AdminWindow>
   );
 }

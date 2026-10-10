@@ -6,8 +6,8 @@ export default function NotFound() {
     <PageBody>
       <div className="px-4 py-32 flex flex-col items-center gap-4 text-center">
         <p className="text-faded">404</p>
-        <p className="tag">Nothing here</p>
-        <Link href="/" className="tag underline underline-offset-4 hover:text-accent">
+        <p className="text-[17px] font-semibold">Nothing here</p>
+        <Link href="/" className="mac-btn">
           Back to shop
         </Link>
       </div>

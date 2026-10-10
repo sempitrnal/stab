@@ -3,19 +3,19 @@ import PaperPhoto from "@/components/paper-photo";
 interface Props {
   title: string;
   image: string | null;
+  slug?: string;
 }
 
-// Newsprint photo: black and white (sepia nudges the greyed tile back to
-// warm bone), full colour when the parent `group` is hovered. Touch screens
-// can't hover, so they always get full colour.
-export default function ProductMedia({ title, image }: Props) {
+// Product photo on its tile, white backdrop blended away.
+export default function ProductMedia({ title, image, slug }: Props) {
   if (image) {
     return (
       <PaperPhoto
         src={image}
         alt={title}
+        slug={slug}
         width={800}
-        className="absolute inset-0 [@media(hover:hover)]:grayscale [@media(hover:hover)]:sepia-[.08] group-hover:grayscale-0 group-hover:sepia-0 transition-[filter] duration-300"
+        className="absolute inset-0 transition-transform duration-300 group-hover:scale-[1.03]"
       />
     );
   }

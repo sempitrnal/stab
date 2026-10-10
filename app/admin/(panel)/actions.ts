@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { OrderStatus } from "@/lib/types";
+import { adminEmail } from "@/lib/admin-email";
 
 export interface VariantInput {
   id?: string;
@@ -39,10 +40,7 @@ async function requireAdmin() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (!user || (adminEmail && user.email !== adminEmail)) {
-    throw new Error("Unauthorized");
-  }
+  if (!user || user.email !== adminEmail()) throw new Error("Unauthorized");
 }
 
 export async function saveProduct(input: ProductInput) {
@@ -132,6 +130,21 @@ export async function setProductActive(id: string, active: boolean) {
   revalidatePath("/admin");
 }
 
+// Saves a drag-and-drop order: each product's sort_order becomes its index.
+export async function reorderProducts(ids: string[]) {
+  await requireAdmin();
+  const admin = createAdminClient();
+  const results = await Promise.all(
+    ids.map((id, i) =>
+      admin.from("products").update({ sort_order: i }).eq("id", id),
+    ),
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) throw new Error(failed.error.message);
+  revalidateStorefront();
+  revalidatePath("/admin");
+}
+
 export async function deleteProduct(id: string) {
   await requireAdmin();
   const admin = createAdminClient();
@@ -148,6 +161,25 @@ export async function setOrderStatus(id: string, status: OrderStatus) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin");
   revalidatePath(`/admin/orders/${id}`);
+}
+
+// Permanently deletes orders (their items cascade) and their uploaded
+// payment screenshots. Stock is not returned.
+export async function deleteOrders(ids: string[]) {
+  await requireAdmin();
+  if (ids.length === 0) return;
+  const admin = createAdminClient();
+  const { data: proofs } = await admin
+    .from("orders")
+    .select("proof_of_payment")
+    .in("id", ids);
+  const { error } = await admin.from("orders").delete().in("id", ids);
+  if (error) throw new Error(error.message);
+  const paths = (proofs ?? [])
+    .map((o) => o.proof_of_payment as string | null)
+    .filter((p): p is string => !!p);
+  if (paths.length) await admin.storage.from("payment-proofs").remove(paths);
+  revalidatePath("/admin/orders");
 }
 
 export async function signOut() {

@@ -9,9 +9,11 @@ import PaperPhoto from "@/components/paper-photo";
 export default function ProductGallery({
   images,
   title,
+  slug,
 }: {
   images: string[];
   title: string;
+  slug?: string;
 }) {
   const [index, setIndex] = useState(0);
   const touchX = useRef<number | null>(null);
@@ -22,7 +24,7 @@ export default function ProductGallery({
 
   return (
     <figure
-      className="rounded-lg bg-card p-2.5 focus:outline-none"
+      className="panel p-2.5 focus:outline-none"
       tabIndex={many ? 0 : undefined}
       aria-roledescription={many ? "carousel" : undefined}
       aria-label={many ? `${title} photos` : undefined}
@@ -33,7 +35,7 @@ export default function ProductGallery({
       }}
     >
       <div
-        className="relative aspect-4/5 rounded-md overflow-hidden bg-bone"
+        className="relative aspect-4/5 rounded-md overflow-hidden bg-well"
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
         onTouchEnd={(e) => {
           if (!many || touchX.current == null) return;
@@ -51,16 +53,16 @@ export default function ProductGallery({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            {/* Product shots carry wide white margins; scaling past the
-                frame zooms in on the product, and the cropped margins are
-                white anyway, so they vanish into the paper. */}
+            {/* Edge to edge: the photo spans the full frame width, uncropped.
+                Raise backgroundSize past 100% to zoom in. */}
             <PaperPhoto
+              slug={slug}
               src={images[index]}
               alt={alt(index)}
               width={1200}
               inset="0"
               className="absolute inset-0"
-              style={{ backgroundSize: "115%" }}
+              style={{ backgroundSize: "100%" }}
             />
           </motion.div>
         </AnimatePresence>
@@ -100,6 +102,7 @@ export default function ProductGallery({
               }`}
             >
               <PaperPhoto
+              slug={slug}
                 src={src}
                 alt=""
                 width={240}

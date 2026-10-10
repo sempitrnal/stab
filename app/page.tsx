@@ -25,12 +25,12 @@ export default async function Home() {
     <Suspense>
       <ShopBrowser products={products}>
         <section id="music" className="mt-6 scroll-mt-4">
-          <div className="py-2.5 border-y border-line flex justify-between tag">
-            <span>Music · Now playing</span>
-            <span className="text-faded">Listen / Watch</span>
+          <div className="pt-10 flex flex-wrap items-end justify-between gap-x-6 gap-y-1">
+            <h2 className="text-[22px] font-bold tracking-tight">Music</h2>
+            <span className="text-[13px] text-faded">Listen and watch</span>
           </div>
           <div className="pt-6 grid md:grid-cols-2 gap-6">
-            <div className="rounded-lg bg-card p-2.5">
+            <div className="panel p-2.5">
               <iframe
                 src="https://open.spotify.com/embed/album/4MnTPaBmEl61zANQDXRdAe?utm_source=generator&theme=0"
                 width="100%"
@@ -41,7 +41,7 @@ export default async function Home() {
                 className="block border-0 w-full rounded-md"
               />
             </div>
-            <div className="rounded-lg bg-card p-2.5">
+            <div className="panel p-2.5">
               <div className="relative aspect-video rounded-md overflow-hidden bg-bone">
                 <iframe
                   src="https://www.youtube.com/embed/Y140YV3xvAk"

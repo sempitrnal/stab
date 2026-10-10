@@ -131,7 +131,7 @@ export default function StabLogo3D({
   return (
     <div className={`relative w-full ${className}`} aria-hidden>
       {!ready && (
-        <span className="absolute inset-0 flex items-center justify-center font-serif italic text-5xl text-ink/15 animate-pulse">
+        <span className="absolute inset-0 flex items-center justify-center font-semibold tracking-tight text-4xl text-ink/15 animate-pulse">
           stab
         </span>
       )}

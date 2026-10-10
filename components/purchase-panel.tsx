@@ -44,8 +44,8 @@ export default function PurchasePanel({ product }: { product: Product }) {
   return (
     <div>
       {selected && (
-        <p>
-          <span className="tag text-faded mr-3">{sizeWord}</span>
+        <p className="text-[13px]">
+          <span className="text-faded mr-2">{sizeWord}</span>
           {selected.label}
           {selected.dimensions && ` · ${selected.dimensions}`}
         </p>
@@ -53,9 +53,9 @@ export default function PurchasePanel({ product }: { product: Product }) {
 
       {variants.length > 0 && (
         <div
-          className="mt-3 grid gap-1.5"
+          className="mt-2.5 grid gap-0.5 rounded-[10px] bg-[var(--mac-fill)] p-[3px]"
           style={{
-            gridTemplateColumns: `repeat(${Math.min(variants.length, 6)}, minmax(0, 1fr))`,
+            gridTemplateColumns: `repeat(${Math.min(variants.length, 8)}, minmax(0, 1fr))`,
           }}
         >
           {variants.map((v) => {
@@ -67,12 +67,12 @@ export default function PurchasePanel({ product }: { product: Product }) {
                 onClick={() => !out && setSelectedId(v.id)}
                 disabled={out}
                 aria-pressed={active}
-                className={`h-10 rounded-md transition-colors ${
+                className={`h-9 rounded-[8px] text-[13px] font-medium transition-[background-color,box-shadow,color] duration-150 ${
                   active
-                    ? "bg-ink text-paper"
+                    ? "bg-white text-ink shadow-[0_1px_2px_rgb(0_0_0/0.12),0_0_0_0.5px_rgb(0_0_0/0.06)]"
                     : out
-                      ? "bg-bone/50 text-ink/25 line-through cursor-not-allowed"
-                      : "bg-bone hover:bg-line"
+                      ? "text-ink/25 line-through cursor-not-allowed"
+                      : "text-faded hover:text-ink"
                 }`}
               >
                 {v.label}
@@ -85,21 +85,23 @@ export default function PurchasePanel({ product }: { product: Product }) {
       <button
         onClick={handleAdd}
         disabled={!selected || soldOut}
-        className="mt-6 w-max h-12 px-4 rounded-md  flex items-center justify-between bg-ink text-paper tag hover:bg-ink/90 cursor-pointer transition-colors disabled:bg-bone disabled:text-faded disabled:cursor-not-allowed"
+        className="mt-5 w-full sm:w-auto h-11 px-5 rounded-[10px] inline-flex items-center justify-center gap-3 bg-[var(--mac-accent)] text-white text-[14px] font-medium shadow-[inset_0_0.5px_0_rgb(255_255_255/0.2),0_1px_2px_rgb(0_0_0/0.15)] transition-[filter] hover:brightness-110 active:brightness-95 disabled:bg-bone disabled:text-faded disabled:shadow-none disabled:cursor-not-allowed"
       >
-        <span className="mr-5">{soldOut ? "Sold out" : added ? "Added ✓" : "Add to cart"}</span>
-        {!soldOut && <span>{formatPrice(unitPrice)} →</span>}
+        <span>{soldOut ? "Sold out" : added ? "Added ✓" : "Add to cart"}</span>
+        {!soldOut && (
+          <span className="tabular-nums text-white/70">{formatPrice(unitPrice)}</span>
+        )}
       </button>
 
       {selected && selected.stock > 0 && selected.stock <= 5 && (
-        <p className="mt-3 text-accent">
-          ● Only {selected.stock} left in {selected.label}
+        <p className="mt-3 text-[12px] font-medium text-[#c93400]">
+          Only {selected.stock} left in {selected.label}
         </p>
       )}
 
       <div className="mt-3 flex justify-end">
-        <Link href="/cart" className="tag text-faded hover:text-ink">
-          View cart →
+        <Link href="/cart" className="text-[12px] text-faded hover:text-ink">
+          View cart ›
         </Link>
       </div>
 
@@ -107,7 +109,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
         <div className="mt-6">
           {product.description && (
             <Drawer title="Details">
-              <p className="font-serif text-base leading-relaxed whitespace-pre-line">
+              <p className="text-[14px] leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
             </Drawer>
@@ -121,7 +123,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
                       v.dimensions && (
                         <tr
                           key={v.id}
-                          className={v.id === selectedId ? "text-accent" : ""}
+                          className={v.id === selectedId ? "font-semibold" : "text-faded"}
                         >
                           <td className="py-1">{v.label}</td>
                           <td className="py-1 text-right">{v.dimensions}</td>

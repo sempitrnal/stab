@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import AdminWindow from "@/components/admin/admin-window";
 import ProductForm from "@/components/admin/product-form";
 import DeleteProductButton from "@/components/admin/delete-product-button";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -23,14 +24,11 @@ export default async function EditProductPage(
   const product = data as Product;
 
   return (
-    <div className="px-4 py-6 max-w-2xl">
-      <div className="flex items-center justify-between gap-4 mb-6">
-        <h1 className="font-black uppercase tracking-tight text-2xl min-w-0 truncate">
-          Edit · {product.title}
-        </h1>
-        <DeleteProductButton id={product.id} />
-      </div>
-      <ProductForm product={product} />
-    </div>
+    <AdminWindow title={product.title} section="products">
+      <ProductForm
+        product={product}
+        actions={<DeleteProductButton id={product.id} />}
+      />
+    </AdminWindow>
   );
 }

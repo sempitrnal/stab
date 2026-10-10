@@ -90,7 +90,7 @@ export default function AddressSearch({
           type="button"
           onClick={search}
           disabled={searching}
-          className="shrink-0 rounded-md bg-ink text-paper px-4 tag hover:bg-accent transition-colors disabled:opacity-50"
+          className="shrink-0 btn-primary h-10! px-4!"
         >
           {searching ? "…" : "Find"}
         </button>

@@ -4,6 +4,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { adminEmail } from "@/lib/admin-email";
 
 function matches(a: string, b: string) {
   const hash = (v: string) => createHash("sha256").update(v).digest();
@@ -15,6 +16,18 @@ function matches(a: string, b: string) {
 // these and rotate the password once env vars can be configured.
 const FALLBACK_USERNAME = "stabulok";
 const FALLBACK_PASSWORD = "saggin123";
+
+// In development, show Supabase's actual reason; in production keep the
+// message generic. Either way the real error is logged on the server.
+function setupError(cause: { message: string } | null | undefined) {
+  console.error("[admin login] account setup failed:", cause?.message);
+  return {
+    error:
+      process.env.NODE_ENV === "development" && cause?.message
+        ? `Could not set up the admin account: ${cause.message}`
+        : "Could not set up the admin account",
+  };
+}
 
 // Username + password login. A match signs in the
 // Supabase admin account behind the scenes so the rest of admin (RLS, image
@@ -36,7 +49,7 @@ export async function signInAdmin(
   const passOk = matches(password, expectedPass);
   if (!userOk || !passOk) return { error: "Wrong username or password" };
 
-  const email = process.env.ADMIN_EMAIL ?? "admin@stab.local";
+  const email = adminEmail();
   const supabase = await createClient();
 
   let { error } = await supabase.auth.signInWithPassword({
@@ -56,12 +69,12 @@ export async function signInAdmin(
     if (created.error) {
       const { data } = await admin.auth.admin.listUsers({ perPage: 1000 });
       const existing = data?.users.find((u) => u.email === email);
-      if (!existing) return { error: "Could not set up the admin account" };
+      if (!existing) return setupError(created.error);
       const updated = await admin.auth.admin.updateUserById(existing.id, {
         password: expectedPass,
         email_confirm: true,
       });
-      if (updated.error) return { error: "Could not set up the admin account" };
+      if (updated.error) return setupError(updated.error);
     }
     ({ error } = await supabase.auth.signInWithPassword({
       email,

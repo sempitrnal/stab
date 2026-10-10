@@ -1,7 +1,11 @@
 "use client";
 
-import { compressImage } from "@/lib/compress-image";
 import { useRef, useState, useTransition } from "react";
+import Link from "next/link";
+import { compressImage } from "@/lib/compress-image";
+import MacSwitch from "@/components/admin/mac-switch";
+import Segmented from "@/components/admin/segmented";
+import SortablePhotos from "@/components/admin/sortable-photos";
 import { saveProduct } from "@/app/admin/(panel)/actions";
 import { createClient } from "@/lib/supabase/client";
 import { TEE_SIZES } from "@/lib/size-chart";
@@ -15,11 +19,6 @@ interface VariantRow {
   priceDollars: string;
   stock: string;
 }
-
-const inputCls =
-  "w-full bg-transparent border border-ink/25 px-3 py-2.5 font-mono text-xs tracking-widest placeholder:text-faded focus:outline-none focus:border-ink";
-const labelCls =
-  "block font-mono text-[10px] uppercase tracking-widest text-faded mb-1.5";
 
 const blankVariant = (label = "", dimensions = ""): VariantRow => ({
   label,
@@ -52,7 +51,62 @@ function slugify(s: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-export default function ProductForm({ product }: { product?: Product }) {
+// System Settings-style grouped section: small title, then a card of rows.
+function Section({
+  title,
+  aside,
+  children,
+}: {
+  title: string;
+  aside?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="flex flex-col gap-2">
+      <div className="flex items-end justify-between gap-3 px-1">
+        <h2 className="text-[13px] font-semibold">{title}</h2>
+        {aside}
+      </div>
+      <div className="mac-card">{children}</div>
+    </section>
+  );
+}
+
+// One labelled row inside a Section card.
+function Row({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5 border-b border-[var(--mac-sep)] px-4 py-3 last:border-b-0 sm:flex-row sm:items-center sm:gap-4">
+      <div className="shrink-0 sm:w-40">
+        <div className="text-[13px]">{label}</div>
+        {hint && <div className="text-[11px] text-[var(--mac-secondary)]">{hint}</div>}
+      </div>
+      <div className="min-w-0 flex-1">{children}</div>
+    </div>
+  );
+}
+
+const TYPES: { value: ProductType; label: string }[] = [
+  { value: "apparel", label: "Apparel" },
+  { value: "accessory", label: "Accessory" },
+  { value: "music", label: "Music" },
+];
+
+export default function ProductForm({
+  product,
+  actions,
+}: {
+  product?: Product;
+  /** Extra buttons for the bottom bar (e.g. Delete on the edit page). */
+  actions?: React.ReactNode;
+}) {
   const [title, setTitle] = useState(product?.title ?? "");
   const [slug, setSlug] = useState(product?.slug ?? "");
   const [type, setType] = useState<ProductType>(product?.type ?? "apparel");
@@ -158,82 +212,79 @@ export default function ProductForm({ product }: { product?: Product }) {
     });
   }
 
+  const totalStock = variants.reduce((n, v) => n + (parseInt(v.stock) || 0), 0);
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className={labelCls}>Title</label>
+    <div className="mx-auto flex max-w-3xl flex-col gap-7">
+      <Section title="Details">
+        <Row label="Title">
           <input
-            className={inputCls}
+            className="mac-input"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="LOGO TEE"
+            placeholder="Logo Tee"
           />
-        </div>
-        <div>
-          <label className={labelCls}>Slug (blank = auto)</label>
+        </Row>
+        <Row label="URL" hint="Leave blank to generate">
+          <div className="flex items-center gap-1.5">
+            <span className="shrink-0 text-[var(--mac-secondary)]">/product/</span>
+            <input
+              className="mac-input"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              placeholder={slugify(title) || "logo-tee"}
+            />
+          </div>
+        </Row>
+        <Row label="Type">
+          <Segmented options={TYPES} value={type} onChange={setType} />
+        </Row>
+        <Row label="Price">
+          <div className="relative w-40">
+            <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--mac-secondary)]">
+              ₱
+            </span>
+            <input
+              className="mac-input pl-6! tabular-nums"
+              value={priceDollars}
+              onChange={(e) => setPriceDollars(e.target.value)}
+              inputMode="decimal"
+              placeholder="500"
+            />
+          </div>
+        </Row>
+        <Row label="Sort order" hint="Lower shows first">
           <input
-            className={inputCls}
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            placeholder={slugify(title) || "logo-tee"}
-          />
-        </div>
-        <div>
-          <label className={labelCls}>Type</label>
-          <select
-            className={inputCls}
-            value={type}
-            onChange={(e) => setType(e.target.value as ProductType)}
-          >
-            <option value="apparel">Apparel</option>
-            <option value="accessory">Accessory</option>
-            <option value="music">Music</option>
-          </select>
-        </div>
-        <div>
-          <label className={labelCls}>Price (USD)</label>
-          <input
-            className={inputCls}
-            value={priceDollars}
-            onChange={(e) => setPriceDollars(e.target.value)}
-            inputMode="decimal"
-            placeholder="35"
-          />
-        </div>
-        <div>
-          <label className={labelCls}>Sort order</label>
-          <input
-            className={inputCls}
+            className="mac-input w-24! tabular-nums"
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
             inputMode="numeric"
           />
-        </div>
-        <div className="flex items-end pb-1">
-          <label className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest cursor-pointer">
-            <input
-              type="checkbox"
-              checked={active}
-              onChange={(e) => setActive(e.target.checked)}
-              className="accent-ink w-4 h-4"
-            />
-            Active (visible in store)
-          </label>
-        </div>
-      </div>
+        </Row>
+        <Row label="Visible in store">
+          <MacSwitch checked={active} onChange={setActive} label="Visible in store" />
+        </Row>
+      </Section>
 
-      <div>
-        <label className={labelCls}>Description</label>
-        <textarea
-          className={`${inputCls} normal-case min-h-24`}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </div>
+      <Section title="Description">
+        <div className="p-3">
+          <textarea
+            className="mac-input h-auto! min-h-28 py-2! leading-relaxed"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Heavyweight cotton. Front print."
+          />
+        </div>
+      </Section>
 
-      <div>
-        <label className={labelCls}>Images</label>
+      <Section
+        title="Photos"
+        aside={
+          <span className="text-[12px] text-[var(--mac-secondary)]">
+            Drag to reorder · first photo is the cover
+          </span>
+        }
+      >
         <input
           ref={fileRef}
           type="file"
@@ -245,169 +296,132 @@ export default function ProductForm({ product }: { product?: Product }) {
             files.forEach(uploadImage);
           }}
         />
-        <div className="flex flex-wrap gap-2">
-          {images.map((src, i) => (
-            <div
-              key={src}
-              className="relative w-20 h-24 bg-bone border border-ink/15 group"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" className="w-full h-full object-cover" />
-              <span className="absolute bottom-0 left-0 bg-ink/70 text-paper font-mono text-[9px] px-1">
-                {i + 1}
-              </span>
-              <button
-                type="button"
-                onClick={() =>
-                  setImages((prev) => prev.filter((s) => s !== src))
-                }
-                className="absolute top-0 right-0 bg-ink text-paper font-mono text-[10px] w-4 h-4 leading-none hover:bg-accent"
-              >
-                ×
-              </button>
-            </div>
-          ))}
+        <SortablePhotos images={images} onChange={setImages}>
           <button
             type="button"
             disabled={uploading}
             onClick={() => fileRef.current?.click()}
-            className="w-20 h-24 border border-dashed border-ink/30 font-mono text-[10px] uppercase tracking-widest text-faded hover:border-ink hover:text-ink transition-colors disabled:opacity-50"
+            className="flex aspect-square flex-col items-center justify-center gap-1 rounded-[10px] border border-dashed border-[rgb(0_0_0/0.18)] text-[var(--mac-secondary)] transition-colors hover:border-[var(--mac-accent)] hover:text-[var(--mac-accent)] disabled:opacity-50"
           >
-            {uploading ? "…" : "+ Add"}
+            <span className="text-[20px] leading-none">{uploading ? "…" : "+"}</span>
+            <span className="text-[11px] font-medium">
+              {uploading ? "Uploading" : "Add photos"}
+            </span>
           </button>
-        </div>
-        <p className="mt-1.5 font-mono text-[9px] uppercase tracking-widest text-faded">
-          First image is the cover. Uploads go to the product-images bucket.
-        </p>
-      </div>
+        </SortablePhotos>
+      </Section>
 
-      <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <label className="font-mono text-[10px] uppercase tracking-widest text-faded">
-            Variants
-          </label>
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={() => setVariants(withTeeSizes)}
-              className="font-mono text-[10px] uppercase tracking-widest hover:text-accent"
-            >
+      <Section
+        title="Sizes & stock"
+        aside={
+          <div className="flex items-center gap-2">
+            <span className="hidden text-[12px] text-[var(--mac-secondary)] sm:inline">
+              {totalStock} in stock
+            </span>
+            <button type="button" onClick={() => setVariants(withTeeSizes)} className="mac-btn">
               Use tee sizes
             </button>
             <button
               type="button"
               onClick={() => setVariants((prev) => [...prev, blankVariant()])}
-              className="font-mono text-[10px] uppercase tracking-widest hover:text-accent"
+              className="mac-btn"
             >
-              + Add variant
+              + Add
             </button>
           </div>
+        }
+      >
+        <div className="hidden grid-cols-[1fr_8rem_4.5rem_6rem_6rem_1.5rem] gap-2 border-b border-[var(--mac-sep)] px-4 py-2 mac-label sm:grid">
+          <span>Size</span>
+          <span>Measurements</span>
+          <span>Stock</span>
+          <span>Price override</span>
+          <span>SKU</span>
+          <span />
         </div>
-        <div className="border-t border-ink/15">
-          <div className="hidden sm:grid grid-cols-[1fr_7rem_4.5rem_6rem_5rem_2rem] gap-2 py-2 font-mono text-[9px] uppercase tracking-widest text-faded">
-            <span>Label</span>
-            <span>Dimensions</span>
-            <span>Stock</span>
-            <span>₱ Override</span>
-            <span>SKU</span>
-            <span />
-          </div>
-          {variants.map((v, i) => (
-            <div
-              key={i}
-              className="relative grid grid-cols-2 gap-2 border-b border-ink/15 py-3 pr-8 last:border-b-0 sm:grid-cols-[1fr_7rem_4.5rem_6rem_5rem_2rem] sm:border-0 sm:py-0 sm:pb-2 sm:pr-0"
+        {variants.map((v, i) => (
+          <div
+            key={i}
+            className="relative grid grid-cols-2 gap-2 border-b border-[var(--mac-sep)] px-4 py-3 pr-11 last:border-b-0 sm:grid-cols-[1fr_8rem_4.5rem_6rem_6rem_1.5rem] sm:items-center sm:py-2 sm:pr-4"
+          >
+            <label className="col-span-2 sm:col-span-1">
+              <span className="mb-1 block mac-label sm:hidden">Size</span>
+              <input
+                className="mac-input"
+                value={v.label}
+                onChange={(e) => setVariant(i, { label: e.target.value })}
+                placeholder="S, OS, Black LP"
+              />
+            </label>
+            <label>
+              <span className="mb-1 block mac-label sm:hidden">Measurements</span>
+              <input
+                className="mac-input"
+                value={v.dimensions}
+                onChange={(e) => setVariant(i, { dimensions: e.target.value })}
+                placeholder='W20" × L27"'
+              />
+            </label>
+            <label>
+              <span className="mb-1 block mac-label sm:hidden">Stock</span>
+              <input
+                className="mac-input tabular-nums"
+                value={v.stock}
+                onChange={(e) => setVariant(i, { stock: e.target.value })}
+                inputMode="numeric"
+              />
+            </label>
+            <label>
+              <span className="mb-1 block mac-label sm:hidden">Price override</span>
+              <input
+                className="mac-input tabular-nums"
+                value={v.priceDollars}
+                onChange={(e) => setVariant(i, { priceDollars: e.target.value })}
+                inputMode="decimal"
+                placeholder="₱"
+              />
+            </label>
+            <label>
+              <span className="mb-1 block mac-label sm:hidden">SKU</span>
+              <input
+                className="mac-input"
+                value={v.sku}
+                onChange={(e) => setVariant(i, { sku: e.target.value })}
+              />
+            </label>
+            <button
+              type="button"
+              aria-label={`Remove ${v.label || "variant"}`}
+              onClick={() => setVariants((prev) => prev.filter((_, idx) => idx !== i))}
+              className="absolute right-4 top-3 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#ff3b30] text-[13px] font-semibold leading-none text-white shadow-[inset_0_0.5px_0_rgb(255_255_255/0.3)] transition-[filter] hover:brightness-110 sm:static"
             >
-              <div className="col-span-2 sm:col-span-1">
-                <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-faded sm:hidden">
-                  Label
-                </span>
-                <input
-                  className={inputCls}
-                  value={v.label}
-                  onChange={(e) => setVariant(i, { label: e.target.value })}
-                  placeholder="S / OS / BLACK LP"
-                />
-              </div>
-              <div>
-                <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-faded sm:hidden">
-                  Dimensions
-                </span>
-                <input
-                  className={inputCls}
-                  value={v.dimensions}
-                  onChange={(e) =>
-                    setVariant(i, { dimensions: e.target.value })
-                  }
-                  placeholder='W20" × L27"'
-                />
-              </div>
-              <div>
-                <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-faded sm:hidden">
-                  Stock
-                </span>
-                <input
-                  className={inputCls}
-                  value={v.stock}
-                  onChange={(e) => setVariant(i, { stock: e.target.value })}
-                  inputMode="numeric"
-                />
-              </div>
-              <div>
-                <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-faded sm:hidden">
-                  ₱ Override
-                </span>
-                <input
-                  className={inputCls}
-                  value={v.priceDollars}
-                  onChange={(e) =>
-                    setVariant(i, { priceDollars: e.target.value })
-                  }
-                  inputMode="decimal"
-                  placeholder="·"
-                />
-              </div>
-              <div>
-                <span className="mb-1 block font-mono text-[9px] uppercase tracking-widest text-faded sm:hidden">
-                  SKU
-                </span>
-                <input
-                  className={inputCls}
-                  value={v.sku}
-                  onChange={(e) => setVariant(i, { sku: e.target.value })}
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() =>
-                  setVariants((prev) => prev.filter((_, idx) => idx !== i))
-                }
-                className="absolute top-3 right-0 font-mono text-sm text-faded hover:text-accent sm:static sm:text-xs"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          {variants.length === 0 && (
-            <p className="py-4 font-mono text-[10px] uppercase tracking-widest text-faded">
-              No variants, add at least one (use “OS” for one-size)
-            </p>
+              −
+            </button>
+          </div>
+        ))}
+        {variants.length === 0 && (
+          <p className="px-4 py-6 text-center text-[var(--mac-secondary)]">
+            No sizes yet. Add one, or use “OS” for one-size.
+          </p>
+        )}
+      </Section>
+
+      <div className="sticky bottom-4 z-10">
+        <div className="flex flex-wrap items-center gap-2 rounded-[12px] bg-white/80 px-3 py-2.5 shadow-[0_0_0_0.5px_rgb(0_0_0/0.1),0_8px_24px_rgb(0_0_0/0.10)] backdrop-blur-xl backdrop-saturate-150">
+          {error ? (
+            <p className="min-w-0 flex-1 truncate px-1 text-[12px] text-[#d70015]">{error}</p>
+          ) : (
+            <span className="flex-1" />
           )}
+          {actions}
+          <Link href="/admin" className="mac-btn">
+            Cancel
+          </Link>
+          <button onClick={submit} disabled={pending} className="mac-btn" data-variant="primary">
+            {pending ? "Saving…" : product ? "Save changes" : "Create product"}
+          </button>
         </div>
       </div>
-
-      {error && (
-        <p className="font-mono text-[10px] uppercase tracking-widest text-accent">
-          {error}
-        </p>
-      )}
-
-      <button
-        onClick={submit}
-        disabled={pending}
-        className="w-full bg-ink text-paper font-mono text-xs uppercase tracking-widest py-4 hover:bg-accent transition-colors disabled:opacity-50"
-      >
-        {pending ? "Saving…" : product ? "Save changes" : "Create product"}
-      </button>
     </div>
   );
 }

@@ -23,23 +23,24 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
 
   return (
     <>
-      <div className="py-2.5 border-b border-line flex justify-between gap-4 tag">
-        <Link href="/" className="hover:text-accent">
-          ← All listings
+      <nav aria-label="Breadcrumb" className="pt-6 flex items-center gap-1.5 text-[13px] text-faded">
+        <Link href="/" className="hover:text-ink">
+          Shop
         </Link>
-        <Link href={`/?type=${product.type}`} className="text-faded hover:text-ink">
-          For sale · {product.type}
+        <span aria-hidden>›</span>
+        <Link href={`/?type=${product.type}`} className="capitalize hover:text-ink">
+          {product.type}
         </Link>
-      </div>
+      </nav>
 
       <PageBody>
         <article className="pt-5 grid md:grid-cols-[1.15fr_1fr] gap-6 md:gap-10">
           <div className="flex flex-col gap-4">
             {product.images.length > 0 ? (
-              <ProductGallery images={product.images} title={product.title} />
+              <ProductGallery images={product.images} title={product.title} slug={product.slug} />
             ) : (
-              <div className="rounded-lg bg-card p-2.5">
-                <div className="relative aspect-4/5 rounded-md overflow-hidden bg-bone">
+              <div className="panel p-2.5">
+                <div className="relative aspect-4/5 rounded-md overflow-hidden bg-well">
                   <ProductMedia title={product.title} image={null} />
                 </div>
               </div>
@@ -47,11 +48,11 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           </div>
 
           <div>
-            <div className="md:sticky md:top-6 rounded-lg bg-card p-5 md:p-6">
-              <h1 className="font-serif italic text-4xl md:text-5xl leading-none">
+            <div className="md:sticky md:top-6 panel p-5 md:p-6">
+              <h1 className="text-[28px] md:text-[34px] font-bold tracking-tight leading-tight">
                 {product.title}
               </h1>
-              <p className="mt-2 font-serif text-xl text-accent">
+              <p className="mt-1 text-[19px] font-medium tabular-nums text-faded">
                 {formatPrice(product.price_cents)}
               </p>
               <div className="mt-6">
