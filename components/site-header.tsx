@@ -46,23 +46,22 @@ export default function SiteHeader() {
   );
 
   return (
-    // Masthead: nav | logo | cart on desktop; logo on top with nav + cart
-    // sharing one row underneath on mobile.
-    <header className="rule-double grid grid-cols-2 md:grid-cols-[1fr_auto_1fr] items-center pt-1 pb-2 md:py-1">
-      <Link
-        href="/"
-        aria-label="STAB, home"
-        className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-1 w-full md:w-auto justify-self-center"
-      >
-        <StabLogo3D className="h-24 md:w-[30rem] md:h-48" />
-      </Link>
-      <div className="md:col-start-1 md:row-start-1 flex flex-col gap-1">
-        {nav}
-        <span className="hidden md:block pl-1 text-[12px] text-faded">
-          hostile youth records
-        </span>
+    // Logo alone above the divider; nav and cart share the row below it.
+    <header>
+      <div className="rule-double flex justify-center pt-1 pb-2 md:py-1">
+        <Link href="/" aria-label="STAB, home" className="w-full md:w-auto">
+          <StabLogo3D className="h-24 md:w-[30rem] md:h-48" />
+        </Link>
       </div>
-      <div className="md:col-start-3 md:row-start-1 justify-self-end">{cart}</div>
+      <div className="flex items-center justify-between gap-4 pt-3">
+        <div className="flex items-center gap-3">
+          {nav}
+          <span className="hidden text-[12px] text-faded md:inline">
+            hostile youth records
+          </span>
+        </div>
+        {cart}
+      </div>
     </header>
   );
 }

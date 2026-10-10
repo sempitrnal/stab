@@ -3,53 +3,38 @@ import ProductMedia from "@/components/product-media";
 import { formatPrice } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
-// One boxed classified ad.
-export default function ProductCard({
-  product,
-  number,
-}: {
-  product: Product;
-  number: string;
-}) {
+// Photo-first card: the photo on a light tile with a frosted price tag,
+// name and a two-line description underneath.
+export default function ProductCard({ product }: { product: Product }) {
   const variants = product.variants ?? [];
   const soldOut = variants.length > 0 && variants.every((v) => v.stock <= 0);
-  const inStock = variants.filter((v) => v.stock > 0).map((v) => v.label);
 
   return (
-    <Link
-      href={`/product/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl bg-card shadow-[0_0_0_0.5px_rgb(0_0_0/0.07),0_1px_3px_rgb(0_0_0/0.05)] transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:bg-card-hover hover:shadow-[0_0_0_0.5px_rgb(0_0_0/0.08),0_10px_24px_rgb(0_0_0/0.08)]"
-    >
-      <div className="relative aspect-4/3 bg-well">
+    <Link href={`/product/${product.slug}`} className="group block">
+      <div className="relative aspect-4/5 overflow-hidden rounded-[14px] bg-well-light">
         <ProductMedia
           title={product.title}
           image={product.images[0] ?? null}
           slug={product.slug}
+          tile="bg-well-light"
+          inset="12%"
         />
+        <span
+          className={`absolute bottom-2 left-2 rounded-full bg-white/80 px-2.5 py-1 text-[12px] font-semibold leading-none tabular-nums shadow-[0_1px_2px_rgb(0_0_0/0.08)] backdrop-blur-md sm:bottom-3 sm:left-3 sm:text-[13px] ${
+            soldOut ? "text-faded" : "text-ink"
+          }`}
+        >
+          {soldOut ? "Sold out" : formatPrice(product.price_cents)}
+        </span>
       </div>
-      {/* flex-1: fills the card when the row is taller than this card's text */}
-      <div className="flex-1 p-2.5 sm:p-3.5 bg-[#fff]">
-        <div className="flex justify-between gap-3 mb-2 sm:mb-3 tag">
-          <span className="text-faded tabular-nums">{number}</span>
-          <span className={`tabular-nums ${soldOut ? "text-faded" : "text-ink"}`}>
-            {soldOut ? "Sold out" : formatPrice(product.price_cents)}
-          </span>
-        </div>
-        <h3 className="text-[15px] sm:text-[17px] font-medium sm:font-semibold tracking-tight leading-snug">
-          {product.title}
-        </h3>
-        <p className="mt-1 text-[12px] font-light sm:font-normal sm:text-[13px] leading-snug text-faded line-clamp-2 sm:line-clamp-3">
-          {product.description ||
-            "Official STAB merch. Pick it up at a show or have it shipped."}
+      <h3 className="mt-2 px-0.5 text-[13px] font-semibold leading-snug tracking-tight sm:mt-2.5 sm:text-[15px]">
+        {product.title}
+      </h3>
+      {product.description && (
+        <p className="mt-0.5 line-clamp-2 px-0.5 text-[11px] leading-snug text-faded sm:text-[12px]">
+          {product.description}
         </p>
-        {inStock.length > 1 && (
-          <></>
-          // <p className="mt-1.5 text-faded">In stock: {inStock.join(" · ")}</p>
-        )}
-        {!soldOut && (
-          <p className="mt-2.5 text-[12px] font-medium text-ink/70 group-hover:text-ink transition-colors">Add to cart →</p>
-        )}
-      </div>
+      )}
     </Link>
   );
 }

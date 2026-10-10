@@ -68,6 +68,8 @@ export interface Order {
   status: OrderStatus;
   total_cents: number;
   created_at: string;
+  /** Present when the query joins line items (admin orders list). */
+  order_items?: Pick<OrderItem, "image" | "title" | "qty">[];
 }
 
 export interface OrderItem {

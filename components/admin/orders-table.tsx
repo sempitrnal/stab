@@ -22,7 +22,7 @@ const MATCH: Record<Filter, (o: Order) => boolean> = {
   closed: (o) => o.status === "cancelled" || o.status === "refunded",
 };
 
-const COLS = "sm:grid-cols-[1rem_5.5rem_1fr_6rem_7.5rem_6rem]";
+const COLS = "md:grid-cols-[1rem_minmax(0,1.4fr)_minmax(0,1fr)_6rem_7.5rem_6rem]";
 
 // Mail-style order list: search, status filter, click a row to open, tick
 // rows (shift-click for a range) to bulk delete.
@@ -103,7 +103,7 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
-        <label className="relative w-full sm:w-64">
+        <label className="relative w-full md:w-64">
           <span className="sr-only">Search orders</span>
           <svg
             aria-hidden
@@ -137,7 +137,7 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
 
       <div className="mac-card overflow-hidden">
         <div
-          className={`hidden sm:grid ${COLS} items-center gap-4 border-b border-[var(--mac-sep)] px-4 py-2 mac-label`}
+          className={`hidden md:grid ${COLS} items-center gap-4 border-b border-[var(--mac-sep)] px-4 py-2 mac-label`}
         >
           <MacCheckbox
             checked={allVisible}
@@ -166,7 +166,7 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
                     : "hover:bg-[var(--mac-hover)]"
                 }`}
               >
-                <span className="order-0 row-span-3 self-start pt-0.5 sm:row-span-1 sm:self-center sm:pt-0">
+                <span className="order-0 row-span-3 self-start pt-0.5 md:row-span-1 md:self-center md:pt-0">
                   <MacCheckbox
                     checked={isSelected}
                     onToggle={(shift) => toggle(index, shift)}
@@ -176,30 +176,39 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
                 <Link
                   href={href}
                   onClick={(e) => e.stopPropagation()}
-                  className="order-1 min-w-0"
+                  className="order-1 flex min-w-0 items-center gap-2.5"
                 >
-                  <span className="block font-semibold tabular-nums">{o.ref}</span>
-                  <span className="block text-[12px] text-[var(--mac-secondary)]">
-                    {new Date(o.created_at).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                    })}
+                  <ItemThumbs items={o.order_items ?? []} />
+                  <span className="min-w-0">
+                    <span className="block truncate">
+                      <span className="font-semibold tabular-nums">{o.ref}</span>
+                      <span className="text-[12px] text-[var(--mac-secondary)]">
+                        {" · "}
+                        {new Date(o.created_at).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </span>
+                    <span className="block truncate text-[12px] text-[var(--mac-secondary)]">
+                      {itemSummary(o.order_items ?? [])}
+                    </span>
                   </span>
                 </Link>
-                <span className="order-3 col-span-2 min-w-0 sm:order-2 sm:col-span-1">
+                <span className="order-3 col-span-2 min-w-0 md:order-2 md:col-span-1">
                   <span className="block truncate">{o.name}</span>
                   <span className="block truncate text-[12px] text-[var(--mac-secondary)]">
                     {SHIPPING[o.shipping_method]}
                   </span>
                 </span>
-                <span className="order-4 hidden sm:order-3 sm:block">
+                <span className="order-4 hidden md:order-3 md:block">
                   <Pill>{PAYMENT[o.payment_method]}</Pill>
                 </span>
-                <span className="order-2 justify-self-end sm:order-4 sm:justify-self-start">
+                <span className="order-2 justify-self-end md:order-4 md:justify-self-start">
                   <StatusPill status={o.status} downPayment={o.payment_type === "down"} />
                 </span>
-                <span className="order-5 col-span-2 text-[12px] tabular-nums text-[var(--mac-secondary)] sm:col-span-1 sm:text-right sm:text-[13px] sm:text-[var(--mac-text)]">
-                  <span className="sm:hidden">{PAYMENT[o.payment_method]} · </span>
+                <span className="order-5 col-span-2 text-[12px] tabular-nums text-[var(--mac-secondary)] md:col-span-1 md:text-right md:text-[13px] md:text-[var(--mac-text)]">
+                  <span className="md:hidden">{PAYMENT[o.payment_method]} · </span>
                   {formatPrice(o.total_cents)}
                 </span>
               </li>
@@ -266,5 +275,48 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
         onCancel={() => setConfirming(false)}
       />
     </div>
+  );
+}
+
+// "2× logo tee, 1× cap"
+function itemSummary(items: NonNullable<Order["order_items"]>) {
+  return items.map((i) => `${i.qty}× ${i.title}`).join(", ") || "No items";
+}
+
+// Overlapping thumbnails of what was ordered: up to three, then "+N".
+// Hover shows the full item list.
+function ItemThumbs({ items }: { items: NonNullable<Order["order_items"]> }) {
+  const shown = items.slice(0, 3);
+  const extra = items.length - shown.length;
+  const summary = items.length ? itemSummary(items) : "";
+
+  return (
+    <span className="flex shrink-0 items-center" title={summary || undefined}>
+      {shown.map((item, i) => (
+        <span
+          key={i}
+          className={`relative h-9 w-9 overflow-hidden rounded-[8px] bg-[#f0f0f2] ring-2 ring-white ${i > 0 ? "-ml-3.5" : ""}`}
+          style={{ zIndex: shown.length - i }}
+        >
+          {item.image && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={item.image}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover mix-blend-multiply"
+            />
+          )}
+        </span>
+      ))}
+      {extra > 0 && (
+        <span className="-ml-3.5 flex h-9 min-w-9 items-center justify-center rounded-[8px] bg-[#e5e5ea] px-1 text-[11px] font-semibold text-[var(--mac-secondary)] ring-2 ring-white">
+          +{extra}
+        </span>
+      )}
+      {items.length === 0 && (
+        <span className="h-9 w-9 rounded-[8px] bg-[#f0f0f2] ring-2 ring-white" />
+      )}
+    </span>
   );
 }

@@ -16,7 +16,7 @@ export async function getAllOrders(): Promise<Order[]> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("orders")
-    .select("*")
+    .select("*, order_items(image, title, qty)")
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data ?? [];

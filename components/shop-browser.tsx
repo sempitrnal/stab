@@ -23,18 +23,11 @@ export default function ShopBrowser({
 }) {
   const type = useSearchParams().get("type");
 
-  // Numbers stay tied to the full catalog so they don't shift when filtering.
-  const numbered = products.map((product, i) => ({
-    product,
-    n: String(i + 1).padStart(3, "0"),
-  }));
   const types = (Object.keys(TYPE_LABELS) as ProductType[]).filter((t) =>
     products.some((p) => p.type === t),
   );
   const active = types.find((t) => t === type) ?? null;
-  const shown = active
-    ? numbered.filter(({ product }) => product.type === active)
-    : numbered;
+  const shown = active ? products.filter((p) => p.type === active) : products;
 
   const sections = [
     { value: "all", label: "All", href: "/" },
@@ -45,9 +38,9 @@ export default function ShopBrowser({
     <>
       <div className="pt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
         <div>
-          <h1 className="text-[20px] font-bold tracking-tight leading-tight">
-            Shop{" "}
-            <span className="text-faded font-semibold tabular-nums">{shown.length}</span>
+          <h1 className="text-[20px] font-medium tracking-tight leading-tight">
+            shop{" "}
+            <span className="text-faded text-[16px] font-light tabular-nums">{shown.length}</span>
           </h1>
           <p className="text-[13px] text-faded">
            gone stabbin
@@ -60,9 +53,9 @@ export default function ShopBrowser({
 
       {/* Reads left to right, row by row: 2 columns on phones, up to 4 wide */}
       <PageBody>
-        <div className="pt-6 grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-6">
-          {shown.map(({ product, n }) => (
-            <ProductCard key={product.id} product={product} number={n} />
+        <div className="pt-6 grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-3 gap-y-5 sm:gap-x-6 sm:gap-y-8">
+          {shown.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
         {children}
