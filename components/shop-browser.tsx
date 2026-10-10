@@ -73,9 +73,9 @@ export default function ShopBrowser({
         </nav>
       </div>
 
-      {/* Reads left to right, row by row: 1 column on phones, up to 4 wide */}
+      {/* Reads left to right, row by row: 2 columns on phones, up to 4 wide */}
       <PageBody>
-        <div className="pt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="pt-6 grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-6">
           {shown.map(({ product, n }) => (
             <ProductCard key={product.id} product={product} number={n} />
           ))}
