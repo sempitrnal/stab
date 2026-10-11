@@ -28,7 +28,7 @@
 /* Small label: section heads, table keys, nav. */
 @utility tag {
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: -0.005em;
 }
@@ -51,7 +51,7 @@
   height: 44px;
   padding: 0 18px;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   color: #fff;
   background: var(--mac-accent);
@@ -92,7 +92,7 @@
   font-family:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
     system-ui, sans-serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   letter-spacing: -0.005em;
   color: var(--mac-text);
   -webkit-font-smoothing: antialiased;
@@ -107,7 +107,7 @@
 }
 
 @utility mac-label {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--mac-secondary);
 }
@@ -119,7 +119,7 @@
   background: var(--mac-card);
   border: 1px solid rgb(0 0 0 / 0.12);
   border-radius: 7px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--mac-text);
   transition:
     border-color 120ms,
@@ -142,7 +142,7 @@
   height: 28px;
   padding: 0 12px;
   border-radius: 7px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 500;
   white-space: nowrap;
   color: var(--mac-text);
@@ -184,9 +184,18 @@ html {
   background: var(--color-paper);
 }
 
+/* Type is in rem, so this scales all text on large screens. */
+@media (min-width: 1920px) {
+  html {
+    font-size: 30px;
+  }
+}
+
 body {
   background: var(--color-paper);
   color: var(--color-ink);
+  /* w-screen breakouts include the scrollbar width; don't let that scroll sideways */
+  overflow-x: clip;
 }
 
 ::selection {
@@ -201,7 +210,7 @@ body {
   input,
   select,
   textarea {
-    font-size: 16px;
+    font-size: 1rem;
   }
 }
 

@@ -25,8 +25,8 @@ export default function AdminLoginPage() {
     <div className="px-4 py-20 flex flex-col items-center">
       <div className="mac-card w-full max-w-xs p-6 flex flex-col gap-5">
         <div className="text-center">
-          <h1 className="text-[17px] font-semibold">Admin</h1>
-          <p className="mt-0.5 text-[12px] text-faded">Sign in to manage the store</p>
+          <h1 className="text-[1.0625rem] font-semibold">Admin</h1>
+          <p className="mt-0.5 text-[0.75rem] text-faded">Sign in to manage the store</p>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
           <input
@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
             {pending ? "Signing in…" : "Sign in"}
           </button>
           {error && (
-            <p className="text-center text-[12px] text-[#d70015]">{error}</p>
+            <p className="text-center text-[0.75rem] text-[#d70015]">{error}</p>
           )}
         </form>
       </div>

@@ -66,14 +66,14 @@ export default function ConfirmDialog({
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-[280px] rounded-[14px] bg-[rgb(246_246_248/0.92)] p-4 text-center shadow-[0_0_0_0.5px_rgb(0_0_0/0.12),0_20px_50px_rgb(0_0_0/0.25)] backdrop-blur-2xl backdrop-saturate-150"
           >
-            <div className="mx-auto mb-2.5 flex h-11 w-11 items-center justify-center rounded-[11px] bg-[#ff3b30] text-[22px] font-bold leading-none text-white shadow-[inset_0_0.5px_0_rgb(255_255_255/0.3)]">
+            <div className="mx-auto mb-2.5 flex h-11 w-11 items-center justify-center rounded-[11px] bg-[#ff3b30] text-[1.375rem] font-bold leading-none text-white shadow-[inset_0_0.5px_0_rgb(255_255_255/0.3)]">
               !
             </div>
-            <h2 id="confirm-title" className="text-[13px] font-semibold">
+            <h2 id="confirm-title" className="text-[0.8125rem] font-semibold">
               {title}
             </h2>
             {message && (
-              <p id="confirm-message" className="mt-1 text-[11px] leading-snug text-[var(--mac-secondary)]">
+              <p id="confirm-message" className="mt-1 text-[0.6875rem] leading-snug text-[var(--mac-secondary)]">
                 {message}
               </p>
             )}

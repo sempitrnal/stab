@@ -64,7 +64,7 @@ function Section({
   return (
     <section className="flex flex-col gap-2">
       <div className="flex items-end justify-between gap-3 px-1">
-        <h2 className="text-[13px] font-semibold">{title}</h2>
+        <h2 className="text-[0.8125rem] font-semibold">{title}</h2>
         {aside}
       </div>
       <div className="mac-card">{children}</div>
@@ -85,8 +85,8 @@ function Row({
   return (
     <div className="flex flex-col gap-1.5 border-b border-[var(--mac-sep)] px-4 py-3 last:border-b-0 sm:flex-row sm:items-center sm:gap-4">
       <div className="shrink-0 sm:w-40">
-        <div className="text-[13px]">{label}</div>
-        {hint && <div className="text-[11px] text-[var(--mac-secondary)]">{hint}</div>}
+        <div className="text-[0.8125rem]">{label}</div>
+        {hint && <div className="text-[0.6875rem] text-[var(--mac-secondary)]">{hint}</div>}
       </div>
       <div className="min-w-0 flex-1">{children}</div>
     </div>
@@ -280,7 +280,7 @@ export default function ProductForm({
       <Section
         title="Photos"
         aside={
-          <span className="text-[12px] text-[var(--mac-secondary)]">
+          <span className="text-[0.75rem] text-[var(--mac-secondary)]">
             Drag to reorder · first photo is the cover
           </span>
         }
@@ -303,8 +303,8 @@ export default function ProductForm({
             onClick={() => fileRef.current?.click()}
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded-[10px] border border-dashed border-[rgb(0_0_0/0.18)] text-[var(--mac-secondary)] transition-colors hover:border-[var(--mac-accent)] hover:text-[var(--mac-accent)] disabled:opacity-50"
           >
-            <span className="text-[20px] leading-none">{uploading ? "…" : "+"}</span>
-            <span className="text-[11px] font-medium">
+            <span className="text-[1.25rem] leading-none">{uploading ? "…" : "+"}</span>
+            <span className="text-[0.6875rem] font-medium">
               {uploading ? "Uploading" : "Add photos"}
             </span>
           </button>
@@ -315,7 +315,7 @@ export default function ProductForm({
         title="Sizes & stock"
         aside={
           <div className="flex items-center gap-2">
-            <span className="hidden text-[12px] text-[var(--mac-secondary)] sm:inline">
+            <span className="hidden text-[0.75rem] text-[var(--mac-secondary)] sm:inline">
               {totalStock} in stock
             </span>
             <button type="button" onClick={() => setVariants(withTeeSizes)} className="mac-btn">
@@ -393,7 +393,7 @@ export default function ProductForm({
               type="button"
               aria-label={`Remove ${v.label || "variant"}`}
               onClick={() => setVariants((prev) => prev.filter((_, idx) => idx !== i))}
-              className="absolute right-4 top-3 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#ff3b30] text-[13px] font-semibold leading-none text-white shadow-[inset_0_0.5px_0_rgb(255_255_255/0.3)] transition-[filter] hover:brightness-110 sm:static"
+              className="absolute right-4 top-3 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#ff3b30] text-[0.8125rem] font-semibold leading-none text-white shadow-[inset_0_0.5px_0_rgb(255_255_255/0.3)] transition-[filter] hover:brightness-110 sm:static"
             >
               −
             </button>
@@ -409,7 +409,7 @@ export default function ProductForm({
       <div className="sticky bottom-4 z-10">
         <div className="flex flex-wrap items-center gap-2 rounded-[12px] bg-white/80 px-3 py-2.5 shadow-[0_0_0_0.5px_rgb(0_0_0/0.1),0_8px_24px_rgb(0_0_0/0.10)] backdrop-blur-xl backdrop-saturate-150">
           {error ? (
-            <p className="min-w-0 flex-1 truncate px-1 text-[12px] text-[#d70015]">{error}</p>
+            <p className="min-w-0 flex-1 truncate px-1 text-[0.75rem] text-[#d70015]">{error}</p>
           ) : (
             <span className="flex-1" />
           )}

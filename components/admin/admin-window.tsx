@@ -23,7 +23,7 @@ export default function AdminWindow({
           <span className="h-3 w-3 rounded-full bg-[#febc2e] shadow-[inset_0_0_0_0.5px_rgb(0_0_0/0.12)]" />
           <span className="h-3 w-3 rounded-full bg-[#28c840] shadow-[inset_0_0_0_0.5px_rgb(0_0_0/0.12)]" />
         </div>
-        <h1 className="min-w-0 flex-1 truncate text-[13px] font-semibold">
+        <h1 className="min-w-0 flex-1 truncate text-[0.8125rem] font-semibold">
           {title}
         </h1>
         <Segmented
@@ -49,7 +49,7 @@ export default function AdminWindow({
 export function NewProductButton() {
   return (
     <Link href="/admin/products/new" className="mac-btn" data-variant="primary">
-      <span className="text-[15px] leading-none">+</span> New product
+      <span className="text-[0.9375rem] leading-none">+</span> New product
     </Link>
   );
 }

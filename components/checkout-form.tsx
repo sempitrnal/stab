@@ -17,7 +17,7 @@ import { formatPhPhone, formatPrice, isCompletePhPhone } from "@/lib/format";
 import type { PaymentMethod, PaymentType, ShippingMethod } from "@/lib/types";
 
 const inputCls = "mac-input h-10!";
-const labelCls = "block text-[12px] font-medium text-faded mb-1.5";
+const labelCls = "block text-[0.75rem] font-medium text-faded mb-1.5";
 const segCls = "flex flex-wrap gap-2";
 const radioCls = (active: boolean) =>
   `mac-btn h-9! px-3.5! ${active ? "bg-[var(--mac-accent)]! text-white!" : ""}`;
@@ -33,7 +33,7 @@ function Step({
 }) {
   return (
     <section className="panel p-5 md:p-6 grid md:grid-cols-[140px_1fr] gap-4">
-      <h2 className="text-[15px] font-medium tracking-tight">
+      <h2 className="text-[0.9375rem] font-medium tracking-tight">
         <span className="text-faded mr-2 tabular-nums">{n}</span>
         {title}
       </h2>
@@ -85,7 +85,7 @@ export default function CheckoutForm() {
     return (
       <div className="px-4 py-20 flex flex-col items-center gap-6">
         <p className="tag text-faded">Order received</p>
-        <h1 className="text-[28px] font-bold tracking-tight tabular-nums">
+        <h1 className="text-[1.75rem] font-bold tracking-tight tabular-nums">
           {placed.ref}
         </h1>
         <table className="w-full max-w-md panel [&_td]:px-5 [&_tr:first-child_td]:pt-4 [&_tr:last-child_td]:pb-4">
@@ -197,7 +197,7 @@ export default function CheckoutForm() {
               >
                 <Thumb src={item.image} title={item.title} slug={item.slug} className="w-11 h-11" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-semibold tracking-tight leading-tight truncate">
+                  <p className="text-[0.875rem] font-semibold tracking-tight leading-tight truncate">
                     {item.title}
                   </p>
                   <p className="text-faded">
@@ -336,7 +336,7 @@ export default function CheckoutForm() {
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className={`px-4 py-6 w-full rounded-[10px] text-[13px] font-medium transition-colors ${
+              className={`px-4 py-6 w-full rounded-[10px] text-[0.8125rem] font-medium transition-colors ${
                 proof
                   ? "bg-[var(--mac-accent)] text-white"
                   : "border border-dashed border-[rgb(0_0_0/0.18)] bg-white/50 text-faded hover:border-ink/40 hover:text-ink"

@@ -38,11 +38,11 @@ export default function ShopBrowser({
     <>
       <div className="pt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
         <div>
-          <h1 className="text-[20px] font-medium tracking-tight leading-tight">
+          <h1 className="text-[1.25rem] font-medium tracking-tight leading-tight">
             shop{" "}
-            <span className="text-faded text-[16px] font-light tabular-nums">{shown.length}</span>
+            <span className="text-faded text-[1rem] font-light tabular-nums">{shown.length}</span>
           </h1>
-          <p className="text-[13px] text-faded">
+          <p className="text-[0.8125rem] text-faded">
            gone stabbin
           </p>
         </div>

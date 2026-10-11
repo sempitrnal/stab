@@ -44,7 +44,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
   return (
     <div>
       {selected && (
-        <p className="text-[13px]">
+        <p className="text-[0.8125rem]">
           <span className="text-faded mr-2">{sizeWord}</span>
           {selected.label}
           {selected.dimensions && ` · ${selected.dimensions}`}
@@ -67,7 +67,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
                 onClick={() => !out && setSelectedId(v.id)}
                 disabled={out}
                 aria-pressed={active}
-                className={`h-9 rounded-[8px] text-[13px] font-medium transition-[background-color,box-shadow,color] duration-150 ${
+                className={`h-9 rounded-[8px] text-[0.8125rem] font-medium transition-[background-color,box-shadow,color] duration-150 ${
                   active
                     ? "bg-white text-ink shadow-[0_1px_2px_rgb(0_0_0/0.12),0_0_0_0.5px_rgb(0_0_0/0.06)]"
                     : out
@@ -85,7 +85,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
       <button
         onClick={handleAdd}
         disabled={!selected || soldOut}
-        className="mt-5 w-full sm:w-auto h-11 px-5 rounded-[10px] inline-flex items-center justify-center gap-3 bg-[var(--mac-accent)] text-white text-[14px] font-medium shadow-[inset_0_0.5px_0_rgb(255_255_255/0.2),0_1px_2px_rgb(0_0_0/0.15)] transition-[filter] hover:brightness-110 active:brightness-95 disabled:bg-bone disabled:text-faded disabled:shadow-none disabled:cursor-not-allowed"
+        className="mt-5 w-full sm:w-auto h-11 px-5 rounded-[10px] inline-flex items-center justify-center gap-3 bg-[var(--mac-accent)] text-white text-[0.875rem] font-medium shadow-[inset_0_0.5px_0_rgb(255_255_255/0.2),0_1px_2px_rgb(0_0_0/0.15)] transition-[filter] hover:brightness-110 active:brightness-95 disabled:bg-bone disabled:text-faded disabled:shadow-none disabled:cursor-not-allowed"
       >
         <span>{soldOut ? "Sold out" : added ? "Added ✓" : "Add to cart"}</span>
         {!soldOut && (
@@ -94,13 +94,13 @@ export default function PurchasePanel({ product }: { product: Product }) {
       </button>
 
       {selected && selected.stock > 0 && selected.stock <= 5 && (
-        <p className="mt-3 text-[12px] font-medium text-[#c93400]">
+        <p className="mt-3 text-[0.75rem] font-medium text-[#c93400]">
           Only {selected.stock} left in {selected.label}
         </p>
       )}
 
       <div className="mt-3 flex justify-end">
-        <Link href="/cart" className="text-[12px] text-faded hover:text-ink">
+        <Link href="/cart" className="text-[0.75rem] text-faded hover:text-ink">
           View cart ›
         </Link>
       </div>
@@ -109,7 +109,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
         <div className="mt-6">
           {product.description && (
             <Drawer title="Details">
-              <p className="text-[14px] leading-relaxed whitespace-pre-line">
+              <p className="text-[0.875rem] leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
             </Drawer>

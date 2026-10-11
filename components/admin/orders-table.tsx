@@ -182,7 +182,7 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
                   <span className="min-w-0">
                     <span className="block truncate">
                       <span className="font-semibold tabular-nums">{o.ref}</span>
-                      <span className="text-[12px] text-[var(--mac-secondary)]">
+                      <span className="text-[0.75rem] text-[var(--mac-secondary)]">
                         {" · "}
                         {new Date(o.created_at).toLocaleDateString(undefined, {
                           month: "short",
@@ -190,14 +190,14 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
                         })}
                       </span>
                     </span>
-                    <span className="block truncate text-[12px] text-[var(--mac-secondary)]">
+                    <span className="block truncate text-[0.75rem] text-[var(--mac-secondary)]">
                       {itemSummary(o.order_items ?? [])}
                     </span>
                   </span>
                 </Link>
                 <span className="order-3 col-span-2 min-w-0 md:order-2 md:col-span-1">
                   <span className="block truncate">{o.name}</span>
-                  <span className="block truncate text-[12px] text-[var(--mac-secondary)]">
+                  <span className="block truncate text-[0.75rem] text-[var(--mac-secondary)]">
                     {SHIPPING[o.shipping_method]}
                   </span>
                 </span>
@@ -207,7 +207,7 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
                 <span className="order-2 justify-self-end md:order-4 md:justify-self-start">
                   <StatusPill status={o.status} downPayment={o.payment_type === "down"} />
                 </span>
-                <span className="order-5 col-span-2 text-[12px] tabular-nums text-[var(--mac-secondary)] md:col-span-1 md:text-right md:text-[13px] md:text-[var(--mac-text)]">
+                <span className="order-5 col-span-2 text-[0.75rem] tabular-nums text-[var(--mac-secondary)] md:col-span-1 md:text-right md:text-[0.8125rem] md:text-[var(--mac-text)]">
                   <span className="md:hidden">{PAYMENT[o.payment_method]} · </span>
                   {formatPrice(o.total_cents)}
                 </span>
@@ -236,7 +236,7 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
                 {selected.size} selected
               </span>
               {deleteError && (
-                <span className="text-[12px] text-[#d70015]">{deleteError}</span>
+                <span className="text-[0.75rem] text-[#d70015]">{deleteError}</span>
               )}
               <span className="flex-1" />
               <button
@@ -310,7 +310,7 @@ function ItemThumbs({ items }: { items: NonNullable<Order["order_items"]> }) {
         </span>
       ))}
       {extra > 0 && (
-        <span className="-ml-3.5 flex h-9 min-w-9 items-center justify-center rounded-[8px] bg-[#e5e5ea] px-1 text-[11px] font-semibold text-[var(--mac-secondary)] ring-2 ring-white">
+        <span className="-ml-3.5 flex h-9 min-w-9 items-center justify-center rounded-[8px] bg-[#e5e5ea] px-1 text-[0.6875rem] font-semibold text-[var(--mac-secondary)] ring-2 ring-white">
           +{extra}
         </span>
       )}

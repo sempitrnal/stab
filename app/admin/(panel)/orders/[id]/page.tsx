@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="px-1 text-[13px] font-semibold">{title}</h2>
+      <h2 className="px-1 text-[0.8125rem] font-semibold">{title}</h2>
       <div className="mac-card">{children}</div>
     </section>
   );
@@ -34,7 +34,7 @@ function Amount({ label, value, tint }: { label: string; value: string; tint?: s
     <div className="mac-card px-4 py-3">
       <div className="mac-label">{label}</div>
       <div
-        className="mt-0.5 text-[20px] font-semibold tracking-tight tabular-nums"
+        className="mt-0.5 text-[1.25rem] font-semibold tracking-tight tabular-nums"
         style={tint ? { color: tint } : undefined}
       >
         {value}
@@ -113,10 +113,10 @@ export default async function OrderPage(
       <div className="mx-auto flex max-w-4xl flex-col gap-6">
         <div className="mac-card flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3">
           <div className="min-w-0 flex-1">
-            <div className="text-[20px] font-semibold tracking-tight tabular-nums">
+            <div className="text-[1.25rem] font-semibold tracking-tight tabular-nums">
               {o.ref}
             </div>
-            <div className="text-[12px] text-[var(--mac-secondary)]">
+            <div className="text-[0.75rem] text-[var(--mac-secondary)]">
               Placed {new Date(o.created_at).toLocaleString(undefined, {
                 dateStyle: "medium",
                 timeStyle: "short",
@@ -203,7 +203,7 @@ export default async function OrderPage(
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="truncate font-medium">{i.title}</div>
-                    <div className="text-[12px] text-[var(--mac-secondary)]">
+                    <div className="text-[0.75rem] text-[var(--mac-secondary)]">
                       {i.qty} × {formatPrice(i.unit_price_cents)}
                       {i.variant_label && ` · ${i.variant_label}`}
                     </div>

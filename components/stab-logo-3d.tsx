@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Center, Environment, useGLTF } from "@react-three/drei";
 import {
+  Bloom,
   ChromaticAberration,
   EffectComposer,
   Noise,
@@ -13,12 +14,16 @@ import {
 import { BlendFunction, Effect } from "postprocessing";
 import * as THREE from "three";
 
-// Tinted chrome: color multiplies the env reflections.
-const CHROME = new THREE.MeshStandardMaterial({
-  color: new THREE.Color("#ba8fe3"),
+// Tinted chrome: color multiplies the env reflections; a faint iridescent
+// film adds a slight hue shift as it turns.
+const CHROME = new THREE.MeshPhysicalMaterial({
+  color: new THREE.Color("#c4b2e6"),
   metalness: 1,
-  roughness: 0.01,
-  envMapIntensity: 10,
+  roughness: 0.02,
+  envMapIntensity: 12,
+  iridescence: 0.25,
+  iridescenceIOR: 1.8,
+  iridescenceThicknessRange: [100, 400],
 });
 
 // Last pass: scale colour by alpha. Grain and scanlines write colour into
@@ -50,7 +55,7 @@ const FOV = 50;
 // lens and gets magnified, so that's the distance that counts. Desktop keeps
 // the fixed CAMERA_Z.
 const MOBILE = "(max-width: 767px)";
-const MOBILE_FILL = 0.8;
+const MOBILE_FILL = 0.9;
 
 function StabModel({ onReady }: { onReady: () => void }) {
   const { scene } = useGLTF("/stab.glb");
@@ -70,7 +75,7 @@ function StabModel({ onReady }: { onReady: () => void }) {
     const size = new THREE.Box3()
       .setFromObject(scene)
       .getSize(new THREE.Vector3());
-    const scale = size.x > 0 ? 1.8 / size.x : 1;
+    const scale = size.x > 0 ? 2.5 / size.x : 1;
     return {
       scale,
       height: size.y * scale,
@@ -131,7 +136,7 @@ export default function StabLogo3D({
   return (
     <div className={`relative w-full ${className}`} aria-hidden>
       {!ready && (
-        <span className="absolute inset-0 flex items-center justify-center font-semibold tracking-tight text-4xl text-ink/15 animate-pulse">
+        <span className="absolute inset-0 flex items-center justify-center font-light tracking-tight text-4xl text-ink/15 animate-pulse">
           stab
         </span>
       )}
@@ -148,22 +153,37 @@ export default function StabLogo3D({
           <Environment preset="park" />
           {/* sharp lights put specular glints on the chrome
               as it spins */}
-          <spotLight position={[4, 4, 6]} intensity={20} angle={0.5} />
+          <spotLight position={[4, 4, 6]} intensity={40} angle={0.5} />
           <spotLight
             position={[-5, -2, 4]}
-            intensity={10}
+            intensity={8}
             angle={0.5}
-            color="#b4c8ff"
+            color="#bcd8ff"
+          />
+          {/* magenta kicker from behind/below for colour on the edges */}
+          <spotLight
+            position={[3, -4, -3]}
+            intensity={6}
+            angle={0.6}
+            color="#e6b8ff"
           />
           <EffectComposer>
+            {/* glints on the chrome bloom into a shine */}
+            <Bloom
+              intensity={0.4}
+              luminanceThreshold={0.7}
+              luminanceSmoothing={0.2}
+              mipmapBlur
+            />
             {/* edge fringing: cheap print / photocopy feel */}
-            <ChromaticAberration offset={[0.0007, 0.0006]} />
+            {/* <ChromaticAberration offset={[0.002, 0.004]} /> */}
             {/* subtle film grain */}
             <Noise opacity={0.2} />
-            {/* CRT scanlines */}
-            <Scanline density={1.5} opacity={0.15} />
             {/* chunky low-res pixels */}
-            <Pixelation granularity={2} />
+            <Pixelation granularity={2.5} />
+            {/* CRT scanlines, after pixelation so they stay fine instead of
+                being blown up into the pixel blocks */}
+            <Scanline density={1.5} opacity={0.2} />
             <primitive object={premultiply} />
           </EffectComposer>
         </Suspense>

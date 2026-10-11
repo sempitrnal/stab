@@ -9,8 +9,14 @@ import { formatPrice } from "@/lib/format";
 export function PageBar({ title, meta }: { title: string; meta?: string }) {
   return (
     <div className="pt-6 flex items-baseline gap-2">
-      <h1 className="text-[18px] font-nor tracking-tight leading-tight">{title}</h1>
-      {meta && <span className="text-[16px] font-light tabular-nums text-faded">{meta}</span>}
+      <h1 className="text-[1.125rem] font-nor tracking-tight leading-tight">
+        {title}
+      </h1>
+      {meta && (
+        <span className="text-[1rem] font-light tabular-nums text-faded">
+          {meta}
+        </span>
+      )}
     </div>
   );
 }
@@ -18,7 +24,7 @@ export function PageBar({ title, meta }: { title: string; meta?: string }) {
 export function EmptyState({ line }: { line: string }) {
   return (
     <div className="px-4 py-32 flex flex-col items-center gap-4 text-center">
-      <p className="text-[17px] font-semibold">{line}</p>
+      <p className="text-[1.0625rem] font-light">{line}</p>
       <Link href="/" className="mac-btn">
         Back to shop
       </Link>
@@ -38,7 +44,9 @@ export function Thumb({
   className: string;
 }) {
   return (
-    <div className={`relative rounded-md bg-well shrink-0 overflow-hidden ${className}`}>
+    <div
+      className={`relative rounded-md bg-well shrink-0 overflow-hidden ${className}`}
+    >
       {src && (
         <PaperPhoto
           src={src}
@@ -83,11 +91,16 @@ export default function CartView() {
                 <span className="text-faded self-start">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <Thumb src={item.image} title={item.title} slug={item.slug} className="w-16 h-16" />
+                <Thumb
+                  src={item.image}
+                  title={item.title}
+                  slug={item.slug}
+                  className="w-16 h-16"
+                />
                 <div className="min-w-0 flex flex-col gap-1">
                   <Link
                     href={`/product/${item.slug}`}
-                    className="text-[15px] font-semibold tracking-tight leading-tight hover:text-faded truncate"
+                    className="text-[0.9375rem] font-semibold tracking-tight leading-tight hover:text-faded truncate"
                   >
                     {item.title}
                   </Link>

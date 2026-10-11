@@ -100,14 +100,14 @@ function SortablePhoto({
         className="pointer-events-none h-full w-full select-none object-cover mix-blend-multiply"
       />
       {index === 0 ? (
-        <span className="absolute bottom-1.5 left-1.5 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur">
+        <span className="absolute bottom-1.5 left-1.5 rounded-full bg-black/55 px-2 py-0.5 text-[0.625rem] font-medium text-white backdrop-blur">
           Cover
         </span>
       ) : (
         <button
           type="button"
           onClick={onMakeCover}
-          className="absolute bottom-1.5 left-1.5 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+          className="absolute bottom-1.5 left-1.5 rounded-full bg-black/55 px-2 py-0.5 text-[0.625rem] font-medium text-white backdrop-blur transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
         >
           Make cover
         </button>
@@ -116,7 +116,7 @@ function SortablePhoto({
         type="button"
         aria-label={`Remove photo ${index + 1}`}
         onClick={onRemove}
-        className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/55 text-[12px] leading-none text-white backdrop-blur transition-opacity hover:bg-black/75 sm:opacity-0 sm:group-hover:opacity-100"
+        className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/55 text-[0.75rem] leading-none text-white backdrop-blur transition-opacity hover:bg-black/75 sm:opacity-0 sm:group-hover:opacity-100"
       >
         ×
       </button>

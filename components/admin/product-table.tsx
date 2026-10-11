@@ -91,7 +91,7 @@ export default function ProductTable({ products }: { products: Product[] }) {
             { value: "hidden", label: `Hidden ${hiddenCount}` },
           ]}
         />
-        <span className="ml-auto text-[12px] text-[var(--mac-secondary)]" aria-live="polite">
+        <span className="ml-auto text-[0.75rem] text-[var(--mac-secondary)]" aria-live="polite">
           {saveState === "saving"
             ? "Saving order…"
             : saveState === "saved"
@@ -200,13 +200,13 @@ function ProductRow({
       </div>
       <Link href={href} onClick={(e) => e.stopPropagation()} className="min-w-0">
         <span
-          className={`block truncate text-[13px] font-medium ${
+          className={`block truncate text-[0.8125rem] font-medium ${
             p.active ? "" : "text-[var(--mac-secondary)]"
           }`}
         >
           {p.title}
         </span>
-        <span className="block truncate text-[12px] text-[var(--mac-secondary)]">
+        <span className="block truncate text-[0.75rem] text-[var(--mac-secondary)]">
           <span className="capitalize">{p.type}</span>
           {!p.active && " · Hidden"}
           <span className="sm:hidden">

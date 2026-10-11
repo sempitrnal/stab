@@ -20,7 +20,7 @@ export default function Segmented<T extends string>({
   /** For link options: false keeps the scroll position on navigation. */
   scroll?: boolean;
 }) {
-  const h = size === "sm" ? "h-[24px] text-[12px]" : "h-[28px] text-[13px]";
+  const h = size === "sm" ? "h-[24px] text-[0.75rem]" : "h-[28px] text-[0.8125rem]";
   return (
     <div className="inline-flex rounded-[8px] bg-[var(--mac-fill)] p-[2px]">
       {options.map((o) => {

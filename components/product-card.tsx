@@ -20,18 +20,18 @@ export default function ProductCard({ product }: { product: Product }) {
           inset="12%"
         />
         <span
-          className={`absolute bottom-2 left-2 rounded-full bg-white/80 px-2.5 py-1 text-[12px] font-semibold leading-none tabular-nums shadow-[0_1px_2px_rgb(0_0_0/0.08)] backdrop-blur-md sm:bottom-3 sm:left-3 sm:text-[13px] ${
+          className={`absolute bottom-2 left-2 rounded-full bg-white/80 px-2.5 py-1 text-[10px]  font-normal sm:font-semibold leading-none tabular-nums shadow-[0_1px_2px_rgb(0_0_0/0.08)] backdrop-blur-md sm:bottom-3 sm:left-3 sm:text-[0.8125rem] ${
             soldOut ? "text-faded" : "text-ink"
           }`}
         >
-          {soldOut ? "Sold out" : formatPrice(product.price_cents)}
+          {soldOut ? "sold out" : formatPrice(product.price_cents)}
         </span>
       </div>
-      <h3 className="mt-2 px-0.5 text-[13px] font-semibold leading-snug tracking-tight sm:mt-2.5 sm:text-[15px]">
+      <h3 className="mt-2 px-0.5 text-[0.8125rem] font-medium sm:font-semibold leading-snug tracking-tight sm:mt-2.5 sm:text-[0.9375rem]">
         {product.title}
       </h3>
       {product.description && (
-        <p className="mt-0.5 line-clamp-2 px-0.5 text-[11px] leading-snug text-faded sm:text-[12px]">
+        <p className="mt-0.5 line-clamp-2 font-light sm:font-normal px-0.5 text-[0.6875rem] leading-snug text-faded sm:text-[0.75rem]">
           {product.description}
         </p>
       )}

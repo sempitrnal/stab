@@ -11,7 +11,7 @@ function Stat({ label, value, tint }: { label: string; value: string; tint?: str
     <div className="mac-card px-4 py-3">
       <div className="mac-label">{label}</div>
       <div
-        className="mt-0.5 text-[22px] font-semibold tracking-tight tabular-nums"
+        className="mt-0.5 text-[1.375rem] font-semibold tracking-tight tabular-nums"
         style={tint ? { color: tint } : undefined}
       >
         {value}
@@ -45,7 +45,7 @@ export default async function OrdersPage() {
 
         {tally.length > 0 && (
           <section className="flex flex-col gap-2">
-            <h2 className="px-1 text-[13px] font-semibold">Units sold</h2>
+            <h2 className="px-1 text-[0.8125rem] font-semibold">Units sold</h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {tally.map((t) => (
                 <div key={t.title} className="mac-card px-4 py-3">
@@ -57,7 +57,7 @@ export default async function OrdersPage() {
                     {t.variants.map((v) => (
                       <span
                         key={v.label}
-                        className="inline-flex h-[20px] items-center gap-1 rounded-full bg-[var(--mac-fill)] px-2 text-[11px] text-[var(--mac-secondary)]"
+                        className="inline-flex h-[20px] items-center gap-1 rounded-full bg-[var(--mac-fill)] px-2 text-[0.6875rem] text-[var(--mac-secondary)]"
                       >
                         <span className="font-medium text-[var(--mac-text)]">{v.label}</span>×{v.qty}
                       </span>

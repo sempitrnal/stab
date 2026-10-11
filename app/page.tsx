@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import HeroVideo from "@/components/hero-video";
+import StabLogo3D from "@/components/stab-logo-3d";
 import ShopBrowser from "@/components/shop-browser";
 import { getProducts } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/configured";
@@ -7,9 +7,6 @@ import { isSupabaseConfigured } from "@/lib/supabase/configured";
 // Statically generated; admin edits and checkout revalidate on demand, the
 // timer is a safety net.
 export const revalidate = 60;
-
-const HERO_VIDEO =
-  "https://euwpzielyffgzghvkdla.supabase.co/storage/v1/object/public/stab/stab2.mp4";
 
 export default async function Home() {
   const configured = isSupabaseConfigured();
@@ -27,48 +24,48 @@ export default async function Home() {
 
   return (
     <>
-      <section className="pt-6">
-        {/* Banner within the page gutters; the video is stretched to fit. Short on
-            mobile, taller at md, then shorter again as the screen widens. */}
-        <div className="relative h-36 overflow-hidden rounded-md bg-bone md:h-64 lg:h-56 xl:h-48">
-          <HeroVideo src={HERO_VIDEO} className="absolute inset-0 h-full w-full object-fill" />
-        </div>
+      <section className="flex justify-center pt-6">
+        <StabLogo3D className="h-40 w-full md:h-56" />
       </section>
-    <Suspense>
-      <ShopBrowser products={products}>
-        <section id="music" className="mt-6 scroll-mt-4">
-          <div className="pt-10 flex flex-wrap items-end justify-between gap-x-6 gap-y-1">
-            <h2 className="text-[22px] font-bold tracking-tight">Music</h2>
-            <span className="text-[13px] text-faded">Listen and watch</span>
-          </div>
-          <div className="pt-6 grid md:grid-cols-2 gap-6">
-            <div className="panel p-2.5">
-              <iframe
-                src="https://open.spotify.com/embed/album/4MnTPaBmEl61zANQDXRdAe?utm_source=generator&theme=0"
-                width="100%"
-                height="352"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-                title="STAB on Spotify"
-                className="block border-0 w-full rounded-md"
-              />
+      <Suspense>
+        <ShopBrowser products={products}>
+          <section id="music" className="mt-6 scroll-mt-4">
+            <div className="pt-10 flex flex-wrap items-end justify-between gap-x-6 gap-y-1">
+              <h2 className="text-[1.375rem] font-bold tracking-tight">
+                Music
+              </h2>
+              <span className="text-[0.8125rem] text-faded">
+                Listen and watch
+              </span>
             </div>
-            <div className="panel p-2.5">
-              <div className="relative aspect-video rounded-md overflow-hidden bg-bone">
+            <div className="pt-6 grid md:grid-cols-2 gap-6">
+              <div className="panel p-2.5">
                 <iframe
-                  src="https://www.youtube.com/embed/Y140YV3xvAk"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
+                  src="https://open.spotify.com/embed/album/4MnTPaBmEl61zANQDXRdAe?utm_source=generator&theme=0"
+                  width="100%"
+                  height="352"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                   loading="lazy"
-                  title="STAB set video"
-                  className="absolute inset-0 w-full h-full border-0"
+                  title="STAB on Spotify"
+                  className="block border-0 w-full rounded-md"
                 />
               </div>
+              <div className="panel p-2.5">
+                <div className="relative aspect-video rounded-md overflow-hidden bg-bone">
+                  <iframe
+                    src="https://www.youtube.com/embed/Y140YV3xvAk"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    loading="lazy"
+                    title="STAB set video"
+                    className="absolute inset-0 w-full h-full border-0"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </section>
-      </ShopBrowser>
-    </Suspense>
+          </section>
+        </ShopBrowser>
+      </Suspense>
     </>
   );
 }

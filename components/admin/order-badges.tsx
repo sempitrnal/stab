@@ -46,7 +46,7 @@ export function Pill({
 }) {
   return (
     <span
-      className="inline-flex h-[20px] items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[11px] font-medium"
+      className="inline-flex h-[20px] items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[0.6875rem] font-medium"
       style={{
         color,
         backgroundColor: `color-mix(in srgb, ${color} 13%, transparent)`,
