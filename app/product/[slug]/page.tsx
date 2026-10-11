@@ -4,6 +4,7 @@ import PageBody from "@/components/page-body";
 import ProductGallery from "@/components/product-gallery";
 import ProductMedia from "@/components/product-media";
 import PurchasePanel from "@/components/purchase-panel";
+import RevealUp from "@/components/reveal-up";
 import { getProductBySlug, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 
@@ -58,7 +59,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           </div>
 
           <div>
-            <div className="md:sticky md:top-6 panel p-5 md:p-6">
+            <RevealUp className="md:sticky md:top-6 panel -mx-4 rounded-t-[44px] rounded-b-none p-5 md:mx-0 md:rounded-[14px] md:p-6">
               <h1 className="text-[1.75rem] md:text-[1.9rem] font-light sm:font-light  tracking-tight leading-tight">
                 {product.title}
               </h1>
@@ -73,7 +74,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
               <div className="mt-6">
                 <PurchasePanel product={product} />
               </div>
-            </div>
+            </RevealUp>
           </div>
         </article>
       </PageBody>

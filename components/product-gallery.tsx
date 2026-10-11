@@ -24,7 +24,7 @@ export default function ProductGallery({
 
   return (
     <figure
-      className="panel p-2.5 focus:outline-none"
+      className="focus:outline-none"
       tabIndex={many ? 0 : undefined}
       aria-roledescription={many ? "carousel" : undefined}
       aria-label={many ? `${title} photos` : undefined}
@@ -35,7 +35,7 @@ export default function ProductGallery({
       }}
     >
       <div
-        className="relative aspect-4/5 rounded-md overflow-hidden bg-well-light"
+        className="relative aspect-4/5 rounded-md overflow-hidden border border-line bg-paper"
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
         onTouchEnd={(e) => {
           if (!many || touchX.current == null) return;
@@ -57,7 +57,7 @@ export default function ProductGallery({
                 Raise backgroundSize past 100% to zoom in. */}
             <PaperPhoto
               slug={slug}
-              tile="bg-well-light"
+              tile="bg-paper"
               src={images[index]}
               alt={alt(index)}
               width={1200}
@@ -76,7 +76,7 @@ export default function ProductGallery({
         )}
       </div>
 
-      <figcaption className="pt-2.5 px-1 flex justify-between tag text-faded/75 font-mono text-[0.625rem] lowercase">
+      <figcaption className="pt-2.5 flex justify-between tag text-faded/75 font-mono text-[0.625rem] lowercase">
         <span>
           Fig. {index + 1} {`->`} {title}
         </span>
@@ -98,13 +98,13 @@ export default function ProductGallery({
               aria-current={i === index}
               className={`rounded-md transition-opacity ${
                 i === index
-                  ? "ring-1 ring-ink ring-offset-2 ring-offset-card"
+                  ? "ring-1 ring-ink ring-offset-2 ring-offset-paper"
                   : "opacity-60 hover:opacity-100"
               }`}
             >
               <PaperPhoto
-              slug={slug}
-              tile="bg-well-light"
+                slug={slug}
+                tile="bg-paper"
                 src={src}
                 alt=""
                 width={240}
