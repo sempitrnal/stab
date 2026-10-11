@@ -2,10 +2,26 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Drawer from "@/components/drawer";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
+import { parseDimensions } from "@/lib/dimensions";
 import type { Product, Variant } from "@/lib/types";
+
+// Always-open section: same hairlines as the old collapsible drawer.
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border-t border-line py-3">
+      <h2 className="mb-2 text-[0.8125rem] font-medium">{title}</h2>
+      {children}
+    </section>
+  );
+}
 
 export default function PurchasePanel({ product }: { product: Product }) {
   const variants = [...(product.variants ?? [])].sort(
@@ -89,7 +105,9 @@ export default function PurchasePanel({ product }: { product: Product }) {
       >
         <span>{soldOut ? "Sold out" : added ? "Added ✓" : "Add to cart"}</span>
         {!soldOut && (
-          <span className="tabular-nums text-white/70">{formatPrice(unitPrice)}</span>
+          <span className="tabular-nums text-white/70">
+            {formatPrice(unitPrice)}
+          </span>
         )}
       </button>
 
@@ -105,35 +123,63 @@ export default function PurchasePanel({ product }: { product: Product }) {
         </Link>
       </div>
 
-      {(product.description || hasDims) && (
+      {hasDims && (
         <div className="mt-6">
-          {product.description && (
-            <Drawer title="Details">
-              <p className="text-[0.875rem] leading-relaxed whitespace-pre-line">
-                {product.description}
-              </p>
-            </Drawer>
-          )}
-          {hasDims && (
-            <Drawer title="Size guide">
-              <table className="w-full">
+          <Section title="Size guide">
+            <div className="overflow-hidden rounded-lg border border-line">
+              <table className="w-full table-fixed border-collapse text-[0.8125rem] tabular-nums [&_tr:first-child>*]:border-t-0 [&_tr>*:first-child]:border-l-0">
+                <thead>
+                  <tr className="text-left text-faded">
+                    <th className="border-b border-l border-t border-line px-3 py-1.5 font-normal">
+                      Size
+                    </th>
+                    <th className="border-b border-l border-t border-line px-3 py-1.5 font-normal">
+                      Width (in)
+                    </th>
+                    <th className="border-b border-l border-t border-line px-3 py-1.5 font-normal">
+                      Length (in)
+                    </th>
+                  </tr>
+                </thead>
                 <tbody>
-                  {variants.map(
-                    (v) =>
-                      v.dimensions && (
-                        <tr
-                          key={v.id}
-                          className={v.id === selectedId ? "font-semibold" : "text-faded"}
-                        >
-                          <td className="py-1">{v.label}</td>
-                          <td className="py-1 text-right">{v.dimensions}</td>
-                        </tr>
-                      ),
-                  )}
+                  {variants.map((v) => {
+                    if (!v.dimensions) return null;
+                    const dims = parseDimensions(v.dimensions);
+                    return (
+                      <tr
+                        key={v.id}
+                        className={
+                          v.id === selectedId ? "font-semibold" : "text-faded"
+                        }
+                      >
+                        <td className="border-l border-t border-line px-3 py-1.5">
+                          {v.label}
+                        </td>
+                        {dims ? (
+                          <>
+                            <td className="border-l border-t border-line px-3 py-1.5">
+                              {dims.width}
+                            </td>
+                            <td className="border-l border-t border-line px-3 py-1.5">
+                              {dims.length}
+                            </td>
+                          </>
+                        ) : (
+                          // Not in W × L form: show it as typed.
+                          <td
+                            className="border-l border-t border-line px-3 py-1.5"
+                            colSpan={2}
+                          >
+                            {v.dimensions}
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
-            </Drawer>
-          )}
+            </div>
+          </Section>
         </div>
       )}
     </div>

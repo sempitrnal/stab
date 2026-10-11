@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import StabLogo3D from "@/components/stab-logo-3d";
 import ShopBrowser from "@/components/shop-browser";
 import { getProducts } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/configured";
@@ -24,20 +23,9 @@ export default async function Home() {
 
   return (
     <>
-      <section className="flex justify-center pt-6">
-        <StabLogo3D className="h-40 w-full md:h-56" />
-      </section>
       <Suspense>
         <ShopBrowser products={products}>
           <section id="music" className="mt-6 scroll-mt-4">
-            <div className="pt-10 flex flex-wrap items-end justify-between gap-x-6 gap-y-1">
-              <h2 className="text-[1.375rem] font-bold tracking-tight">
-                Music
-              </h2>
-              <span className="text-[0.8125rem] text-faded">
-                Listen and watch
-              </span>
-            </div>
             <div className="pt-6 grid md:grid-cols-2 gap-6">
               <div className="panel p-2.5">
                 <iframe

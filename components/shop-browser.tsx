@@ -1,6 +1,8 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import BannerVideo from "@/components/banner-video";
+import CartButton from "@/components/cart-button";
 import PageBody from "@/components/page-body";
 import ProductCard from "@/components/product-card";
 import Segmented from "@/components/admin/segmented";
@@ -36,8 +38,8 @@ export default function ShopBrowser({
 
   return (
     <>
-      <div className="pt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-        <div>
+      <div className="pt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div className="mr-auto">
           <h1 className="text-[1.25rem] font-medium tracking-tight leading-tight">
             shop{" "}
             <span className="text-faded text-[1rem] font-light tabular-nums">{shown.length}</span>
@@ -46,7 +48,15 @@ export default function ShopBrowser({
            gone stabbin
           </p>
         </div>
-        <nav aria-label="Filter by type" className="max-w-full overflow-x-auto">
+        {/* Phones: heading and cart on the first line, filter below.
+            md and up: heading left, filter and cart on the right. */}
+        <div className="order-2 md:order-3">
+          <CartButton />
+        </div>
+        <nav
+          aria-label="Filter by type"
+          className="order-3 w-full overflow-x-auto md:order-2 md:w-auto"
+        >
           <Segmented value={active ?? "all"} options={sections} scroll={false} />
         </nav>
       </div>
@@ -57,6 +67,9 @@ export default function ShopBrowser({
           {shown.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
+        </div>
+        <div className="pt-10">
+          <BannerVideo />
         </div>
         {children}
       </PageBody>

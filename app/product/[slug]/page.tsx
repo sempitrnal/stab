@@ -59,12 +59,17 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
 
           <div>
             <div className="md:sticky md:top-6 panel p-5 md:p-6">
-              <h1 className="text-[1.75rem] md:text-[2.125rem] font-light sm:font-medium  tracking-tight leading-tight">
+              <h1 className="text-[1.75rem] md:text-[1.9rem] font-light sm:font-light  tracking-tight leading-tight">
                 {product.title}
               </h1>
               <p className="mt-1 text-[1.1875rem] font-light sm:font-normal tabular-nums text-faded">
                 {formatPrice(product.price_cents)}
               </p>
+              {product.description && (
+                <p className="mt-4 text-[0.675rem] sm:text-[0.875rem] font-light font-stretch-105% leading-relaxed whitespace-pre-line text-faded/95">
+                  {product.description}
+                </p>
+              )}
               <div className="mt-6">
                 <PurchasePanel product={product} />
               </div>
