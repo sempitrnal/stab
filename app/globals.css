@@ -184,13 +184,6 @@ html {
   background: var(--color-paper);
 }
 
-/* Type is in rem, so this scales all text on large screens. */
-@media (min-width: 1920px) {
-  html {
-    font-size: 30px;
-  }
-}
-
 body {
   background: var(--color-paper);
   color: var(--color-ink);

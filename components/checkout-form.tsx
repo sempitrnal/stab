@@ -115,10 +115,7 @@ export default function CheckoutForm() {
         <p className="text-faded text-center max-w-sm">
           We&apos;ll confirm your order once payment is verified.
         </p>
-        <Link
-          href="/"
-          className="mac-btn"
-        >
+        <Link href="/" className="mac-btn">
           Back to shop
         </Link>
       </div>
@@ -160,7 +157,11 @@ export default function CheckoutForm() {
           proofPath,
           shippingMethod: shipping,
           address: shipping === "pickup" ? undefined : addr,
-          items: items.map((i) => ({ variantId: i.variantId, qty: i.qty })),
+          items: items.map((i) => ({
+            variantId: i.variantId,
+            qty: i.qty,
+            ...(i.custom ? { productId: i.productId, custom: i.custom } : {}),
+          })),
         });
 
         if ("error" in result) {
@@ -191,11 +192,13 @@ export default function CheckoutForm() {
           <h2 className="tag text-faded mb-3">Your order</h2>
           <ul>
             {items.map((item) => (
-              <li
-                key={item.variantId}
-                className="py-2 flex items-center gap-3"
-              >
-                <Thumb src={item.image} title={item.title} slug={item.slug} className="w-11 h-11" />
+              <li key={item.variantId} className="py-2 flex items-center gap-3">
+                <Thumb
+                  src={item.image}
+                  title={item.title}
+                  slug={item.slug}
+                  className="w-11 h-11"
+                />
                 <div className="flex-1 min-w-0">
                   <p className="text-[0.875rem] font-semibold tracking-tight leading-tight truncate">
                     {item.title}
@@ -212,7 +215,9 @@ export default function CheckoutForm() {
             <tbody>
               <tr>
                 <td className="py-2 tag text-faded">Subtotal</td>
-                <td className="py-2 text-right">{formatPrice(subtotalCents)}</td>
+                <td className="py-2 text-right">
+                  {formatPrice(subtotalCents)}
+                </td>
               </tr>
               {feeCents > 0 && (
                 <tr>
@@ -241,7 +246,9 @@ export default function CheckoutForm() {
         <Step n="01" title="Contact">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className={labelCls}>Name  <span className="text-red-400">*</span></label>
+              <label className={labelCls}>
+                Name <span className="text-red-400">*</span>
+              </label>
               <input
                 className={inputCls}
                 value={name}
@@ -249,7 +256,9 @@ export default function CheckoutForm() {
               />
             </div>
             <div>
-              <label className={labelCls}>Email <span className="text-red-400">*</span></label>
+              <label className={labelCls}>
+                Email <span className="text-red-400">*</span>
+              </label>
               <input
                 className={inputCls}
                 type="email"
@@ -258,7 +267,9 @@ export default function CheckoutForm() {
               />
             </div>
             <div>
-              <label className={labelCls}>Phone <span className="text-red-400">*</span></label>
+              <label className={labelCls}>
+                Phone <span className="text-red-400">*</span>
+              </label>
               <input
                 className={inputCls}
                 type="tel"
@@ -287,7 +298,9 @@ export default function CheckoutForm() {
 
         <Step n="02" title="Payment">
           <div>
-            <label className={labelCls}>Payment method <span className="text-red-400">*</span></label>
+            <label className={labelCls}>
+              Payment method <span className="text-red-400">*</span>
+            </label>
             <div className={segCls}>
               {(Object.keys(PAYMENT_METHODS) as PaymentMethod[]).map((m) => (
                 <button
@@ -307,7 +320,9 @@ export default function CheckoutForm() {
           </div>
 
           <div>
-            <label className={labelCls}>Payment type <span className="text-red-400">*</span></label>
+            <label className={labelCls}>
+              Payment type <span className="text-red-400">*</span>
+            </label>
             <div className={segCls}>
               {(Object.keys(PAYMENT_TYPES) as PaymentType[]).map((t) => (
                 <button
@@ -321,11 +336,13 @@ export default function CheckoutForm() {
                 </button>
               ))}
             </div>
-        
           </div>
 
           <div>
-            <label className={labelCls}>Proof of payment (screenshot) <span className="text-red-400">*</span></label>
+            <label className={labelCls}>
+              Proof of payment (screenshot){" "}
+              <span className="text-red-400">*</span>
+            </label>
             <input
               ref={fileRef}
               type="file"
@@ -344,15 +361,15 @@ export default function CheckoutForm() {
             >
               {proof ? `✓ ${proof.name}` : "+ Upload screenshot"}
             </button>
-            <p className="mt-2 text-faded">
-           
-            </p>
+            <p className="mt-2 text-faded"></p>
           </div>
         </Step>
 
         <Step n="03" title="Shipping">
           <div>
-            <label className={labelCls}>Shipping method <span className="text-red-400">*</span></label>
+            <label className={labelCls}>
+              Shipping method <span className="text-red-400">*</span>
+            </label>
             <div className={segCls}>
               {(Object.keys(SHIPPING_METHODS) as ShippingMethod[]).map((m) => (
                 <button
@@ -370,7 +387,10 @@ export default function CheckoutForm() {
 
           {shipping === "maxim_lalamove" && (
             <div>
-              <label className={labelCls}>Where to pin the location <span className="text-red-400">*</span></label>
+              <label className={labelCls}>
+                Where to pin the location{" "}
+                <span className="text-red-400">*</span>
+              </label>
               <input
                 className={inputCls}
                 value={addr.pin}
@@ -383,8 +403,9 @@ export default function CheckoutForm() {
           {(shipping === "jnt" || shipping === "international") && (
             <div>
               <label className={labelCls}>
-                Delivery address 
-                {shipping === "international" ? "" : " · Philippines"} <span className="text-red-400">*</span>
+                Delivery address
+                {shipping === "international" ? "" : " · Philippines"}{" "}
+                <span className="text-red-400">*</span>
               </label>
               {shipping === "international" && (
                 <div className="mb-3">
@@ -419,7 +440,9 @@ export default function CheckoutForm() {
                   value={addr.city}
                   onChange={(e) => setAddr({ ...addr, city: e.target.value })}
                   placeholder={
-                    shipping === "international" ? "City" : "City / municipality"
+                    shipping === "international"
+                      ? "City"
+                      : "City / municipality"
                   }
                 />
                 <input
@@ -429,7 +452,9 @@ export default function CheckoutForm() {
                     setAddr({ ...addr, province: e.target.value })
                   }
                   placeholder={
-                    shipping === "international" ? "State / province" : "Province"
+                    shipping === "international"
+                      ? "State / province"
+                      : "Province"
                   }
                 />
                 <input

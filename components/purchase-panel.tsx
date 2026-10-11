@@ -5,6 +5,13 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { parseDimensions } from "@/lib/dimensions";
+import {
+  CUSTOM_LIMITS,
+  customLabel,
+  customLineId,
+  isValidCustomSize,
+  roundHalf,
+} from "@/lib/custom-size";
 import type { Product, Variant } from "@/lib/types";
 
 // Always-open section: same hairlines as the old collapsible drawer.
@@ -31,6 +38,10 @@ export default function PurchasePanel({ product }: { product: Product }) {
     variants.find((v) => v.stock > 0)?.id ?? null,
   );
   const [added, setAdded] = useState(false);
+  // Made-to-measure (apparel only): the buyer types width and length.
+  const [customOn, setCustomOn] = useState(false);
+  const [customW, setCustomW] = useState("");
+  const [customL, setCustomL] = useState("");
   const { add } = useCart();
 
   const selected: Variant | undefined = variants.find(
@@ -41,7 +52,31 @@ export default function PurchasePanel({ product }: { product: Product }) {
   const hasDims = variants.some((v) => v.dimensions);
   const sizeWord = product.type === "apparel" ? "Size" : "Variant";
 
+  const canCustom = product.type === "apparel";
+  const parsed = {
+    width: roundHalf(parseFloat(customW)),
+    length: roundHalf(parseFloat(customL)),
+  };
+  const customValid = customOn && isValidCustomSize(parsed);
+
   function handleAdd() {
+    if (customOn) {
+      if (!isValidCustomSize(parsed)) return;
+      add({
+        productId: product.id,
+        slug: product.slug,
+        title: product.title,
+        variantId: customLineId(product.id, parsed),
+        variantLabel: customLabel(parsed),
+        unitPriceCents: product.price_cents,
+        image: product.images[0] ?? null,
+        maxStock: 99,
+        custom: parsed,
+      });
+      setAdded(true);
+      setTimeout(() => setAdded(false), 1500);
+      return;
+    }
     if (!selected) return;
     add({
       productId: product.id,
@@ -59,12 +94,19 @@ export default function PurchasePanel({ product }: { product: Product }) {
 
   return (
     <div>
-      {selected && (
+      {customOn ? (
         <p className="text-[0.8125rem]">
           <span className="text-faded mr-2">{sizeWord}</span>
-          {selected.label}
-          {selected.dimensions && ` · ${selected.dimensions}`}
+          {customValid ? customLabel(parsed) : "Custom"}
         </p>
+      ) : (
+        selected && (
+          <p className="text-[0.8125rem]">
+            <span className="text-faded mr-2">{sizeWord}</span>
+            {selected.label}
+            {selected.dimensions && ` · ${selected.dimensions}`}
+          </p>
+        )
       )}
 
       {variants.length > 0 && (
@@ -76,11 +118,15 @@ export default function PurchasePanel({ product }: { product: Product }) {
         >
           {variants.map((v) => {
             const out = v.stock <= 0;
-            const active = v.id === selectedId;
+            const active = !customOn && v.id === selectedId;
             return (
               <button
                 key={v.id}
-                onClick={() => !out && setSelectedId(v.id)}
+                onClick={() => {
+                  if (out) return;
+                  setCustomOn(false);
+                  setSelectedId(v.id);
+                }}
                 disabled={out}
                 aria-pressed={active}
                 className={`h-9 rounded-[8px] text-[0.8125rem] font-medium transition-[background-color,box-shadow,color] duration-150 ${
@@ -98,20 +144,75 @@ export default function PurchasePanel({ product }: { product: Product }) {
         </div>
       )}
 
+      {canCustom && (
+        <div className="mt-3">
+          <label className="flex cursor-pointer items-center gap-2 text-[0.8125rem]">
+            <input
+              type="checkbox"
+              checked={customOn}
+              onChange={(e) => setCustomOn(e.target.checked)}
+              className="h-4 w-4 accent-[var(--mac-accent)]"
+            />
+            Custom size
+          </label>
+          {customOn && (
+            <div className="mt-2.5 grid grid-cols-2 gap-3">
+              <label className="block">
+                <span className="mb-1 block text-[0.75rem] text-faded">
+                  Width (in)
+                </span>
+                <input
+                  className="mac-input tabular-nums"
+                  inputMode="decimal"
+                  value={customW}
+                  onChange={(e) => setCustomW(e.target.value)}
+                  placeholder={`${CUSTOM_LIMITS.width.min}–${CUSTOM_LIMITS.width.max}`}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-[0.75rem] text-faded">
+                  Length (in)
+                </span>
+                <input
+                  className="mac-input tabular-nums"
+                  inputMode="decimal"
+                  value={customL}
+                  onChange={(e) => setCustomL(e.target.value)}
+                  placeholder={`${CUSTOM_LIMITS.length.min}–${CUSTOM_LIMITS.length.max}`}
+                />
+              </label>
+              {(customW || customL) && !customValid && (
+                <p className="col-span-2 text-[0.75rem] text-[#c93400]">
+                  Width {CUSTOM_LIMITS.width.min}–{CUSTOM_LIMITS.width.max} in,
+                  length {CUSTOM_LIMITS.length.min}–{CUSTOM_LIMITS.length.max}{" "}
+                  in.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       <button
         onClick={handleAdd}
-        disabled={!selected || soldOut}
+        disabled={customOn ? !customValid : !selected || soldOut}
         className="mt-5 w-full sm:w-auto h-11 px-5 rounded-[10px] inline-flex items-center justify-center gap-3 bg-[var(--mac-accent)] text-white text-[0.875rem] font-medium shadow-[inset_0_0.5px_0_rgb(255_255_255/0.2),0_1px_2px_rgb(0_0_0/0.15)] transition-[filter] hover:brightness-110 active:brightness-95 disabled:bg-bone disabled:text-faded disabled:shadow-none disabled:cursor-not-allowed"
       >
-        <span>{soldOut ? "Sold out" : added ? "Added ✓" : "Add to cart"}</span>
-        {!soldOut && (
+        <span>
+          {soldOut && !customOn
+            ? "Sold out"
+            : added
+              ? "Added ✓"
+              : "Add to cart"}
+        </span>
+        {(!soldOut || customOn) && (
           <span className="tabular-nums text-white/70">
-            {formatPrice(unitPrice)}
+            {formatPrice(customOn ? product.price_cents : unitPrice)}
           </span>
         )}
       </button>
 
-      {selected && selected.stock > 0 && selected.stock <= 5 && (
+      {!customOn && selected && selected.stock > 0 && selected.stock <= 5 && (
         <p className="mt-3 text-[0.75rem] font-medium text-[#c93400]">
           Only {selected.stock} left in {selected.label}
         </p>

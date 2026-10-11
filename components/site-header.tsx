@@ -28,7 +28,7 @@ export default function SiteHeader() {
     <header>
       <div className="flex justify-center pt-6">
         <Link href="/" aria-label="STAB, home" className="w-full md:w-auto">
-          <StabLogo3D className="h-40 md:h-56 md:w-[30rem]" />
+          <StabLogo3D className="h-20 md:h-56 md:w-[30rem]" />
         </Link>
       </div>
       {/* On the home page the cart lives in the shop row instead. */}
@@ -36,7 +36,7 @@ export default function SiteHeader() {
         <div className="flex items-center justify-between gap-4 pt-3">
           <div className="flex items-center gap-3">
             {nav}
-            <span className="hidden text-[0.75rem] text-faded md:inline min-[1920px]:hidden">
+            <span className="hidden text-[0.75rem] text-faded md:inline">
               hostile youth records
             </span>
           </div>

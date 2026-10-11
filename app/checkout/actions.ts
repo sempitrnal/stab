@@ -3,11 +3,20 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SHIPPING_METHODS } from "@/lib/checkout-config";
+import {
+  customLabel,
+  isValidCustomSize,
+  roundHalf,
+  type CustomSize,
+} from "@/lib/custom-size";
 import type { PaymentMethod, PaymentType, ShippingMethod } from "@/lib/types";
 
 export interface CheckoutItemInput {
   variantId: string;
   qty: number;
+  /** Made-to-measure apparel: no variant, the product id and size instead. */
+  productId?: string;
+  custom?: CustomSize;
 }
 
 export interface CheckoutAddress {
@@ -75,7 +84,9 @@ export async function placeOrder(
   if (input.items.length === 0) return { error: "Cart is empty" };
 
   const admin = createAdminClient();
-  const variantIds = input.items.map((i) => i.variantId);
+  const stockItems = input.items.filter((i) => !i.custom);
+  const customItems = input.items.filter((i) => i.custom);
+  const variantIds = stockItems.map((i) => i.variantId);
 
   // Price and stock are always resolved server-side, never trust the client.
   const { data: variants, error: vErr } = await admin
@@ -89,7 +100,37 @@ export async function placeOrder(
   const byId = new Map(variants.map((v) => [v.id, v]));
   const lineItems = [];
 
-  for (const item of input.items) {
+  // Custom sizes: priced at the product's base price, no stock to check.
+  const customProductIds = [...new Set(customItems.map((i) => i.productId))];
+  const { data: customProducts } = customProductIds.length
+    ? await admin
+        .from("products")
+        .select("id, title, price_cents, active, type, images")
+        .in("id", customProductIds as string[])
+    : { data: [] };
+  const productById = new Map((customProducts ?? []).map((p) => [p.id, p]));
+
+  for (const item of customItems) {
+    const p = productById.get(item.productId ?? "");
+    const size = item.custom && {
+      width: roundHalf(item.custom.width),
+      length: roundHalf(item.custom.length),
+    };
+    if (!p?.active || p.type !== "apparel" || !isValidCustomSize(size))
+      return { error: "A custom size in your cart is no longer valid" };
+    if (!Number.isInteger(item.qty) || item.qty < 1)
+      return { error: "Invalid quantity" };
+    lineItems.push({
+      variant_id: null,
+      title: p.title,
+      variant_label: customLabel(size),
+      image: p.images?.[0] ?? null,
+      qty: item.qty,
+      unit_price_cents: p.price_cents,
+    });
+  }
+
+  for (const item of stockItems) {
     const v = byId.get(item.variantId);
     const joined = v?.products;
     const product = (Array.isArray(joined) ? joined[0] : joined) as
@@ -151,7 +192,7 @@ export async function placeOrder(
     return { error: "Could not create order" };
   }
 
-  for (const item of input.items) {
+  for (const item of stockItems) {
     await admin.rpc("decrement_stock", {
       variant: item.variantId,
       qty: item.qty,

@@ -93,4 +93,6 @@ export interface CartItem {
   image: string | null;
   qty: number;
   maxStock: number;
+  /** Made-to-measure line: no variant, measurements in inches. */
+  custom?: { width: number; length: number };
 }
