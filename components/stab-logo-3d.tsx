@@ -148,9 +148,9 @@ export default function StabLogo3D({
       >
         <Suspense fallback={null}>
           <StabModel onReady={() => setReady(true)} />
-          {/* real HDRI env (same family of presets gltf-viewer uses);
-              fetched from the pmndrs CDN at runtime */}
-          <Environment preset="park" />
+          {/* the "park" HDRI, self-hosted so it's cached with the model
+              instead of fetched from a CDN on every load */}
+          <Environment files="/park.hdr" />
           {/* sharp lights put specular glints on the chrome
               as it spins */}
           <spotLight position={[4, 4, 6]} intensity={40} angle={0.5} />
