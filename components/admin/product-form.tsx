@@ -34,7 +34,11 @@ const blankVariant = (label = "", dimensions = ""): VariantRow => ({
 function withTeeSizes(rows: VariantRow[]): VariantRow[] {
   // XXL/XXXL are the same sizes as the chart's 2XL/3XL.
   const key = (s: string) =>
-    s.trim().toUpperCase().replace(/^XXXL$/, "3XL").replace(/^XXL$/, "2XL");
+    s
+      .trim()
+      .toUpperCase()
+      .replace(/^XXXL$/, "3XL")
+      .replace(/^XXL$/, "2XL");
   const sized = TEE_SIZES.map(({ label, dimensions }) => {
     const match = rows.find((r) => key(r.label) === key(label));
     return match ? { ...match, dimensions } : blankVariant(label, dimensions);
@@ -86,7 +90,11 @@ function Row({
     <div className="flex flex-col gap-1.5 border-b border-[var(--mac-sep)] px-4 py-3 last:border-b-0 sm:flex-row sm:items-center sm:gap-4">
       <div className="shrink-0 sm:w-40">
         <div className="text-[0.8125rem]">{label}</div>
-        {hint && <div className="text-[0.6875rem] text-[var(--mac-secondary)]">{hint}</div>}
+        {hint && (
+          <div className="text-[0.6875rem] text-[var(--mac-secondary)]">
+            {hint}
+          </div>
+        )}
       </div>
       <div className="min-w-0 flex-1">{children}</div>
     </div>
@@ -118,6 +126,9 @@ export default function ProductForm({
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [active, setActive] = useState(product?.active ?? true);
+  const [allowCustom, setAllowCustom] = useState(
+    product?.allow_custom_size ?? false,
+  );
   const [sortOrder, setSortOrder] = useState(
     (product?.sort_order ?? 0).toString(),
   );
@@ -190,6 +201,7 @@ export default function ProductForm({
           price_cents: price,
           images,
           active,
+          allow_custom_size: type === "apparel" && allowCustom,
           sort_order: parseInt(sortOrder) || 0,
           variants: variants.map((v, i) => ({
             id: v.id,
@@ -227,7 +239,9 @@ export default function ProductForm({
         </Row>
         <Row label="URL" hint="Leave blank to generate">
           <div className="flex items-center gap-1.5">
-            <span className="shrink-0 text-[var(--mac-secondary)]">/product/</span>
+            <span className="shrink-0 text-[var(--mac-secondary)]">
+              /product/
+            </span>
             <input
               className="mac-input"
               value={slug}
@@ -262,8 +276,24 @@ export default function ProductForm({
           />
         </Row>
         <Row label="Visible in store">
-          <MacSwitch checked={active} onChange={setActive} label="Visible in store" />
+          <MacSwitch
+            checked={active}
+            onChange={setActive}
+            label="Visible in store"
+          />
         </Row>
+        {type === "apparel" && (
+          <Row
+            label="Custom size"
+            hint="Adds a Custom option where buyers enter width and length"
+          >
+            <MacSwitch
+              checked={allowCustom}
+              onChange={setAllowCustom}
+              label="Allow custom size"
+            />
+          </Row>
+        )}
       </Section>
 
       <Section title="Description">
@@ -303,7 +333,9 @@ export default function ProductForm({
             onClick={() => fileRef.current?.click()}
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded-[10px] border border-dashed border-[rgb(0_0_0/0.18)] text-[var(--mac-secondary)] transition-colors hover:border-[var(--mac-accent)] hover:text-[var(--mac-accent)] disabled:opacity-50"
           >
-            <span className="text-[1.25rem] leading-none">{uploading ? "…" : "+"}</span>
+            <span className="text-[1.25rem] leading-none">
+              {uploading ? "…" : "+"}
+            </span>
             <span className="text-[0.6875rem] font-medium">
               {uploading ? "Uploading" : "Add photos"}
             </span>
@@ -318,7 +350,11 @@ export default function ProductForm({
             <span className="hidden text-[0.75rem] text-[var(--mac-secondary)] sm:inline">
               {totalStock} in stock
             </span>
-            <button type="button" onClick={() => setVariants(withTeeSizes)} className="mac-btn">
+            <button
+              type="button"
+              onClick={() => setVariants(withTeeSizes)}
+              className="mac-btn"
+            >
               Use tee sizes
             </button>
             <button
@@ -354,7 +390,9 @@ export default function ProductForm({
               />
             </label>
             <label>
-              <span className="mb-1 block mac-label sm:hidden">Measurements</span>
+              <span className="mb-1 block mac-label sm:hidden">
+                Measurements
+              </span>
               <input
                 className="mac-input"
                 value={v.dimensions}
@@ -372,11 +410,15 @@ export default function ProductForm({
               />
             </label>
             <label>
-              <span className="mb-1 block mac-label sm:hidden">Price override</span>
+              <span className="mb-1 block mac-label sm:hidden">
+                Price override
+              </span>
               <input
                 className="mac-input tabular-nums"
                 value={v.priceDollars}
-                onChange={(e) => setVariant(i, { priceDollars: e.target.value })}
+                onChange={(e) =>
+                  setVariant(i, { priceDollars: e.target.value })
+                }
                 inputMode="decimal"
                 placeholder="₱"
               />
@@ -392,7 +434,9 @@ export default function ProductForm({
             <button
               type="button"
               aria-label={`Remove ${v.label || "variant"}`}
-              onClick={() => setVariants((prev) => prev.filter((_, idx) => idx !== i))}
+              onClick={() =>
+                setVariants((prev) => prev.filter((_, idx) => idx !== i))
+              }
               className="absolute right-4 top-3 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#ff3b30] text-[0.8125rem] font-semibold leading-none text-white shadow-[inset_0_0.5px_0_rgb(255_255_255/0.3)] transition-[filter] hover:brightness-110 sm:static"
             >
               −
@@ -409,7 +453,9 @@ export default function ProductForm({
       <div className="sticky bottom-4 z-10">
         <div className="flex flex-wrap items-center gap-2 rounded-[12px] bg-white/80 px-3 py-2.5 shadow-[0_0_0_0.5px_rgb(0_0_0/0.1),0_8px_24px_rgb(0_0_0/0.10)] backdrop-blur-xl backdrop-saturate-150">
           {error ? (
-            <p className="min-w-0 flex-1 truncate px-1 text-[0.75rem] text-[#d70015]">{error}</p>
+            <p className="min-w-0 flex-1 truncate px-1 text-[0.75rem] text-[#d70015]">
+              {error}
+            </p>
           ) : (
             <span className="flex-1" />
           )}
@@ -417,7 +463,12 @@ export default function ProductForm({
           <Link href="/admin" className="mac-btn">
             Cancel
           </Link>
-          <button onClick={submit} disabled={pending} className="mac-btn" data-variant="primary">
+          <button
+            onClick={submit}
+            disabled={pending}
+            className="mac-btn"
+            data-variant="primary"
+          >
             {pending ? "Saving…" : product ? "Save changes" : "Create product"}
           </button>
         </div>

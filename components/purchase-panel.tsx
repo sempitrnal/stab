@@ -52,7 +52,8 @@ export default function PurchasePanel({ product }: { product: Product }) {
   const hasDims = variants.some((v) => v.dimensions);
   const sizeWord = product.type === "apparel" ? "Size" : "Variant";
 
-  const canCustom = product.type === "apparel";
+  // Switched on per product in the admin (apparel only).
+  const canCustom = product.type === "apparel" && !!product.allow_custom_size;
   const parsed = {
     width: roundHalf(parseFloat(customW)),
     length: roundHalf(parseFloat(customL)),
@@ -109,11 +110,12 @@ export default function PurchasePanel({ product }: { product: Product }) {
         )
       )}
 
-      {variants.length > 0 && (
+      {(variants.length > 0 || canCustom) && (
         <div
           className="mt-2.5 grid gap-0.5 rounded-[10px] bg-[var(--mac-fill)] p-[3px]"
           style={{
-            gridTemplateColumns: `repeat(${Math.min(variants.length, 8)}, minmax(0, 1fr))`,
+            gridTemplateColumns:
+              `${variants.length > 0 ? `repeat(${Math.min(variants.length, 8)}, minmax(0, 1fr))` : ""}${canCustom ? " minmax(4.5rem, auto)" : ""}`.trim(),
           }}
         >
           {variants.map((v) => {
@@ -141,55 +143,56 @@ export default function PurchasePanel({ product }: { product: Product }) {
               </button>
             );
           })}
+          {canCustom && (
+            <button
+              onClick={() => setCustomOn(true)}
+              aria-pressed={customOn}
+              className={`h-9 rounded-[8px] px-3 text-[0.8125rem] font-medium transition-[background-color,box-shadow,color] duration-150 ${
+                customOn
+                  ? "bg-white text-ink shadow-[0_1px_2px_rgb(0_0_0/0.12),0_0_0_0.5px_rgb(0_0_0/0.06)]"
+                  : "text-faded hover:text-ink"
+              }`}
+            >
+              Custom
+            </button>
+          )}
         </div>
       )}
 
-      {canCustom && (
+      {canCustom && customOn && (
         <div className="mt-3">
-          <label className="flex cursor-pointer items-center gap-2 text-[0.8125rem]">
-            <input
-              type="checkbox"
-              checked={customOn}
-              onChange={(e) => setCustomOn(e.target.checked)}
-              className="h-4 w-4 accent-[var(--mac-accent)]"
-            />
-            Custom size
-          </label>
-          {customOn && (
-            <div className="mt-2.5 grid grid-cols-2 gap-3">
-              <label className="block">
-                <span className="mb-1 block text-[0.75rem] text-faded">
-                  Width (in)
-                </span>
-                <input
-                  className="mac-input tabular-nums"
-                  inputMode="decimal"
-                  value={customW}
-                  onChange={(e) => setCustomW(e.target.value)}
-                  placeholder={`${CUSTOM_LIMITS.width.min}–${CUSTOM_LIMITS.width.max}`}
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1 block text-[0.75rem] text-faded">
-                  Length (in)
-                </span>
-                <input
-                  className="mac-input tabular-nums"
-                  inputMode="decimal"
-                  value={customL}
-                  onChange={(e) => setCustomL(e.target.value)}
-                  placeholder={`${CUSTOM_LIMITS.length.min}–${CUSTOM_LIMITS.length.max}`}
-                />
-              </label>
-              {(customW || customL) && !customValid && (
-                <p className="col-span-2 text-[0.75rem] text-[#c93400]">
-                  Width {CUSTOM_LIMITS.width.min}–{CUSTOM_LIMITS.width.max} in,
-                  length {CUSTOM_LIMITS.length.min}–{CUSTOM_LIMITS.length.max}{" "}
-                  in.
-                </p>
-              )}
-            </div>
-          )}
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="mb-1 block text-[0.75rem] text-faded">
+                Width (in)
+              </span>
+              <input
+                className="mac-input tabular-nums"
+                inputMode="decimal"
+                value={customW}
+                onChange={(e) => setCustomW(e.target.value)}
+                placeholder={`${CUSTOM_LIMITS.width.min}–${CUSTOM_LIMITS.width.max}`}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-[0.75rem] text-faded">
+                Length (in)
+              </span>
+              <input
+                className="mac-input tabular-nums"
+                inputMode="decimal"
+                value={customL}
+                onChange={(e) => setCustomL(e.target.value)}
+                placeholder={`${CUSTOM_LIMITS.length.min}–${CUSTOM_LIMITS.length.max}`}
+              />
+            </label>
+            {(customW || customL) && !customValid && (
+              <p className="col-span-2 text-[0.75rem] text-[#c93400]">
+                Width {CUSTOM_LIMITS.width.min}–{CUSTOM_LIMITS.width.max} in,
+                length {CUSTOM_LIMITS.length.min}–{CUSTOM_LIMITS.length.max} in.
+              </p>
+            )}
+          </div>
         </div>
       )}
 

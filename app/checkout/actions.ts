@@ -105,7 +105,9 @@ export async function placeOrder(
   const { data: customProducts } = customProductIds.length
     ? await admin
         .from("products")
-        .select("id, title, price_cents, active, type, images")
+        .select(
+          "id, title, price_cents, active, type, images, allow_custom_size",
+        )
         .in("id", customProductIds as string[])
     : { data: [] };
   const productById = new Map((customProducts ?? []).map((p) => [p.id, p]));
@@ -116,7 +118,12 @@ export async function placeOrder(
       width: roundHalf(item.custom.width),
       length: roundHalf(item.custom.length),
     };
-    if (!p?.active || p.type !== "apparel" || !isValidCustomSize(size))
+    if (
+      !p?.active ||
+      p.type !== "apparel" ||
+      !p.allow_custom_size ||
+      !isValidCustomSize(size)
+    )
       return { error: "A custom size in your cart is no longer valid" };
     if (!Number.isInteger(item.qty) || item.qty < 1)
       return { error: "Invalid quantity" };

@@ -20,6 +20,8 @@ export interface Product {
   price_cents: number;
   images: string[];
   active: boolean;
+  /** Apparel only: buyers may enter their own width and length. */
+  allow_custom_size?: boolean;
   sort_order: number;
   created_at: string;
   variants?: Variant[];

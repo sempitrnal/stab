@@ -26,6 +26,7 @@ export interface ProductInput {
   price_cents: number;
   images: string[];
   active: boolean;
+  allow_custom_size: boolean;
   sort_order: number;
   variants: VariantInput[];
 }
@@ -56,6 +57,7 @@ export async function saveProduct(input: ProductInput) {
     price_cents: fields.price_cents,
     images: fields.images,
     active: fields.active,
+    allow_custom_size: fields.allow_custom_size,
     sort_order: fields.sort_order,
   };
 

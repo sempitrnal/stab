@@ -11,13 +11,14 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <Link href={`/product/${product.slug}`} className="group block">
-      <div className="relative aspect-4/5 overflow-hidden rounded-[14px] bg-well-light">
+      <div className="relative aspect-4/5 overflow-hidden rounded-[14px] bg-paper">
         <ProductMedia
           title={product.title}
           image={product.images[0] ?? null}
+          hoverImage={product.images[1] ?? null}
           slug={product.slug}
-          tile="bg-well-light"
-          inset="12%"
+          tile="bg-paper"
+          inset="4%"
         />
         <span
           className={`absolute bottom-2 left-2 rounded-full bg-white/80 px-2.5 py-1 text-[10px]  font-normal sm:font-semibold leading-none tabular-nums shadow-[0_1px_2px_rgb(0_0_0/0.08)] backdrop-blur-md sm:bottom-3 sm:left-3 sm:text-[0.8125rem] ${
