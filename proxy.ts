@@ -25,8 +25,10 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Refresh the session cookie on every request.
-  await supabase.auth.getUser();
+  // Refresh the session cookie on every request. getClaims() checks the JWT
+  // against the project's cached signing keys instead of asking the Auth
+  // server, so it adds no network round trip unless the token needs a refresh.
+  await supabase.auth.getClaims();
 
   return response;
 }

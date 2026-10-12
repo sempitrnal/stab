@@ -13,11 +13,11 @@ export default async function AdminLayout({
   if (!isSupabaseConfigured()) redirect("/admin/login");
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Verified locally against the project's signing keys (no Auth round trip,
+  // unlike getUser()). Writes still re-check with getUser() in actions.ts.
+  const { data } = await supabase.auth.getClaims();
 
-  if (!user || user.email !== adminEmail()) redirect("/admin/login");
+  if (data?.claims?.email !== adminEmail()) redirect("/admin/login");
 
   return <>{children}</>;
 }
