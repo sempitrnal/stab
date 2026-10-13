@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     ...OG_BASE,
     url: "/",
-    title: "STAB · Merch",
+    title: "stab",
     description: SITE_DESCRIPTION,
     images: [DEFAULT_OG_IMAGE],
   },

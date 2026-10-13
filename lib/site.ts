@@ -7,9 +7,9 @@ export function siteUrl() {
   return vercel ? `https://${vercel}` : null;
 }
 
-export const SITE_NAME = "STAB";
+export const SITE_NAME = "stab";
 export const SITE_DESCRIPTION =
-  "STAB merch: tees, caps, tapes and more from hostile youth records.";
+  "stab tees, caps, tapes and more. hostile youth records reppin";
 
 // Next.js replaces a parent's openGraph object wholesale rather than merging
 // it, so pages spread this in to keep the site-wide fields.
@@ -31,5 +31,5 @@ export const DEFAULT_OG_IMAGE = {
   url: DEFAULT_IMAGE,
   width: 1200,
   height: 630,
-  alt: "STAB · Harder than you",
+  alt: "harder than you",
 };
