@@ -5,6 +5,7 @@ import { getProducts } from "@/lib/data";
 import {
   absoluteUrl,
   DEFAULT_IMAGE,
+  DEFAULT_OG_IMAGE,
   OG_BASE,
   SITE_DESCRIPTION,
   SITE_NAME,
@@ -20,7 +21,9 @@ export const metadata: Metadata = {
     url: "/",
     title: "STAB · Merch",
     description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
   },
+  twitter: { card: "summary_large_image", images: [DEFAULT_IMAGE] },
 };
 
 // Statically generated; admin edits and checkout revalidate on demand, the

@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CartProvider } from "@/lib/cart";
 import SiteHeader from "@/components/site-header";
-import { OG_BASE, SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/site";
+import {
+  DEFAULT_IMAGE,
+  DEFAULT_OG_IMAGE,
+  OG_BASE,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  siteUrl,
+} from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,11 +22,13 @@ export const metadata: Metadata = {
     ...OG_BASE,
     title: "STAB",
     description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "STAB",
     description: SITE_DESCRIPTION,
+    images: [DEFAULT_IMAGE],
   },
 };
 

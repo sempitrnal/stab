@@ -24,6 +24,12 @@ export const OG_BASE = {
 export const absoluteUrl = (path: string) =>
   `${siteUrl() ?? "http://localhost:3000"}${path}`;
 
-// The generated share card (app/opengraph-image.tsx): used wherever a page has
-// no photo of its own, so every page still carries an image.
-export const DEFAULT_IMAGE = "/opengraph-image";
+// The site's share image (public/og.jpg, 1200x630): the home page's, and used
+// wherever a page has no photo of its own, so every page still carries one.
+export const DEFAULT_IMAGE = "/og.jpg";
+export const DEFAULT_OG_IMAGE = {
+  url: DEFAULT_IMAGE,
+  width: 1200,
+  height: 630,
+  alt: "STAB · Harder than you",
+};
