@@ -1,4 +1,5 @@
 import Link from "next/link";
+import OrderLink from "@/components/admin/order-link";
 import { getAllOrders, getProductTally } from "@/lib/admin-data";
 import { formatPrice } from "@/lib/format";
 import { signOut } from "../actions";
@@ -120,7 +121,7 @@ export default async function OrdersPage() {
               key={o.id}
               className="border border-ink/15 mb-2 last:mb-0 sm:mb-0 sm:border-0 sm:border-b"
             >
-              <Link
+              <OrderLink
                 href={`/admin/orders/${o.id}`}
                 className="p-3 sm:p-0 sm:py-3 flex flex-wrap items-center gap-x-3 gap-y-2.5 sm:gap-4 font-mono text-xs hover:bg-bone/50 transition-colors"
               >
@@ -152,7 +153,7 @@ export default async function OrdersPage() {
                 <span className="ml-auto sm:ml-0 sm:w-16 text-right shrink-0 sm:order-7">
                   {formatPrice(o.total_cents)}
                 </span>
-              </Link>
+              </OrderLink>
             </li>
           ))}
           {orders.length === 0 && (
