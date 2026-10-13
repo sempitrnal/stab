@@ -18,3 +18,12 @@ export const OG_BASE = {
   siteName: SITE_NAME,
   locale: "en_PH",
 } as const;
+
+// Absolute URL for a site path, for places that can't take a relative one
+// (JSON-LD, share images). Falls back to localhost in local dev.
+export const absoluteUrl = (path: string) =>
+  `${siteUrl() ?? "http://localhost:3000"}${path}`;
+
+// The generated share card (app/opengraph-image.tsx): used wherever a page has
+// no photo of its own, so every page still carries an image.
+export const DEFAULT_IMAGE = "/opengraph-image";

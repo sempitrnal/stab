@@ -8,7 +8,12 @@ import PurchasePanel from "@/components/purchase-panel";
 import RevealUp from "@/components/reveal-up";
 import { getProductBySlug, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
-import { OG_BASE, SITE_DESCRIPTION } from "@/lib/site";
+import {
+  absoluteUrl,
+  DEFAULT_IMAGE,
+  OG_BASE,
+  SITE_DESCRIPTION,
+} from "@/lib/site";
 
 // Statically generated; admin edits and checkout revalidate on demand, the
 // timer is a safety net.
@@ -30,9 +35,9 @@ export async function generateMetadata(
   const description =
     product.description?.replace(/\s+/g, " ").trim().slice(0, 200) ||
     `${product.title}. ${SITE_DESCRIPTION}`;
-  const images = product.images[0]
-    ? [{ url: product.images[0], alt: product.title }]
-    : undefined;
+  const images = [
+    { url: product.images[0] ?? DEFAULT_IMAGE, alt: product.title },
+  ];
 
   return {
     title,
@@ -45,7 +50,12 @@ export async function generateMetadata(
       description,
       images,
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: images.map((i) => i.url),
+    },
   };
 }
 
@@ -62,10 +72,14 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
     "@type": "Product",
     name: product.title,
     ...(product.description ? { description: product.description } : {}),
-    ...(product.images.length > 0 ? { image: product.images } : {}),
+    url: absoluteUrl(`/product/${product.slug}`),
+    // Every photo, or the site card when the product has none yet.
+    image:
+      product.images.length > 0 ? product.images : [absoluteUrl(DEFAULT_IMAGE)],
     brand: { "@type": "Brand", name: "STAB" },
     offers: {
       "@type": "Offer",
+      url: absoluteUrl(`/product/${product.slug}`),
       priceCurrency: "PHP",
       price: (product.price_cents / 100).toFixed(2),
       availability: inStock
@@ -74,12 +88,34 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
     },
   };
 
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Shop",
+        item: absoluteUrl("/"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: product.title,
+        item: absoluteUrl(`/product/${product.slug}`),
+      },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+          __html: JSON.stringify([jsonLd, breadcrumbs]).replace(
+            /</g,
+            "\\u003c",
+          ),
         }}
       />
       <nav

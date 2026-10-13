@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import ShopBrowser from "@/components/shop-browser";
 import { getProducts } from "@/lib/data";
-import { OG_BASE, SITE_DESCRIPTION } from "@/lib/site";
+import {
+  absoluteUrl,
+  DEFAULT_IMAGE,
+  OG_BASE,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+} from "@/lib/site";
 import { isSupabaseConfigured } from "@/lib/supabase/configured";
 
 export const metadata: Metadata = {
@@ -35,8 +41,34 @@ export default async function Home() {
     );
   }
 
+  // Structured data: the site and the shop behind it, with its logo card.
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE_NAME,
+      url: absoluteUrl("/"),
+      description: SITE_DESCRIPTION,
+      image: absoluteUrl(DEFAULT_IMAGE),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: absoluteUrl("/"),
+      logo: absoluteUrl(DEFAULT_IMAGE),
+      image: absoluteUrl(DEFAULT_IMAGE),
+    },
+  ];
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <Suspense>
         <ShopBrowser products={products}>
           <section id="music" className="mt-6 scroll-mt-4">
