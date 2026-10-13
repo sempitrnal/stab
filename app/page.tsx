@@ -1,7 +1,21 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import ShopBrowser from "@/components/shop-browser";
 import { getProducts } from "@/lib/data";
+import { OG_BASE, SITE_DESCRIPTION } from "@/lib/site";
 import { isSupabaseConfigured } from "@/lib/supabase/configured";
+
+export const metadata: Metadata = {
+  title: "STAB · Merch",
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    ...OG_BASE,
+    url: "/",
+    title: "STAB · Merch",
+    description: SITE_DESCRIPTION,
+  },
+};
 
 // Statically generated; admin edits and checkout revalidate on demand, the
 // timer is a safety net.

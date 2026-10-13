@@ -28,6 +28,8 @@ export default function AdminWindow({
         </h1>
         <Segmented
           size="sm"
+          prefetch
+          showPending
           value={section}
           options={[
             { value: "products", label: "Products", href: "/admin" },

@@ -1,6 +1,11 @@
 import Link from "next/link";
 import PageBody from "@/components/page-body";
 
+export const metadata = {
+  title: "STAB · Not found",
+  robots: { index: false, follow: false },
+};
+
 export default function NotFound() {
   return (
     <PageBody>

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageBody from "@/components/page-body";
@@ -7,6 +8,7 @@ import PurchasePanel from "@/components/purchase-panel";
 import RevealUp from "@/components/reveal-up";
 import { getProductBySlug, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
+import { OG_BASE, SITE_DESCRIPTION } from "@/lib/site";
 
 // Statically generated; admin edits and checkout revalidate on demand, the
 // timer is a safety net.
@@ -17,13 +19,69 @@ export async function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
 }
 
+export async function generateMetadata(
+  props: PageProps<"/product/[slug]">,
+): Promise<Metadata> {
+  const { slug } = await props.params;
+  const product = await getProductBySlug(slug);
+  if (!product) return { title: "STAB · Not found", robots: { index: false } };
+
+  const title = `STAB · ${product.title}`;
+  const description =
+    product.description?.replace(/\s+/g, " ").trim().slice(0, 200) ||
+    `${product.title}. ${SITE_DESCRIPTION}`;
+  const images = product.images[0]
+    ? [{ url: product.images[0], alt: product.title }]
+    : undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/product/${product.slug}` },
+    openGraph: {
+      ...OG_BASE,
+      url: `/product/${product.slug}`,
+      title,
+      description,
+      images,
+    },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
+
 export default async function ProductPage(props: PageProps<"/product/[slug]">) {
   const { slug } = await props.params;
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
+  const variants = product.variants ?? [];
+  const inStock = variants.length === 0 || variants.some((v) => v.stock > 0);
+  // Structured data for search results (price, availability, photo).
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title,
+    ...(product.description ? { description: product.description } : {}),
+    ...(product.images.length > 0 ? { image: product.images } : {}),
+    brand: { "@type": "Brand", name: "STAB" },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "PHP",
+      price: (product.price_cents / 100).toFixed(2),
+      availability: inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <nav
         aria-label="Breadcrumb"
         className="pt-6 flex items-center gap-1.5 text-[0.8125rem] text-faded"

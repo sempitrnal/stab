@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // Admin pages are dynamic, so by default every click waits on the server.
+    // With the admin links prefetching in full, keep what they fetched for 30s
+    // so the click is instant; edits refresh it (router.refresh / revalidatePath).
+    staleTimes: { dynamic: 30, static: 30 },
+  },
   // 192.168.*.* lets phones on the local Wi-Fi load the dev server.
   allowedDevOrigins: ["127.0.0.1", "192.168.*.*"],
   // The 3D logo's model and lighting map never change under the same name, so

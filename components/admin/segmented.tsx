@@ -1,8 +1,39 @@
 "use client";
 
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 
 type Option<T extends string> = { value: T; label: string; href?: string };
+
+// Swaps the label for a spinner while its link's navigation is pending. The
+// label stays in place (invisible) so the control doesn't change width.
+function PendingLabel({ children }: { children: React.ReactNode }) {
+  const { pending } = useLinkStatus();
+  return (
+    <span className="relative">
+      <span className={pending ? "invisible" : undefined}>{children}</span>
+      {pending && (
+        <span
+          className="absolute inset-0 grid place-items-center"
+          role="status"
+          aria-label="Loading"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            className="h-3.5 w-3.5 animate-spin"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden
+          >
+            <circle cx="8" cy="8" r="6" opacity="0.25" />
+            <path d="M14 8a6 6 0 0 0-6-6" />
+          </svg>
+        </span>
+      )}
+    </span>
+  );
+}
 
 // macOS segmented control. Options with an href render as links (for nav);
 // the rest call onChange.
@@ -12,6 +43,8 @@ export default function Segmented<T extends string>({
   onChange,
   size = "md",
   scroll = true,
+  prefetch,
+  showPending,
 }: {
   options: Option<T>[];
   value: T;
@@ -19,8 +52,13 @@ export default function Segmented<T extends string>({
   size?: "sm" | "md";
   /** For link options: false keeps the scroll position on navigation. */
   scroll?: boolean;
+  /** For link options: true prefetches the whole page, data included, as the link scrolls into view. */
+  prefetch?: boolean;
+  /** For link options: show a spinner on the link while its page loads. */
+  showPending?: boolean;
 }) {
-  const h = size === "sm" ? "h-[24px] text-[0.75rem]" : "h-[28px] text-[0.8125rem]";
+  const h =
+    size === "sm" ? "h-[24px] text-[0.75rem]" : "h-[28px] text-[0.8125rem]";
   return (
     <div className="inline-flex rounded-[8px] bg-[var(--mac-fill)] p-[2px]">
       {options.map((o) => {
@@ -31,8 +69,15 @@ export default function Segmented<T extends string>({
             : "text-[var(--mac-secondary)] hover:text-[var(--mac-text)]"
         }`;
         return o.href ? (
-          <Link key={o.value} href={o.href} scroll={scroll} className={cls} aria-current={on ? "page" : undefined}>
-            {o.label}
+          <Link
+            key={o.value}
+            href={o.href}
+            scroll={scroll}
+            prefetch={prefetch}
+            className={cls}
+            aria-current={on ? "page" : undefined}
+          >
+            {showPending ? <PendingLabel>{o.label}</PendingLabel> : o.label}
           </Link>
         ) : (
           <button

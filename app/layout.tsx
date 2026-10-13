@@ -2,26 +2,39 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CartProvider } from "@/lib/cart";
 import SiteHeader from "@/components/site-header";
+import { OG_BASE, SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  // Absolute URLs for og:image and canonical links resolve against this.
+  metadataBase: new URL(siteUrl() ?? "http://localhost:3000"),
   title: "STAB",
-  description: "STAB · merch",
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  openGraph: {
+    ...OG_BASE,
+    title: "STAB",
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "STAB",
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className="h-full antialiased"
-    >
+    <html lang="en" className="h-full antialiased">
       <body className="mac min-h-full flex flex-col bg-paper text-ink">
         <CartProvider>
           <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 flex-1 flex flex-col">
             <SiteHeader />
             <main className="flex-1">{children}</main>
             <footer className="mt-16 border-t border-line py-5 flex flex-wrap gap-x-6 gap-y-2 justify-between text-[0.75rem] text-faded">
-              <span>© {new Date().getFullYear()} STAB · All rights reserved</span>
+              <span>
+                © {new Date().getFullYear()} STAB · All rights reserved
+              </span>
               <nav className="flex gap-5">
                 <Link href="/#music" className="hover:text-ink">
                   Music

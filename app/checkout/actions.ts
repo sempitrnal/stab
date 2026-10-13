@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { sendOrderEmails } from "@/lib/email";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SHIPPING_METHODS } from "@/lib/checkout-config";
 import {
@@ -98,7 +100,14 @@ export async function placeOrder(
   if (vErr || !variants) return { error: "Could not verify items" };
 
   const byId = new Map(variants.map((v) => [v.id, v]));
-  const lineItems = [];
+  const lineItems: {
+    variant_id: string | null;
+    title: string;
+    variant_label: string | null;
+    image: string | null;
+    qty: number;
+    unit_price_cents: number;
+  }[] = [];
 
   // Custom sizes: priced at the product's base price, no stock to check.
   const customProductIds = [...new Set(customItems.map((i) => i.productId))];
@@ -208,5 +217,31 @@ export async function placeOrder(
 
   revalidatePath("/");
   revalidatePath("/product/[slug]", "page");
+
+  // Confirmation to the customer and an alert to the shop, after the response
+  // so a slow or failing mail service never delays or breaks the order.
+  after(() =>
+    sendOrderEmails({
+      ref: order.ref,
+      name,
+      email,
+      phone,
+      socialHandle: input.socialHandle?.trim() || null,
+      paymentMethod: input.paymentMethod,
+      paymentType: input.paymentType === "down" ? "down" : "full",
+      shippingMethod: input.shippingMethod,
+      address: address as Record<string, string> | null,
+      items: lineItems.map((li) => ({
+        title: li.title,
+        variantLabel: li.variant_label ?? "",
+        qty: li.qty,
+        unitCents: li.unit_price_cents,
+        image: li.image,
+      })),
+      shippingFeeCents,
+      totalCents,
+    }),
+  );
+
   return { ref: order.ref };
 }
