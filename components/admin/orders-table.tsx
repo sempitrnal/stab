@@ -51,6 +51,14 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
   const [deleting, startDelete] = useTransition();
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
+  // Row being opened: shows a spinner until the detail page replaces this one.
+  const [opening, setOpening] = useState<string | null>(null);
+
+  function open(href: string, id: string) {
+    if (opening) return;
+    setOpening(id);
+    router.push(href);
+  }
 
   // Only count ids that still exist (e.g. after a delete or refresh).
   const selected = useMemo(
@@ -155,13 +163,17 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
           {rows.map((o, index) => {
             const href = `/admin/orders/${o.id}`;
             const isSelected = selected.has(o.id);
+            const isOpening = opening === o.id;
             return (
               <li
                 key={o.id}
-                onClick={() => router.push(href)}
+                onClick={() => open(href, o.id)}
+                aria-busy={isOpening || undefined}
                 onMouseEnter={() => router.prefetch(href)}
-                className={`grid cursor-default grid-cols-[1rem_1fr_auto] items-center gap-x-4 gap-y-1 border-b border-[var(--mac-sep)] px-4 py-2.5 last:border-b-0 transition-colors ${COLS} ${
-                  isSelected
+                className={`grid relative cursor-default select-none grid-cols-[1rem_1fr_auto] items-center gap-x-4 gap-y-1 border-b border-[var(--mac-sep)] px-4 py-2.5 last:border-b-0 transition-[background-color,transform] active:scale-[0.995] active:bg-[color-mix(in_srgb,var(--mac-accent)_14%,white)] ${COLS} ${
+                  isOpening
+                    ? "bg-[color-mix(in_srgb,var(--mac-accent)_10%,white)]"
+                    : isSelected
                     ? "bg-[color-mix(in_srgb,var(--mac-accent)_8%,white)]"
                     : "hover:bg-[var(--mac-hover)]"
                 }`}
@@ -175,7 +187,10 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
                 </span>
                 <Link
                   href={href}
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpening(o.id);
+                  }}
                   className="order-1 flex min-w-0 items-center gap-2.5"
                 >
                   <ItemThumbs items={o.order_items ?? []} />
@@ -211,6 +226,18 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
                   <span className="md:hidden">{PAYMENT[o.payment_method]} · </span>
                   {formatPrice(o.total_cents)}
                 </span>
+                {isOpening && (
+                  <span
+                    role="status"
+                    aria-label="Opening order"
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <svg viewBox="0 0 16 16" className="h-4 w-4 animate-spin text-[var(--mac-accent)]">
+                      <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" strokeOpacity="0.25" strokeWidth="2" />
+                      <path d="M14 8a6 6 0 0 0-6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </span>
+                )}
               </li>
             );
           })}
