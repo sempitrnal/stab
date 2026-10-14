@@ -65,7 +65,8 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
   if (!product) notFound();
 
   const variants = product.variants ?? [];
-  const inStock = variants.length === 0 || variants.some((v) => v.stock > 0);
+  const inStock =
+    product.preorder || variants.length === 0 || variants.some((v) => v.stock > 0);
   // Structured data for search results (price, availability, photo).
   const jsonLd = {
     "@context": "https://schema.org",
@@ -82,9 +83,11 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
       url: absoluteUrl(`/product/${product.slug}`),
       priceCurrency: "PHP",
       price: (product.price_cents / 100).toFixed(2),
-      availability: inStock
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
+      availability: product.preorder
+        ? "https://schema.org/PreOrder"
+        : inStock
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
     },
   };
 
@@ -154,7 +157,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
 
           <div>
             <RevealUp className="md:sticky md:top-6 panel -mx-4 rounded-t-[44px] rounded-b-none p-5 md:mx-0 md:rounded-[14px] md:p-6">
-              <h1 className="text-[1.75rem] md:text-[1.9rem] font-light sm:font-light  tracking-tight leading-tight">
+              <h1 className="text-[1.75rem] md:text-[1.9rem] font-light sm:font-normal  tracking-tight leading-tight">
                 {product.title}
               </h1>
               <p className="mt-1 text-[1.1875rem] font-light sm:font-normal tabular-nums text-faded">

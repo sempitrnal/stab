@@ -19,8 +19,8 @@
   --color-faded: #6e6e73;
 
   --font-sans:
-    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
-    system-ui, sans-serif;
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-inter),
+    "Helvetica Neue", sans-serif;
   /* Body text and labels: change here to swap the whole UI voice. */
   --font-ui: var(--font-sans);
 }
@@ -89,9 +89,7 @@
 }
 
 .mac {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
-    system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   letter-spacing: -0.005em;
   color: var(--mac-text);
@@ -210,4 +208,94 @@ body {
 :focus-visible {
   outline: 1px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+/* Switchblade loader: the blade snaps out of the handle, stabs down, blood
+   spatters from the point and runs off the tip, then the blade folds back.
+   One 1.5s cycle. */
+@keyframes knife-stab {
+  0%, 34% { transform: translateY(-8px) rotate(-4deg); }
+  40% { transform: translateY(-11px) rotate(-6deg); }
+  48% { transform: translateY(3px) rotate(0deg); }
+  60% { transform: translateY(2px) rotate(0deg); }
+  88%, 100% { transform: translateY(-8px) rotate(-4deg); }
+}
+@keyframes blade-flick {
+  0%, 12% { transform: rotate(180deg); }
+  22% { transform: rotate(-14deg); }
+  28% { transform: rotate(5deg); }
+  33%, 78% { transform: rotate(0deg); }
+  90%, 100% { transform: rotate(180deg); }
+}
+@keyframes knife-blood {
+  0%, 47% { opacity: 0; }
+  50%, 76% { opacity: 1; }
+  88%, 100% { opacity: 0; }
+}
+@keyframes blood-puddle {
+  0%, 47% { opacity: 0; transform: scale(0.2); }
+  52% { opacity: 0.9; transform: scale(0.35); }
+  100% { opacity: 0; transform: scale(1.3); }
+}
+@keyframes blood-splat {
+  0%, 48% { opacity: 0; transform: translate(0, 0) scale(0.4); }
+  52% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.5); }
+}
+@keyframes blood-drip {
+  0%, 60% { opacity: 0; transform: translateY(0) scaleY(0.6); }
+  68% { opacity: 1; transform: translateY(0) scaleY(1.2); }
+  100% { opacity: 0; transform: translateY(7px) scaleY(1); }
+}
+.knife-stab,
+.switch-blade,
+.knife-blood,
+.blood-puddle,
+.blood-splat,
+.blood-drip {
+  animation-duration: 1.5s;
+  animation-iteration-count: infinite;
+  transform-box: fill-box;
+}
+.knife-stab {
+  animation-name: knife-stab;
+  animation-timing-function: cubic-bezier(0.5, 0, 0.3, 1);
+  transform-origin: 50% 0%;
+}
+/* Pivots about the handle's end, in viewBox coordinates. */
+.switch-blade {
+  animation-name: blade-flick;
+  animation-timing-function: cubic-bezier(0.3, 1.4, 0.5, 1);
+  transform-box: view-box;
+  transform-origin: 16px 15.4px;
+}
+.knife-blood { animation-name: knife-blood; }
+.blood-puddle {
+  animation-name: blood-puddle;
+  animation-timing-function: ease-out;
+  transform-origin: center;
+}
+.blood-splat {
+  animation-name: blood-splat;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
+  transform-origin: center;
+}
+.blood-drip {
+  animation-name: blood-drip;
+  animation-timing-function: ease-in;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .knife-stab,
+  .switch-blade,
+  .knife-blood,
+  .blood-puddle,
+  .blood-splat,
+  .blood-drip {
+    animation: none;
+  }
+  .knife-blood { opacity: 1; }
+  .blood-puddle,
+  .blood-splat,
+  .blood-drip { opacity: 0; }
 }

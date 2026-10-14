@@ -34,8 +34,11 @@ export default function PurchasePanel({ product }: { product: Product }) {
   const variants = [...(product.variants ?? [])].sort(
     (a, b) => a.sort_order - b.sort_order,
   );
+  // Preorders ignore stock: every size is available.
+  const preorder = !!product.preorder;
+  const available = (v: Variant) => preorder || v.stock > 0;
   const [selectedId, setSelectedId] = useState<string | null>(
-    variants.find((v) => v.stock > 0)?.id ?? null,
+    variants.find(available)?.id ?? null,
   );
   const [added, setAdded] = useState(false);
   // Made-to-measure (apparel only): the buyer types width and length.
@@ -48,7 +51,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
     (v) => v.id === selectedId,
   );
   const unitPrice = selected?.price_cents ?? product.price_cents;
-  const soldOut = variants.length > 0 && variants.every((v) => v.stock <= 0);
+  const soldOut = variants.length > 0 && !variants.some(available);
   const hasDims = variants.some((v) => v.dimensions);
   const sizeWord = product.type === "apparel" ? "Size" : "Variant";
 
@@ -87,7 +90,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
       variantLabel: selected.label,
       unitPriceCents: unitPrice,
       image: product.images[0] ?? null,
-      maxStock: selected.stock,
+      maxStock: preorder ? 99 : selected.stock,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -119,7 +122,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
           }}
         >
           {variants.map((v) => {
-            const out = v.stock <= 0;
+            const out = !available(v);
             const active = !customOn && v.id === selectedId;
             return (
               <button
@@ -206,7 +209,9 @@ export default function PurchasePanel({ product }: { product: Product }) {
             ? "Sold out"
             : added
               ? "Added ✓"
-              : "Add to cart"}
+              : preorder
+                ? "Preorder"
+                : "Add to cart"}
         </span>
         {(!soldOut || customOn) && (
           <span className="tabular-nums text-white/70">
@@ -215,7 +220,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
         )}
       </button>
 
-      {!customOn && selected && selected.stock > 0 && selected.stock <= 5 && (
+      {!preorder && !customOn && selected && selected.stock > 0 && selected.stock <= 5 && (
         <p className="mt-3 text-[0.75rem] font-medium text-[#c93400]">
           Only {selected.stock} left in {selected.label}
         </p>

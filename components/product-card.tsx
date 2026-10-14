@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LinkOverlay, PendingFade } from "@/components/link-pending";
 import ProductMedia from "@/components/product-media";
 import { formatPrice } from "@/lib/format";
 import type { Product } from "@/lib/types";
@@ -7,19 +8,23 @@ import type { Product } from "@/lib/types";
 // name and a two-line description underneath.
 export default function ProductCard({ product }: { product: Product }) {
   const variants = product.variants ?? [];
-  const soldOut = variants.length > 0 && variants.every((v) => v.stock <= 0);
+  const soldOut =
+    !product.preorder && variants.length > 0 && variants.every((v) => v.stock <= 0);
 
   return (
     <Link href={`/product/${product.slug}`} className="group block">
       <div className="relative aspect-4/5 overflow-hidden rounded-[14px] bg-paper">
-        <ProductMedia
-          title={product.title}
-          image={product.images[0] ?? null}
-          hoverImage={product.images[1] ?? null}
-          slug={product.slug}
-          tile="bg-paper"
-          inset="4%"
-        />
+        <PendingFade>
+          <ProductMedia
+            title={product.title}
+            image={product.images[0] ?? null}
+            hoverImage={product.images[1] ?? null}
+            slug={product.slug}
+            tile="bg-paper"
+            inset="4%"
+          />
+        </PendingFade>
+        <LinkOverlay />
         <span
           className={`absolute bottom-2 left-2 rounded-full bg-white/80 px-2.5 py-1 text-[10px]  font-normal sm:font-semibold leading-none tabular-nums shadow-[0_1px_2px_rgb(0_0_0/0.08)] backdrop-blur-md sm:bottom-3 sm:left-3 sm:text-[0.8125rem] ${
             soldOut ? "text-faded" : "text-ink"

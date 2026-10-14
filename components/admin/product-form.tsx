@@ -101,6 +101,10 @@ function Row({
   );
 }
 
+// Variant row columns, with and without the stock input (full class names for Tailwind).
+const GRID = "sm:grid-cols-[1fr_8rem_4.5rem_6rem_6rem_1.5rem]";
+const GRID_PREORDER = "sm:grid-cols-[1fr_8rem_6rem_6rem_1.5rem]";
+
 const TYPES: { value: ProductType; label: string }[] = [
   { value: "apparel", label: "Apparel" },
   { value: "accessory", label: "Accessory" },
@@ -129,6 +133,7 @@ export default function ProductForm({
   const [allowCustom, setAllowCustom] = useState(
     product?.allow_custom_size ?? false,
   );
+  const [preorder, setPreorder] = useState(product?.preorder ?? false);
   const [sortOrder, setSortOrder] = useState(
     (product?.sort_order ?? 0).toString(),
   );
@@ -202,6 +207,7 @@ export default function ProductForm({
           images,
           active,
           allow_custom_size: type === "apparel" && allowCustom,
+          preorder,
           sort_order: parseInt(sortOrder) || 0,
           variants: variants.map((v, i) => ({
             id: v.id,
@@ -282,6 +288,12 @@ export default function ProductForm({
             label="Visible in store"
           />
         </Row>
+        <Row
+          label="Preorder"
+          hint="Ignores stock; shows a preorder badge in the store"
+        >
+          <MacSwitch checked={preorder} onChange={setPreorder} label="Preorder" />
+        </Row>
         {type === "apparel" && (
           <Row
             label="Custom size"
@@ -344,12 +356,14 @@ export default function ProductForm({
       </Section>
 
       <Section
-        title="Sizes & stock"
+        title={preorder ? "Sizes" : "Sizes & stock"}
         aside={
           <div className="flex items-center gap-2">
-            <span className="hidden text-[0.75rem] text-[var(--mac-secondary)] sm:inline">
-              {totalStock} in stock
-            </span>
+            {!preorder && (
+              <span className="hidden text-[0.75rem] text-[var(--mac-secondary)] sm:inline">
+                {totalStock} in stock
+              </span>
+            )}
             <button
               type="button"
               onClick={() => setVariants(withTeeSizes)}
@@ -367,10 +381,10 @@ export default function ProductForm({
           </div>
         }
       >
-        <div className="hidden grid-cols-[1fr_8rem_4.5rem_6rem_6rem_1.5rem] gap-2 border-b border-[var(--mac-sep)] px-4 py-2 mac-label sm:grid">
+        <div className={`hidden gap-2 border-b border-[var(--mac-sep)] px-4 py-2 mac-label sm:grid ${preorder ? GRID_PREORDER : GRID}`}>
           <span>Size</span>
           <span>Measurements</span>
-          <span>Stock</span>
+          {!preorder && <span>Stock</span>}
           <span>Price override</span>
           <span>SKU</span>
           <span />
@@ -378,7 +392,7 @@ export default function ProductForm({
         {variants.map((v, i) => (
           <div
             key={i}
-            className="relative grid grid-cols-2 gap-2 border-b border-[var(--mac-sep)] px-4 py-3 pr-11 last:border-b-0 sm:grid-cols-[1fr_8rem_4.5rem_6rem_6rem_1.5rem] sm:items-center sm:py-2 sm:pr-4"
+            className={`relative grid grid-cols-2 gap-2 border-b border-[var(--mac-sep)] px-4 py-3 pr-11 last:border-b-0 sm:items-center sm:py-2 sm:pr-4 ${preorder ? GRID_PREORDER : GRID}`}
           >
             <label className="col-span-2 sm:col-span-1">
               <span className="mb-1 block mac-label sm:hidden">Size</span>
@@ -400,15 +414,17 @@ export default function ProductForm({
                 placeholder='W20" × L27"'
               />
             </label>
-            <label>
-              <span className="mb-1 block mac-label sm:hidden">Stock</span>
-              <input
-                className="mac-input tabular-nums"
-                value={v.stock}
-                onChange={(e) => setVariant(i, { stock: e.target.value })}
-                inputMode="numeric"
-              />
-            </label>
+            {!preorder && (
+              <label>
+                <span className="mb-1 block mac-label sm:hidden">Stock</span>
+                <input
+                  className="mac-input tabular-nums"
+                  value={v.stock}
+                  onChange={(e) => setVariant(i, { stock: e.target.value })}
+                  inputMode="numeric"
+                />
+              </label>
+            )}
             <label>
               <span className="mb-1 block mac-label sm:hidden">
                 Price override

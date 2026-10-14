@@ -94,7 +94,7 @@ export async function placeOrder(
   const { data: variants, error: vErr } = await admin
     .from("variants")
     .select(
-      "id, label, stock, price_cents, products(title, price_cents, active, images)",
+      "id, label, stock, price_cents, products(title, price_cents, active, images, preorder)",
     )
     .in("id", variantIds);
   if (vErr || !variants) return { error: "Could not verify items" };
@@ -155,13 +155,14 @@ export async function placeOrder(
           price_cents: number;
           active: boolean;
           images: string[];
+          preorder: boolean;
         }
       | null
       | undefined;
     if (!v || !product?.active)
       return { error: "An item in your cart is no longer available" };
     if (item.qty < 1) return { error: "Invalid quantity" };
-    if (v.stock < item.qty)
+    if (!product.preorder && v.stock < item.qty)
       return { error: `Not enough stock for ${product.title} (${v.label})` };
     lineItems.push({
       variant_id: v.id,
@@ -209,6 +210,10 @@ export async function placeOrder(
   }
 
   for (const item of stockItems) {
+    // Preorders have no stock to take from.
+    const joined = byId.get(item.variantId)?.products;
+    const owner = Array.isArray(joined) ? joined[0] : joined;
+    if (owner?.preorder) continue;
     await admin.rpc("decrement_stock", {
       variant: item.variantId,
       qty: item.qty,

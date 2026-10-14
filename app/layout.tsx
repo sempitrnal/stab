@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Inter } from "next/font/google";
 import { CartProvider } from "@/lib/cart";
 import SiteShell from "@/components/site-shell";
 import {
@@ -11,6 +12,10 @@ import {
   siteUrl,
 } from "@/lib/site";
 import "./globals.css";
+
+// Bundled web font so every device renders the same type, instead of each
+// platform's system font (Roboto on Android, SF on Apple).
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 export const metadata: Metadata = {
   // Absolute URLs for og:image and canonical links resolve against this.
@@ -34,7 +39,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="mac min-h-full flex flex-col bg-paper text-ink">
         <CartProvider>
           <SiteShell

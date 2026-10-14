@@ -27,6 +27,7 @@ export interface ProductInput {
   images: string[];
   active: boolean;
   allow_custom_size: boolean;
+  preorder: boolean;
   sort_order: number;
   variants: VariantInput[];
 }
@@ -58,6 +59,7 @@ export async function saveProduct(input: ProductInput) {
     images: fields.images,
     active: fields.active,
     allow_custom_size: fields.allow_custom_size,
+    preorder: fields.preorder,
     sort_order: fields.sort_order,
   };
 

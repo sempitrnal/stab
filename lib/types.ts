@@ -22,6 +22,8 @@ export interface Product {
   active: boolean;
   /** Apparel only: buyers may enter their own width and length. */
   allow_custom_size?: boolean;
+  /** Preorder: stock is ignored, always purchasable, shown with a badge. */
+  preorder?: boolean;
   sort_order: number;
   created_at: string;
   variants?: Variant[];

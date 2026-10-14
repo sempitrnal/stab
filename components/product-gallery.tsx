@@ -35,7 +35,7 @@ export default function ProductGallery({
       }}
     >
       <div
-        className="relative aspect-4/5 rounded-md overflow-hidden border border-line bg-paper"
+        className="relative aspect-4/5 rounded-md overflow-hidden bg-paper"
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
         onTouchEnd={(e) => {
           if (!many || touchX.current == null) return;

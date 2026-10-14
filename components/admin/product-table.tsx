@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Reorder, useDragControls } from "motion/react";
 import { reorderProducts } from "@/app/admin/(panel)/actions";
 import ActiveToggle from "@/components/admin/active-toggle";
+import { LinkSpinner, Spinner } from "@/components/link-pending";
 import Segmented from "@/components/admin/segmented";
 import { formatPrice } from "@/lib/format";
 import type { Product } from "@/lib/types";
@@ -22,7 +23,9 @@ export default function ProductTable({ products }: { products: Product[] }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [items, setItems] = useState(products);
   const [prevProducts, setPrevProducts] = useState(products);
-  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [saveState, setSaveState] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
   const [, startTransition] = useTransition();
 
   // Take fresh server data (e.g. after a visibility toggle).
@@ -72,8 +75,20 @@ export default function ProductTable({ products }: { products: Product[] }) {
             viewBox="0 0 16 16"
             className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--mac-secondary)]"
           >
-            <circle cx="7" cy="7" r="4.75" fill="none" stroke="currentColor" strokeWidth="1.5" />
-            <path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <circle
+              cx="7"
+              cy="7"
+              r="4.75"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
+            <path
+              d="m10.5 10.5 3 3"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
           </svg>
           <input
             value={query}
@@ -91,7 +106,10 @@ export default function ProductTable({ products }: { products: Product[] }) {
             { value: "hidden", label: `Hidden ${hiddenCount}` },
           ]}
         />
-        <span className="ml-auto text-[0.75rem] text-[var(--mac-secondary)]" aria-live="polite">
+        <span
+          className="ml-auto text-[0.75rem] text-[var(--mac-secondary)]"
+          aria-live="polite"
+        >
           {saveState === "saving"
             ? "Saving order…"
             : saveState === "saved"
@@ -117,7 +135,12 @@ export default function ProductTable({ products }: { products: Product[] }) {
         </div>
         <Reorder.Group as="ul" axis="y" values={items} onReorder={setItems}>
           {rows.map((p) => (
-            <ProductRow key={p.id} product={p} draggable={canReorder} onDrop={saveOrder} />
+            <ProductRow
+              key={p.id}
+              product={p}
+              draggable={canReorder}
+              onDrop={saveOrder}
+            />
           ))}
         </Reorder.Group>
         {rows.length === 0 && (
@@ -142,6 +165,7 @@ function ProductRow({
   onDrop: () => void;
 }) {
   const router = useRouter();
+  const [navigating, startNav] = useTransition();
   const controls = useDragControls();
   const variants = p.variants ?? [];
   const stock = variants.reduce((n, v) => n + v.stock, 0);
@@ -157,13 +181,16 @@ function ProductRow({
       onDragEnd={onDrop}
       whileDrag={{
         scale: 1.015,
-        boxShadow: "0 12px 30px rgb(0 0 0 / 0.16), 0 0 0 0.5px rgb(0 0 0 / 0.08)",
+        boxShadow:
+          "0 12px 30px rgb(0 0 0 / 0.16), 0 0 0 0.5px rgb(0 0 0 / 0.08)",
         borderRadius: 10,
         zIndex: 10,
       }}
-      onClick={() => router.push(href)}
+      onClick={() => startNav(() => router.push(href))}
       onMouseEnter={() => router.prefetch(href)}
-      className={`relative grid ${COLS} cursor-default items-center gap-4 border-b border-[var(--mac-sep)] bg-white px-4 py-2.5 last:border-b-0 transition-colors hover:bg-[#fafafa]`}
+      className={`relative grid ${COLS} cursor-default items-center gap-4 border-b border-[var(--mac-sep)] bg-white px-4 py-2.5 last:border-b-0 transition-colors hover:bg-[#fafafa] ${
+        navigating ? "opacity-70" : ""
+      }`}
     >
       <button
         type="button"
@@ -173,7 +200,12 @@ function ProductRow({
         onClick={(e) => e.stopPropagation()}
         className="flex h-8 w-5 touch-none items-center justify-center rounded text-[var(--mac-secondary)] enabled:cursor-grab enabled:hover:text-[var(--mac-text)] enabled:active:cursor-grabbing disabled:opacity-25"
       >
-        <svg aria-hidden viewBox="0 0 10 16" className="h-4 w-2.5" fill="currentColor">
+        <svg
+          aria-hidden
+          viewBox="0 0 10 16"
+          className="h-4 w-2.5"
+          fill="currentColor"
+        >
           {[3, 8, 13].map((y) => (
             <g key={y}>
               <circle cx="2.5" cy={y} r="1.3" />
@@ -183,7 +215,7 @@ function ProductRow({
         </svg>
       </button>
       <div
-        className={`h-11 w-11 overflow-hidden rounded-[8px] bg-[#f0f0f2] shadow-[inset_0_0_0_0.5px_rgb(0_0_0/0.06)] ${
+        className={`relative h-11 w-11 overflow-hidden rounded-[8px] bg-[#f0f0f2] shadow-[inset_0_0_0_0.5px_rgb(0_0_0/0.06)] ${
           p.active ? "" : "opacity-45"
         }`}
       >
@@ -197,26 +229,45 @@ function ProductRow({
             className="h-full w-full object-cover mix-blend-multiply"
           />
         )}
+        {/* Row click: spinner over the thumbnail while the edit page loads. */}
+        {navigating && (
+          <span
+            role="status"
+            aria-label="Loading"
+            className="absolute inset-0 grid place-items-center bg-black/35 text-white"
+          >
+            <Spinner className="h-4 w-4" />
+          </span>
+        )}
       </div>
-      <Link href={href} onClick={(e) => e.stopPropagation()} className="min-w-0">
+      <Link
+        href={href}
+        onClick={(e) => e.stopPropagation()}
+        className="min-w-0"
+      >
         <span
           className={`block truncate text-[0.8125rem] font-medium ${
             p.active ? "" : "text-[var(--mac-secondary)]"
           }`}
         >
           {p.title}
+          <LinkSpinner />
         </span>
         <span className="block truncate text-[0.75rem] text-[var(--mac-secondary)]">
           <span className="capitalize">{p.type}</span>
           {!p.active && " · Hidden"}
           <span className="sm:hidden">
             {" · "}
-            {formatPrice(p.price_cents)} · {stock} in stock
+            {formatPrice(p.price_cents)} · {p.preorder ? "Preorder" : `${stock} in stock`}
           </span>
         </span>
       </Link>
       <span className="hidden text-right tabular-nums sm:block">
-        <span className={stock === 0 ? "text-[#d70015]" : ""}>{stock}</span>
+        {p.preorder ? (
+          <span className="text-[#8a6d00]">Preorder</span>
+        ) : (
+          <span className={stock === 0 ? "text-[#d70015]" : ""}>{stock}</span>
+        )}
         <span className="text-[var(--mac-secondary)]">
           {" "}
           · {variants.length} {variants.length === 1 ? "size" : "sizes"}
