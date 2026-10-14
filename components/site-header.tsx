@@ -10,9 +10,6 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const inShop = pathname === "/" || pathname.startsWith("/product");
 
-  // Admin has its own window chrome.
-  if (pathname.startsWith("/admin")) return null;
-
   const nav = (
     <nav aria-label="Main" className="hidden">
       <Segmented<"shop" | "music" | "none">
