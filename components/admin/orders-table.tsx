@@ -86,6 +86,14 @@ export default function OrdersTable({
   const [deleting, startDelete] = useTransition();
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
+  // Row being opened: shows a spinner until the detail page replaces this one.
+  const [opening, setOpening] = useState<string | null>(null);
+
+  function open(href: string, id: string) {
+    if (opening) return;
+    setOpening(id);
+    router.push(href);
+  }
 
   // Any change other than paging goes back to page 1.
   function go(patch: Partial<OrderQuery>) {
@@ -235,17 +243,21 @@ export default function OrdersTable({
           {rows.map((o, index) => {
             const href = `/admin/orders/${o.id}`;
             const isSelected = picked.has(o.id);
+            const isOpening = opening === o.id;
             return (
               <li
                 key={o.id}
-                onClick={(e) => (selecting ? toggle(index, e.shiftKey) : router.push(href))}
+                onClick={(e) => (selecting ? toggle(index, e.shiftKey) : open(href, o.id))}
+                aria-busy={isOpening || undefined}
                 onMouseEnter={() => !selecting && router.prefetch(href)}
-                className={`grid cursor-default items-center gap-x-4 gap-y-1 border-b border-[var(--mac-sep)] px-4 py-2.5 last:border-b-0 transition-colors ${
-                  selecting ? `select-none grid-cols-[1rem_1fr_auto] ${COLS_SELECTING}` : `grid-cols-[1fr_auto] ${COLS}`
+                className={`relative grid cursor-default select-none items-center gap-x-4 gap-y-1 border-b border-[var(--mac-sep)] px-4 py-2.5 last:border-b-0 transition-[background-color,transform] active:scale-[0.995] active:bg-[color-mix(in_srgb,var(--mac-accent)_14%,white)] ${
+                  selecting ? `grid-cols-[1rem_1fr_auto] ${COLS_SELECTING}` : `grid-cols-[1fr_auto] ${COLS}`
                 } ${
-                  isSelected
-                    ? "bg-[color-mix(in_srgb,var(--mac-accent)_8%,white)]"
-                    : "hover:bg-[var(--mac-hover)]"
+                  isOpening
+                    ? "bg-[color-mix(in_srgb,var(--mac-accent)_10%,white)]"
+                    : isSelected
+                      ? "bg-[color-mix(in_srgb,var(--mac-accent)_8%,white)]"
+                      : "hover:bg-[var(--mac-hover)]"
                 }`}
               >
                 {selecting && (
@@ -262,8 +274,12 @@ export default function OrdersTable({
                   prefetch={false}
                   onClick={(e) => {
                     // While selecting, the row click toggles instead.
-                    if (selecting) e.preventDefault();
-                    else e.stopPropagation();
+                    if (selecting) {
+                      e.preventDefault();
+                    } else {
+                      e.stopPropagation();
+                      setOpening(o.id);
+                    }
                   }}
                   className="order-1 flex min-w-0 items-center gap-2.5"
                 >
@@ -305,6 +321,18 @@ export default function OrdersTable({
                   <span className="md:hidden">{PAYMENT[o.payment_method]} · </span>
                   {formatPrice(o.total_cents)}
                 </span>
+                {isOpening && (
+                  <span
+                    role="status"
+                    aria-label="Opening order"
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <svg viewBox="0 0 16 16" className="h-4 w-4 animate-spin text-[var(--mac-accent)]">
+                      <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" strokeOpacity="0.25" strokeWidth="2" />
+                      <path d="M14 8a6 6 0 0 0-6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </span>
+                )}
               </li>
             );
           })}
