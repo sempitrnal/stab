@@ -10,6 +10,9 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const inShop = pathname === "/" || pathname.startsWith("/product");
 
+  // Admin has its own window chrome.
+  if (pathname.startsWith("/admin")) return null;
+
   const nav = (
     <nav aria-label="Main" className="hidden">
       <Segmented<"shop" | "music" | "none">
@@ -28,7 +31,7 @@ export default function SiteHeader() {
     <header>
       <div className="flex justify-center pt-6">
         <Link href="/" aria-label="STAB, home" className="w-full md:w-auto">
-          <StabLogo3D className="h-20 md:h-56 md:w-[30rem]" />
+          <StabLogo3D className="h-28 md:h-56 md:w-[30rem]" />
         </Link>
       </div>
       {/* On the home page the cart lives in the shop row instead. */}

@@ -5,7 +5,7 @@ import { PAYMENT_TYPES, SHIPPING_METHODS } from "@/lib/checkout-config";
 import Link from "next/link";
 import AdminWindow from "@/components/admin/admin-window";
 import OrderStatusControl from "@/components/admin/order-status-control";
-import { PAYMENT, Pill, SHIPPING } from "@/components/admin/order-badges";
+import { PaymentPill, SHIPPING } from "@/components/admin/order-badges";
 import type { Order, OrderItem } from "@/lib/types";
 
 export const metadata = { title: "STAB · Order" };
@@ -156,7 +156,7 @@ export default async function OrderPage(
             <Section title="Payment & delivery">
               <Info label="Payment">
                 <span className="flex flex-wrap items-center gap-1.5">
-                  <Pill>{PAYMENT[o.payment_method]}</Pill>
+                  <PaymentPill method={o.payment_method} />
                   <span className="text-[var(--mac-secondary)]">
                     {PAYMENT_TYPES[o.payment_type].label}
                   </span>
