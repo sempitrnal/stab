@@ -16,7 +16,7 @@ export default function AdminWindow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mac my-6 overflow-clip rounded-[14px] bg-[var(--mac-bg)] shadow-[0_0_0_0.5px_rgb(0_0_0/0.12),0_12px_40px_rgb(0_0_0/0.10)]">
+    <div className="mac my-6 scroll-mt-6 overflow-clip rounded-[14px] bg-[var(--mac-bg)] shadow-[0_0_0_0.5px_rgb(0_0_0/0.12),0_12px_40px_rgb(0_0_0/0.10)]">
       <header className="sticky top-0 z-20 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[var(--mac-sep)] bg-[rgb(246_246_248/0.8)] px-4 py-2.5 backdrop-blur-xl backdrop-saturate-150">
         <div className="flex items-center gap-2" aria-hidden>
           <span className="h-3 w-3 rounded-full bg-[#ff5f57] shadow-[inset_0_0_0_0.5px_rgb(0_0_0/0.12)]" />

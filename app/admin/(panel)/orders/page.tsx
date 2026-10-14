@@ -1,4 +1,5 @@
-import { getAllOrders, getProductTally } from "@/lib/admin-data";
+import { getOrderStats, getOrdersPage, getProductTally } from "@/lib/admin-data";
+import { parseOrderQuery } from "@/lib/admin-orders";
 import { formatPrice } from "@/lib/format";
 import AdminWindow from "@/components/admin/admin-window";
 import OrdersTable from "@/components/admin/orders-table";
@@ -20,28 +21,29 @@ function Stat({ label, value, tint }: { label: string; value: string; tint?: str
   );
 }
 
-export default async function OrdersPage() {
-  const [orders, tally] = await Promise.all([getAllOrders(), getProductTally()]);
+export default async function OrdersPage(props: PageProps<"/admin/orders">) {
+  const query = parseOrderQuery(await props.searchParams);
+  const [{ orders, total, page }, stats, tally] = await Promise.all([
+    getOrdersPage(query),
+    getOrderStats(),
+    getProductTally(),
+  ]);
 
-  const toPay = orders.filter(
-    (o) => o.status === "pending" || o.status === "half_paid",
-  ).length;
-  const revenue = orders
-    .filter((o) => o.status === "paid" || o.status === "fulfilled")
-    .reduce((n, o) => n + o.total_cents, 0);
+  const toPay = stats.toPay;
+  const revenue = stats.revenueCents;
   const unitsSold = tally.reduce((n, t) => n + t.totalQty, 0);
 
   return (
     <AdminWindow title="Orders" section="orders">
       <div className="flex flex-col gap-7">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Stat label="Orders" value={String(orders.length)} />
+          <Stat label="Orders" value={String(stats.orders)} />
           <Stat label="To pay" value={String(toPay)} tint={toPay > 0 ? "#c93400" : undefined} />
           <Stat label="Revenue (paid)" value={formatPrice(revenue)} />
           <Stat label="Units sold" value={String(unitsSold)} />
         </div>
 
-        <OrdersTable orders={orders} />
+        <OrdersTable orders={orders} total={total} query={{ ...query, page }} />
 
         {tally.length > 0 && (
           <section className="flex flex-col gap-2">
