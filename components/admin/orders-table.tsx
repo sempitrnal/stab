@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { deleteOrders } from "@/app/admin/(panel)/actions";
+import { deleteOrders, setOrdersStatus } from "@/app/admin/(panel)/actions";
 import ConfirmDialog from "@/components/admin/confirm-dialog";
 import MacCheckbox from "@/components/admin/mac-checkbox";
 import Dropdown from "@/components/admin/dropdown";
@@ -23,10 +23,22 @@ import {
   type SortKey,
 } from "@/lib/admin-orders";
 import { formatPrice } from "@/lib/format";
-import type { Order, PaymentMethod, ShippingMethod } from "@/lib/types";
+import type { Order, OrderStatus, PaymentMethod, ShippingMethod } from "@/lib/types";
 
 const STATUS_OPTIONS = [
   { value: "all" as const, label: "All statuses" },
+  ...STATUS_ORDER.map((s) => ({
+    value: s,
+    label: STATUS[s].label,
+    color: STATUS[s].color,
+    ink: STATUS[s].ink,
+  })),
+];
+
+// Bulk status picker: the "" option is the resting label; picking a real
+// status applies it to every selected order.
+const BULK_STATUS_OPTIONS = [
+  { value: "" as const, label: "Set status…" },
   ...STATUS_ORDER.map((s) => ({
     value: s,
     label: STATUS[s].label,
@@ -85,6 +97,8 @@ export default function OrdersTable({
   const anchor = useRef<number | null>(null);
   const [deleting, startDelete] = useTransition();
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [updating, startUpdate] = useTransition();
+  const [notice, setNotice] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
   // Row being opened: shows a spinner until the detail page replaces this one.
   const [opening, setOpening] = useState<string | null>(null);
@@ -150,6 +164,21 @@ export default function OrdersTable({
     setPicked(new Set());
     anchor.current = null;
     setDeleteError(null);
+  }
+
+  function applyStatus(status: OrderStatus) {
+    const ids = [...picked];
+    setDeleteError(null);
+    setNotice(null);
+    startUpdate(async () => {
+      try {
+        await setOrdersStatus(ids, status);
+        setNotice(`${ids.length} marked ${STATUS[status].label.toLowerCase()}`);
+        router.refresh();
+      } catch {
+        setDeleteError("Couldn't update. Try again.");
+      }
+    });
   }
 
   function removeSelected() {
@@ -387,13 +416,25 @@ export default function OrdersTable({
               {deleteError && (
                 <span className="text-[0.75rem] text-[#d70015]">{deleteError}</span>
               )}
+              {notice && !deleteError && (
+                <span className="text-[0.75rem] text-[#248a3d]">{notice}</span>
+              )}
               <span className="flex-1" />
+              <Dropdown
+                label="Set status of selected orders"
+                value=""
+                options={BULK_STATUS_OPTIONS}
+                disabled={updating || deleting}
+                up
+                onChange={(v) => v && applyStatus(v)}
+              />
               <button
                 type="button"
                 className="mac-btn"
                 onClick={() => {
                   setPicked(new Set());
                   anchor.current = null;
+                  setNotice(null);
                 }}
               >
                 Clear

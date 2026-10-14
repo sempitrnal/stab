@@ -19,6 +19,7 @@ export default function Dropdown<T extends string>({
   label,
   disabled,
   tinted,
+  up,
 }: {
   value: T;
   options: DropdownOption<T>[];
@@ -27,6 +28,8 @@ export default function Dropdown<T extends string>({
   disabled?: boolean;
   // Fill the trigger with the selected option's pastel color.
   tinted?: boolean;
+  // Open the menu above the trigger (for controls at the bottom of the screen).
+  up?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -115,7 +118,7 @@ export default function Dropdown<T extends string>({
           id={listId}
           role="listbox"
           aria-label={label}
-          className="absolute left-0 top-full z-30 mt-1 min-w-full rounded-[10px] bg-white/90 p-1 shadow-[0_0_0_0.5px_rgb(0_0_0/0.12),0_8px_24px_rgb(0_0_0/0.14)] backdrop-blur-xl backdrop-saturate-150"
+          className={`absolute left-0 z-30 min-w-full ${up ? "bottom-full mb-1" : "top-full mt-1"} rounded-[10px] bg-white/90 p-1 shadow-[0_0_0_0.5px_rgb(0_0_0/0.12),0_8px_24px_rgb(0_0_0/0.14)] backdrop-blur-xl backdrop-saturate-150`}
         >
           {options.map((o, i) => (
             <li

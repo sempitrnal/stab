@@ -167,6 +167,17 @@ export async function setOrderStatus(id: string, status: OrderStatus) {
   revalidatePath(`/admin/orders/${id}`);
 }
 
+// Bulk version of setOrderStatus for the orders list.
+export async function setOrdersStatus(ids: string[], status: OrderStatus) {
+  await requireAdmin();
+  if (ids.length === 0) return;
+  const admin = createAdminClient();
+  const { error } = await admin.from("orders").update({ status }).in("id", ids);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin");
+  revalidatePath("/admin/orders");
+}
+
 // Permanently deletes orders (their items cascade) and their uploaded
 // payment screenshots. Stock is not returned.
 export async function deleteOrders(ids: string[]) {

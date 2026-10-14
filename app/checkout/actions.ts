@@ -83,6 +83,10 @@ export async function placeOrder(
     };
   }
 
+  // Proof of payment is required: a screenshot uploaded as <uuid>.<ext>.
+  if (!/^[0-9a-f-]{36}\.[a-z0-9]{1,5}$/i.test(input.proofPath ?? ""))
+    return { error: "Upload your proof of payment screenshot" };
+
   if (input.items.length === 0) return { error: "Cart is empty" };
 
   const admin = createAdminClient();
@@ -191,7 +195,7 @@ export async function placeOrder(
       social_handle: input.socialHandle?.trim() || null,
       payment_method: input.paymentMethod,
       payment_type: input.paymentType === "down" ? "down" : "full",
-      proof_of_payment: input.proofPath ?? null,
+      proof_of_payment: input.proofPath,
       shipping_method: input.shippingMethod,
       address,
       total_cents: totalCents,

@@ -132,20 +132,25 @@ export default function CheckoutForm() {
       setError("Enter your full phone number, like +63 999 616 6666");
       return;
     }
+    if (!proof) {
+      setError("Upload your proof of payment screenshot");
+      return;
+    }
     startTransition(async () => {
       try {
-        let proofPath: string | undefined;
-        if (proof) {
-          if (!configured) return setError("Supabase not configured");
-          const supabase = createClient();
-          const ext = proof.name.split(".").pop() ?? "jpg";
-          const path = `${crypto.randomUUID()}.${ext}`;
-          const { error: upErr } = await supabase.storage
-            .from("payment-proofs")
-            .upload(path, proof);
-          if (upErr) return setError("Proof upload failed, try again");
-          proofPath = path;
-        }
+        if (!configured) return setError("Supabase not configured");
+        const supabase = createClient();
+        // Safe extension for the stored name (the server checks its shape).
+        const rawExt = proof.name.includes(".")
+          ? (proof.name.split(".").pop() ?? "")
+          : "";
+        const ext = /^[a-z0-9]{1,5}$/i.test(rawExt) ? rawExt.toLowerCase() : "jpg";
+        const path = `${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("payment-proofs")
+          .upload(path, proof);
+        if (upErr) return setError("Proof upload failed, try again");
+        const proofPath = path;
 
         const result = await placeOrder({
           name,
@@ -346,6 +351,7 @@ export default function CheckoutForm() {
             <input
               ref={fileRef}
               type="file"
+              required
               accept="image/*"
               onChange={(e) => setProof(e.target.files?.[0] ?? null)}
               className="hidden"
