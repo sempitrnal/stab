@@ -2,43 +2,62 @@ import Link from "next/link";
 import { LinkOverlay, PendingFade } from "@/components/link-pending";
 import ProductMedia from "@/components/product-media";
 import { formatPrice } from "@/lib/format";
+import { fileName, STOCK_LABEL, stockStatus } from "@/lib/term";
 import type { Product } from "@/lib/types";
 
-// Photo-first card: the photo on a light tile with a frosted price tag,
-// name and a two-line description underneath.
-export default function ProductCard({ product }: { product: Product }) {
-  const variants = product.variants ?? [];
-  const soldOut =
-    !product.preorder && variants.length > 0 && variants.every((v) => v.stock <= 0);
+// A product as a file window: title bar with its number and filename, the
+// photo on a lit preview tile, then price and stock on the status line.
+export default function ProductCard({
+  product,
+  index,
+}: {
+  product: Product;
+  index: number;
+}) {
+  const status = stockStatus(product);
+  const soldOut = status === "sold_out";
 
   return (
-    <Link href={`/product/${product.slug}`} className="group block">
-      <div className="relative aspect-4/5 overflow-hidden rounded-[14px] bg-paper">
+    <Link
+      href={`/product/${product.slug}`}
+      className="group flex flex-col border border-ink bg-paper hover:shadow-[0_0_0_1px_var(--color-ink),0_0_18px_rgb(255_68_56/0.35)]"
+    >
+      <div className="flex items-center justify-between gap-2 bg-ink px-2 py-1 font-vt text-[1.0625rem] leading-none text-paper sm:text-[1.25rem]">
+        <span className="truncate">
+          {String(index + 1).padStart(2, "0")} {fileName(product)}
+        </span>
+        <span aria-hidden className="shrink-0">
+          ■
+        </span>
+      </div>
+      <div className="relative aspect-4/5 overflow-hidden bg-well">
         <PendingFade>
           <ProductMedia
             title={product.title}
             image={product.images[0] ?? null}
             hoverImage={product.images[1] ?? null}
             slug={product.slug}
-            tile="bg-paper"
-            inset="4%"
+            tile="bg-well"
+            inset="6%"
           />
         </PendingFade>
         <LinkOverlay />
+      </div>
+      <div className="flex items-baseline justify-between gap-2 border-t border-ink px-2 py-1.5 font-vt text-[1.125rem] leading-none sm:text-[1.375rem]">
+        <span className={soldOut ? "text-faded line-through" : "text-amber"}>
+          {formatPrice(product.price_cents)}
+        </span>
         <span
-          className={`absolute bottom-2 left-2 rounded-full bg-white/80 px-2.5 py-1 text-[10px]  font-normal sm:font-semibold leading-none tabular-nums shadow-[0_1px_2px_rgb(0_0_0/0.08)] backdrop-blur-md sm:bottom-3 sm:left-3 sm:text-[0.8125rem] ${
-            soldOut ? "text-faded" : "text-ink"
-          }`}
+          className={
+            status === "ok" ? "text-faded" : soldOut ? "text-faded" : "text-ink"
+          }
         >
-          {soldOut ? "sold out" : formatPrice(product.price_cents)}
+          {STOCK_LABEL[status]}
         </span>
       </div>
-      <h3 className="mt-2 px-0.5 text-[0.8125rem] font-medium sm:font-semibold leading-snug tracking-tight sm:mt-2.5 sm:text-[0.9375rem]">
-        {product.title}
-      </h3>
       {product.description && (
-        <p className="mt-0.5 line-clamp-2 font-light sm:font-normal px-0.5 text-[0.6875rem] leading-snug text-faded sm:text-[0.75rem]">
-          {product.description}
+        <p className="line-clamp-2 border-t border-line px-2 py-1.5 text-[0.6875rem] leading-snug text-faded sm:text-[0.75rem]">
+          &gt; {product.description}
         </p>
       )}
     </Link>

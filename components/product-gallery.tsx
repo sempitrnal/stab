@@ -35,7 +35,7 @@ export default function ProductGallery({
       }}
     >
       <div
-        className="relative aspect-4/5 rounded-md overflow-hidden bg-paper"
+        className="relative aspect-4/5 overflow-hidden border border-ink bg-well"
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
         onTouchEnd={(e) => {
           if (!many || touchX.current == null) return;
@@ -57,7 +57,7 @@ export default function ProductGallery({
                 Raise backgroundSize past 100% to zoom in. */}
             <PaperPhoto
               slug={slug}
-              tile="bg-paper"
+              tile="bg-well"
               src={images[index]}
               alt={alt(index)}
               width={1200}
@@ -76,7 +76,7 @@ export default function ProductGallery({
         )}
       </div>
 
-      <figcaption className="pt-2.5 flex justify-between tag text-faded/75 font-mono text-[0.625rem] lowercase">
+      <figcaption className="pt-2 flex justify-between font-vt text-[1.125rem] leading-none uppercase text-faded">
         <span>
           Fig. {index + 1} {`->`} {title}
         </span>
@@ -96,20 +96,20 @@ export default function ProductGallery({
               onClick={() => setIndex(i)}
               aria-label={`Show photo ${i + 1}`}
               aria-current={i === index}
-              className={`rounded-md transition-opacity ${
+              className={`border transition-opacity ${
                 i === index
-                  ? "ring-1 ring-ink ring-offset-2 ring-offset-paper"
-                  : "opacity-60 hover:opacity-100"
+                  ? "border-ink ring-1 ring-ink"
+                  : "border-line opacity-60 hover:opacity-100"
               }`}
             >
               <PaperPhoto
                 slug={slug}
-                tile="bg-paper"
+                tile="bg-well"
                 src={src}
                 alt=""
                 width={240}
                 inset="8%"
-                className="w-full aspect-square rounded-md"
+                className="w-full aspect-square"
               />
             </button>
           ))}
@@ -133,9 +133,9 @@ function GalleryArrow({
       aria-label={side === "left" ? "Previous photo" : "Next photo"}
       className={`absolute top-1/2 -translate-y-1/2 ${
         side === "left" ? "left-2" : "right-2"
-      } z-10 w-9 h-9 rounded-full bg-card/85 text-ink flex items-center justify-center hover:bg-card transition-colors`}
+      } z-10 w-11 h-11 bg-paper/90 font-vt text-[1.5rem] text-ink flex items-center justify-center hover:bg-ink hover:text-paper transition-colors`}
     >
-      {side === "left" ? "←" : "→"}
+      {side === "left" ? "<" : ">"}
     </button>
   );
 }

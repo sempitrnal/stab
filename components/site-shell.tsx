@@ -4,7 +4,8 @@ import { usePathname } from "next/navigation";
 import SiteHeader from "@/components/site-header";
 
 // Page container: centered with gutters for the shop; admin runs full-bleed
-// with no header or footer (it has its own window chrome).
+// with no header or footer (it has its own window chrome). Every page but
+// the admin wears the STAB.EXE terminal theme (.term in globals.css).
 export default function SiteShell({
   footer,
   children,
@@ -17,10 +18,13 @@ export default function SiteShell({
   if (admin) return <main className="flex-1">{children}</main>;
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 flex-1 flex flex-col">
-      <SiteHeader />
-      <main className="flex-1">{children}</main>
-      {footer}
+    <div className="term relative flex-1 flex flex-col">
+      <div aria-hidden className="scanlines fixed inset-0 z-50" />
+      <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 flex-1 flex flex-col">
+        <SiteHeader />
+        <main className="flex-1">{children}</main>
+        {footer}
+      </div>
     </div>
   );
 }

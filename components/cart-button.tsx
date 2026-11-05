@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/cart";
 
+// [F4] CART:n in the header's status bar.
 export default function CartButton() {
   const { count, hydrated } = useCart();
   const pathname = usePathname();
@@ -12,29 +13,10 @@ export default function CartButton() {
   return (
     <Link
       href="/cart"
-      className="mac-btn"
       aria-current={inCart ? "page" : undefined}
+      className="flex min-h-11 items-center border-l border-ink px-3 font-vt text-[1.25rem] leading-none uppercase text-amber hover:bg-amber hover:text-paper"
     >
-      <svg
-        aria-hidden
-        viewBox="0 0 16 16"
-        className="h-[15px] w-[15px]"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M2.5 2.5h1.6l1.5 8.2h7l1.4-5.9H4.6" />
-        <circle cx="6.4" cy="13.2" r="0.9" fill="currentColor" stroke="none" />
-        <circle cx="11.6" cy="13.2" r="0.9" fill="currentColor" stroke="none" />
-      </svg>
-      Cart
-      {hydrated && count > 0 && (
-        <span className="ml-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--mac-accent)] px-1.5 text-[0.6875rem] font-semibold tabular-nums text-white">
-          {count}
-        </span>
-      )}
+      [F4] CART:{hydrated ? count : 0}
     </Link>
   );
 }

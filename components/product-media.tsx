@@ -50,7 +50,7 @@ export default function ProductMedia({
 
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <span className="tag text-faded">Photo soon</span>
+      <span className="font-vt text-[1.25rem] uppercase text-black/60">No preview</span>
     </div>
   );
 }

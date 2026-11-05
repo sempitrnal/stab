@@ -8,13 +8,13 @@ import { formatPrice } from "@/lib/format";
 
 export function PageBar({ title, meta }: { title: string; meta?: string }) {
   return (
-    <div className="pt-6 flex items-baseline gap-2">
-      <h1 className="text-[1.125rem] font-nor tracking-tight leading-tight">
-        {title}
+    <div className="pt-6 flex items-baseline gap-2 border-b border-line pb-3 font-vt text-[1.5rem] leading-none uppercase">
+      <h1 className="text-amber">
+        {`C:\\STAB\\${title}> `}
       </h1>
       {meta && (
-        <span className="text-[1rem] font-light tabular-nums text-faded">
-          {meta}
+        <span className="tabular-nums text-faded">
+          {meta} ITEM(S)
         </span>
       )}
     </div>
@@ -24,9 +24,12 @@ export function PageBar({ title, meta }: { title: string; meta?: string }) {
 export function EmptyState({ line }: { line: string }) {
   return (
     <div className="px-4 py-32 flex flex-col items-center gap-4 text-center">
-      <p className="text-[1.0625rem] font-light">{line}</p>
-      <Link href="/" className="mac-btn">
-        Back to shop
+      <p className="font-vt text-[1.625rem] leading-none uppercase">
+        {line}
+        <span aria-hidden className="cursor-blink">█</span>
+      </p>
+      <Link href="/" className="mac-btn h-11! font-vt text-[1.25rem]! uppercase">
+        &lt; Back to shop
       </Link>
     </div>
   );
@@ -45,7 +48,7 @@ export function Thumb({
 }) {
   return (
     <div
-      className={`relative rounded-md bg-well shrink-0 overflow-hidden ${className}`}
+      className={`relative border border-line bg-well shrink-0 overflow-hidden ${className}`}
     >
       {src && (
         <PaperPhoto
@@ -86,7 +89,7 @@ export default function CartView() {
             {items.map((item, i) => (
               <li
                 key={item.variantId}
-                className="rounded-md p-2.5 grid grid-cols-[22px_auto_1fr_auto] items-center gap-x-4 hover:bg-paper/60 transition-colors"
+                className="p-2.5 grid grid-cols-[22px_auto_1fr_auto] items-center gap-x-4 hover:bg-ink/5 transition-colors"
               >
                 <span className="text-faded self-start">
                   {String(i + 1).padStart(2, "0")}
@@ -108,11 +111,11 @@ export default function CartView() {
                     {item.variantLabel} · {formatPrice(item.unitPriceCents)}
                   </span>
                   <div className="flex items-center gap-4 mt-1">
-                    <div className="flex items-center rounded-md bg-bone overflow-hidden">
+                    <div className="flex items-center border border-ink">
                       <button
                         onClick={() => setQty(item.variantId, item.qty - 1)}
                         aria-label="Decrease quantity"
-                        className="w-7 h-7 hover:bg-line"
+                        className="w-9 h-9 hover:bg-ink hover:text-paper"
                       >
                         −
                       </button>
@@ -120,7 +123,7 @@ export default function CartView() {
                       <button
                         onClick={() => setQty(item.variantId, item.qty + 1)}
                         aria-label="Increase quantity"
-                        className="w-7 h-7 hover:bg-line"
+                        className="w-9 h-9 hover:bg-ink hover:text-paper"
                       >
                         +
                       </button>
@@ -161,7 +164,7 @@ export default function CartView() {
                 href="/checkout"
                 className="mt-4 btn-primary w-full justify-between"
               >
-                <span>Checkout</span>
+                <span>[ENTER] CHECKOUT</span>
                 <span>{formatPrice(subtotalCents)} →</span>
               </Link>
             </div>

@@ -8,6 +8,7 @@ import PurchasePanel from "@/components/purchase-panel";
 import RevealUp from "@/components/reveal-up";
 import { getProductBySlug, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
+import { fileName, STOCK_LABEL, stockStatus } from "@/lib/term";
 import {
   absoluteUrl,
   DEFAULT_IMAGE,
@@ -123,18 +124,22 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
       />
       <nav
         aria-label="Breadcrumb"
-        className="pt-6 flex items-center gap-1.5 text-[0.8125rem] text-faded"
+        className="pt-6 flex flex-wrap items-center font-vt text-[1.375rem] leading-none uppercase text-amber"
       >
-        <Link href="/" className="hover:text-ink">
-          Shop
+        <Link href="/" className="hover:bg-amber hover:text-paper">
+          C:\STAB\MERCH
         </Link>
-        <span aria-hidden>›</span>
+        <span aria-hidden>\</span>
         <Link
           href={`/?type=${product.type}`}
-          className="capitalize hover:text-ink"
+          className="hover:bg-amber hover:text-paper"
         >
           {product.type}
         </Link>
+        <span aria-hidden>\</span>
+        <span aria-current="page" className="text-ink">
+          {fileName(product)}
+        </span>
       </nav>
 
       <PageBody>
@@ -147,8 +152,8 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 slug={product.slug}
               />
             ) : (
-              <div className="panel p-2.5">
-                <div className="relative aspect-4/5 rounded-md overflow-hidden bg-well-light">
+              <div className="border border-ink">
+                <div className="relative aspect-4/5 overflow-hidden bg-well">
                   <ProductMedia title={product.title} image={null} />
                 </div>
               </div>
@@ -156,15 +161,20 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           </div>
 
           <div>
-            <RevealUp className="md:sticky md:top-6 panel -mx-4 rounded-t-[44px] rounded-b-none p-5 md:mx-0 md:rounded-[14px] md:p-6">
-              <h1 className="text-[1.75rem] md:text-[1.9rem] font-light sm:font-normal  tracking-tight leading-tight">
+            <RevealUp className="md:sticky md:top-6 border border-ink bg-paper p-4 md:p-6">
+              <p className="font-vt text-[1.25rem] leading-none text-amber">
+                {"> OPEN "}
+                {fileName(product)}
+              </p>
+              <h1 className="glow mt-3 font-vt text-[2.75rem] md:text-[3.5rem] leading-[0.9] uppercase">
                 {product.title}
               </h1>
-              <p className="mt-1 text-[1.1875rem] font-light sm:font-normal tabular-nums text-faded">
-                {formatPrice(product.price_cents)}
+              <p className="mt-3 font-vt text-[1.5rem] leading-none uppercase">
+                COST: <span className="text-amber">{formatPrice(product.price_cents)}</span>
+                <span className="text-faded"> · STOCK: {STOCK_LABEL[stockStatus(product)]}</span>
               </p>
               {product.description && (
-                <p className="mt-4 text-[0.675rem] sm:text-[0.875rem] font-light font-stretch-105% leading-relaxed whitespace-pre-line text-faded/95">
+                <p className="mt-4 text-[0.8125rem] sm:text-[0.875rem] leading-relaxed whitespace-pre-line text-faded">
                   {product.description}
                 </p>
               )}

@@ -3,46 +3,51 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import CartButton from "@/components/cart-button";
-import StabLogo3D from "@/components/stab-logo-3d";
-import Segmented from "@/components/admin/segmented";
+import TermLogo from "@/components/term-logo";
+
+const NAV = [
+  { key: "F1", label: "SHOP", href: "/" },
+  { key: "F2", label: "MUSIC", href: "/#music" },
+] as const;
 
 export default function SiteHeader() {
   const pathname = usePathname();
   const inShop = pathname === "/" || pathname.startsWith("/product");
 
-  const nav = (
-    <nav aria-label="Main" className="hidden">
-      <Segmented<"shop" | "music" | "none">
-        size="sm"
-        value={inShop ? "shop" : "none"}
-        options={[
-          { value: "shop", label: "Shop", href: "/" },
-          { value: "music", label: "Music", href: "/#music" },
-        ]}
-      />
-    </nav>
-  );
-
   return (
-    // 3D logo on every page; nav and cart share the row below it.
-    <header>
-      <div className="flex justify-center pt-6">
-        <Link href="/" aria-label="STAB, home" className="w-full md:w-auto">
-          <StabLogo3D className="h-28 md:h-56 md:w-[30rem]" />
-        </Link>
+    <header className="pt-4">
+      {/* BBS status bar: node info, function-key nav, cart. */}
+      <div className="flex flex-wrap items-stretch justify-between gap-x-4 border border-ink font-vt text-[1.25rem] leading-none uppercase">
+        <span className="hidden items-center px-3 py-2 sm:flex">
+          STAB BBS v1.3 · NODE 07 · 2400 BAUD
+        </span>
+        <nav aria-label="Main" className="flex items-stretch">
+          {NAV.map((n) => {
+            const on = n.label === "SHOP" && inShop;
+            return (
+              <Link
+                key={n.key}
+                href={n.href}
+                aria-current={on ? "page" : undefined}
+                className={`flex min-h-11 items-center px-3 hover:bg-ink hover:text-paper ${
+                  on ? "underline underline-offset-4" : ""
+                }`}
+              >
+                [{n.key}] {n.label}
+              </Link>
+            );
+          })}
+        </nav>
+        <CartButton />
       </div>
-      {/* On the home page the cart lives in the shop row instead. */}
-      {pathname !== "/" && (
-        <div className="flex items-center justify-between gap-4 pt-3">
-          <div className="flex items-center gap-3">
-            {nav}
-            <span className="hidden text-[0.75rem] text-faded md:inline">
-              hostile youth records
-            </span>
-          </div>
-          <CartButton />
-        </div>
-      )}
+
+      <Link
+        href="/"
+        aria-label="STAB, home"
+        className="glow mt-8 block w-fit text-ink drop-shadow-[0_0_6px_rgb(255_68_56/0.5)]"
+      >
+        <TermLogo className="h-auto w-[min(100%,34rem)]" />
+      </Link>
     </header>
   );
 }

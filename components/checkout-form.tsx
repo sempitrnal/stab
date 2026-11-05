@@ -20,7 +20,7 @@ const inputCls = "mac-input h-10!";
 const labelCls = "block text-[0.75rem] font-medium text-faded mb-1.5";
 const segCls = "flex flex-wrap gap-2";
 const radioCls = (active: boolean) =>
-  `mac-btn h-9! px-3.5! ${active ? "bg-[var(--mac-accent)]! text-white!" : ""}`;
+  `mac-btn h-11! px-3.5! ${active ? "bg-[var(--mac-accent)]! text-paper!" : ""}`;
 
 function Step({
   n,
@@ -33,8 +33,8 @@ function Step({
 }) {
   return (
     <section className="panel p-5 md:p-6 grid md:grid-cols-[140px_1fr] gap-4">
-      <h2 className="text-[0.9375rem] font-medium tracking-tight">
-        <span className="text-faded mr-2 tabular-nums">{n}</span>
+      <h2 className="font-vt text-[1.5rem] leading-none uppercase">
+        <span className="text-amber mr-2 tabular-nums">{n}</span>
         {title}
       </h2>
       <div className="flex flex-col gap-5 max-w-xl">{children}</div>
@@ -84,8 +84,8 @@ export default function CheckoutForm() {
     const balance = placed.merchCents + placed.shippingFeeCents - dueNow;
     return (
       <div className="px-4 py-20 flex flex-col items-center gap-6">
-        <p className="tag text-faded">Order received</p>
-        <h1 className="text-[1.75rem] font-bold tracking-tight tabular-nums">
+        <p className="font-vt text-[1.375rem] leading-none uppercase text-amber">TRANSFER COMPLETE · ORDER RECEIVED</p>
+        <h1 className="glow font-vt text-[3rem] leading-none tabular-nums">
           {placed.ref}
         </h1>
         <table className="w-full max-w-md panel [&_td]:px-5 [&_tr:first-child_td]:pt-4 [&_tr:last-child_td]:pb-4">
@@ -115,8 +115,8 @@ export default function CheckoutForm() {
         <p className="text-faded text-center max-w-sm">
           We&apos;ll confirm your order once payment is verified.
         </p>
-        <Link href="/" className="mac-btn">
-          Back to shop
+        <Link href="/" className="mac-btn h-11! font-vt text-[1.25rem]! uppercase">
+          &lt; Back to shop
         </Link>
       </div>
     );
@@ -359,10 +359,10 @@ export default function CheckoutForm() {
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className={`px-4 py-6 w-full rounded-[10px] text-[0.8125rem] font-medium transition-colors ${
+              className={`px-4 py-6 w-full font-vt text-[1.375rem] leading-none uppercase transition-colors ${
                 proof
-                  ? "bg-[var(--mac-accent)] text-white"
-                  : "border border-dashed border-[rgb(0_0_0/0.18)] bg-white/50 text-faded hover:border-ink/40 hover:text-ink"
+                  ? "bg-ink text-paper"
+                  : "border border-dashed border-ink text-faded hover:bg-ink/10 hover:text-ink"
               }`}
             >
               {proof ? `✓ ${proof.name}` : "+ Upload screenshot"}
@@ -492,7 +492,7 @@ export default function CheckoutForm() {
             disabled={pending}
             className="btn-primary w-full justify-between"
           >
-            <span>{pending ? "Placing order…" : "Place order"}</span>
+            <span>{pending ? "TRANSMITTING…" : "[ENTER] PLACE ORDER"}</span>
             <span>{formatPrice(totalCents)} →</span>
           </button>
         </div>

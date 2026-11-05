@@ -24,7 +24,7 @@ function Section({
 }) {
   return (
     <section className="border-t border-line py-3">
-      <h2 className="mb-2 text-[0.8125rem] font-medium">{title}</h2>
+      <h2 className="mb-2 font-vt text-[1.25rem] leading-none uppercase text-amber">{title}</h2>
       {children}
     </section>
   );
@@ -53,7 +53,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
   const unitPrice = selected?.price_cents ?? product.price_cents;
   const soldOut = variants.length > 0 && !variants.some(available);
   const hasDims = variants.some((v) => v.dimensions);
-  const sizeWord = product.type === "apparel" ? "Size" : "Variant";
+  const sizeWord = product.type === "apparel" ? "SIZE" : "VARIANT";
 
   // Switched on per product in the admin (apparel only).
   const canCustom = product.type === "apparel" && !!product.allow_custom_size;
@@ -99,14 +99,14 @@ export default function PurchasePanel({ product }: { product: Product }) {
   return (
     <div>
       {customOn ? (
-        <p className="text-[0.8125rem]">
-          <span className="text-faded mr-2">{sizeWord}</span>
-          {customValid ? customLabel(parsed) : "Custom"}
+        <p className="font-vt text-[1.25rem] leading-none uppercase">
+          <span className="text-amber mr-2">SELECT {sizeWord}:</span>
+          {customValid ? customLabel(parsed) : "CUSTOM"}
         </p>
       ) : (
         selected && (
-          <p className="text-[0.8125rem]">
-            <span className="text-faded mr-2">{sizeWord}</span>
+          <p className="font-vt text-[1.25rem] leading-none uppercase">
+            <span className="text-amber mr-2">SELECT {sizeWord}:</span>
             {selected.label}
             {selected.dimensions && ` · ${selected.dimensions}`}
           </p>
@@ -115,7 +115,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
 
       {(variants.length > 0 || canCustom) && (
         <div
-          className="mt-2.5 grid gap-0.5 rounded-[10px] bg-[var(--mac-fill)] p-[3px]"
+          className="mt-3 grid gap-1.5"
           style={{
             gridTemplateColumns:
               `${variants.length > 0 ? `repeat(${Math.min(variants.length, 8)}, minmax(0, 1fr))` : ""}${canCustom ? " minmax(4.5rem, auto)" : ""}`.trim(),
@@ -134,12 +134,12 @@ export default function PurchasePanel({ product }: { product: Product }) {
                 }}
                 disabled={out}
                 aria-pressed={active}
-                className={`h-9 rounded-[8px] text-[0.8125rem] font-medium transition-[background-color,box-shadow,color] duration-150 ${
+                className={`h-11 border font-vt text-[1.375rem] leading-none uppercase transition-colors duration-100 ${
                   active
-                    ? "bg-white text-ink shadow-[0_1px_2px_rgb(0_0_0/0.12),0_0_0_0.5px_rgb(0_0_0/0.06)]"
+                    ? "border-ink bg-ink text-paper"
                     : out
-                      ? "text-ink/25 line-through cursor-not-allowed"
-                      : "text-faded hover:text-ink"
+                      ? "border-dashed border-line text-faded/70 line-through cursor-not-allowed"
+                      : "border-ink text-ink hover:bg-ink/15"
                 }`}
               >
                 {v.label}
@@ -150,10 +150,10 @@ export default function PurchasePanel({ product }: { product: Product }) {
             <button
               onClick={() => setCustomOn(true)}
               aria-pressed={customOn}
-              className={`h-9 rounded-[8px] px-3 text-[0.8125rem] font-medium transition-[background-color,box-shadow,color] duration-150 ${
+              className={`h-11 border px-3 font-vt text-[1.375rem] leading-none uppercase transition-colors duration-100 ${
                 customOn
-                  ? "bg-white text-ink shadow-[0_1px_2px_rgb(0_0_0/0.12),0_0_0_0.5px_rgb(0_0_0/0.06)]"
-                  : "text-faded hover:text-ink"
+                  ? "border-amber bg-amber text-paper"
+                  : "border-amber text-amber hover:bg-amber/15"
               }`}
             >
               Custom
@@ -190,7 +190,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
               />
             </label>
             {(customW || customL) && !customValid && (
-              <p className="col-span-2 text-[0.75rem] text-[#c93400]">
+              <p className="col-span-2 text-[0.75rem] text-amber">
                 Width {CUSTOM_LIMITS.width.min}–{CUSTOM_LIMITS.width.max} in,
                 length {CUSTOM_LIMITS.length.min}–{CUSTOM_LIMITS.length.max} in.
               </p>
@@ -202,40 +202,40 @@ export default function PurchasePanel({ product }: { product: Product }) {
       <button
         onClick={handleAdd}
         disabled={customOn ? !customValid : !selected || soldOut}
-        className="mt-5 w-full sm:w-auto h-11 px-5 rounded-[10px] inline-flex items-center justify-center gap-3 bg-[var(--mac-accent)] text-white text-[0.875rem] font-medium shadow-[inset_0_0.5px_0_rgb(255_255_255/0.2),0_1px_2px_rgb(0_0_0/0.15)] transition-[filter] hover:brightness-110 active:brightness-95 disabled:bg-bone disabled:text-faded disabled:shadow-none disabled:cursor-not-allowed"
+        className="mt-5 w-full h-14 px-5 inline-flex items-center justify-between gap-3 bg-ink text-paper font-vt text-[1.625rem] leading-none uppercase transition-[filter] hover:brightness-110 active:brightness-95 disabled:bg-bone disabled:text-faded disabled:cursor-not-allowed"
       >
         <span>
           {soldOut && !customOn
             ? "Sold out"
             : added
-              ? "Added ✓"
+              ? "Added. Ready."
               : preorder
-                ? "Preorder"
-                : "Add to cart"}
+                ? "[Enter] Preorder"
+                : "[Enter] Add to cart"}
         </span>
         {(!soldOut || customOn) && (
-          <span className="tabular-nums text-white/70">
+          <span className="tabular-nums">
             {formatPrice(customOn ? product.price_cents : unitPrice)}
           </span>
         )}
       </button>
 
       {!preorder && !customOn && selected && selected.stock > 0 && selected.stock <= 5 && (
-        <p className="mt-3 text-[0.75rem] font-medium text-[#c93400]">
-          Only {selected.stock} left in {selected.label}
+        <p className="mt-3 font-vt text-[1.25rem] leading-none uppercase text-amber">
+          WARNING: ONLY {selected.stock} LEFT IN {selected.label}
         </p>
       )}
 
       <div className="mt-3 flex justify-end">
-        <Link href="/cart" className="text-[0.75rem] text-faded hover:text-ink">
-          View cart ›
+        <Link href="/cart" className="flex min-h-11 items-center font-vt text-[1.25rem] leading-none uppercase text-faded hover:bg-ink hover:text-paper">
+          [F4] VIEW CART &gt;
         </Link>
       </div>
 
       {hasDims && (
         <div className="mt-6">
           <Section title="Size guide">
-            <div className="overflow-hidden rounded-lg border border-line">
+            <div className="overflow-x-auto border border-line">
               <table className="w-full table-fixed border-collapse text-[0.8125rem] tabular-nums [&_tr:first-child>*]:border-t-0 [&_tr>*:first-child]:border-l-0">
                 <thead>
                   <tr className="text-left text-faded">
@@ -258,7 +258,7 @@ export default function PurchasePanel({ product }: { product: Product }) {
                       <tr
                         key={v.id}
                         className={
-                          v.id === selectedId ? "font-semibold" : "text-faded"
+                          v.id === selectedId ? "font-bold" : "text-faded"
                         }
                       >
                         <td className="border-l border-t border-line px-3 py-1.5">

@@ -36,7 +36,7 @@ export default async function Home() {
 
   if (!configured || products.length === 0) {
     return (
-      <p className="py-32 text-center tag text-faded">
+      <p className="py-32 text-center font-vt text-[1.375rem] uppercase text-faded">
         {configured
           ? "No listings yet"
           : "Supabase not configured: fill in .env.local"}
@@ -74,8 +74,11 @@ export default async function Home() {
       />
       <Suspense>
         <ShopBrowser products={products}>
-          <section id="music" className="mt-6 scroll-mt-4">
-            <div className="pt-6 grid md:grid-cols-2 gap-6">
+          <section id="music" className="mt-10 scroll-mt-4">
+            <h2 className="font-vt text-[1.5rem] leading-none text-amber">
+              {"C:\\STAB\\MUSIC> PLAY HARDER.MOD"}
+            </h2>
+            <div className="pt-4 grid md:grid-cols-2 gap-6">
               <div className="panel p-2.5">
                 <iframe
                   src="https://open.spotify.com/embed/album/4MnTPaBmEl61zANQDXRdAe?utm_source=generator&theme=0"
@@ -84,11 +87,11 @@ export default async function Home() {
                   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                   loading="lazy"
                   title="STAB on Spotify"
-                  className="block border-0 w-full rounded-md"
+                  className="block border-0 w-full"
                 />
               </div>
               <div className="panel p-2.5">
-                <div className="relative aspect-video rounded-md overflow-hidden bg-bone">
+                <div className="relative aspect-video overflow-hidden bg-bone">
                   <iframe
                     src="https://www.youtube.com/embed/Y140YV3xvAk"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

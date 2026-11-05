@@ -44,7 +44,7 @@ function parse(r: NomResult): ParsedAddress {
 }
 
 const inputCls =
-  "w-full rounded-md bg-paper px-3 h-10 text-xs placeholder:text-faded focus:outline-none";
+  "w-full border border-line bg-paper px-3 h-10 text-xs placeholder:text-faded focus:outline-none";
 
 export default function AddressSearch({
   onSelect,
@@ -96,7 +96,7 @@ export default function AddressSearch({
         </button>
       </div>
       {results !== null && (
-        <ul className="rounded-md bg-paper overflow-hidden">
+        <ul className="border border-line bg-paper overflow-hidden">
           {results.map((r) => (
             <li key={r.place_id}>
               <button
